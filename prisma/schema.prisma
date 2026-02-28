@@ -15,6 +15,7 @@ model Account {
   password   String  @db.VarChar(255)
   email      String  @unique
   isVerified Boolean @default(false) @map("is_verified")
+  role       Role    @default(USER)
 
   profile Profile?
 
@@ -39,4 +40,9 @@ model Profile {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("profiles")
+}
+
+enum Role {
+  USER
+  ADMIN
 }
