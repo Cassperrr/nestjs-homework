@@ -8,6 +8,7 @@ import {
 	Put
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { Role } from 'prisma/generated/enums';
 import { Authorization, Id } from 'src/common';
 
 import {
@@ -47,7 +48,7 @@ export class ProfileController {
 	}
 
 	@ApiOperation({
-		summary: 'Вернуть полный профиль пользователя'
+		summary: 'Получить полный профиль пользователя'
 	})
 	@ApiOkResponse({ type: MeResponse })
 	@ApiBearerAuth()
@@ -56,5 +57,17 @@ export class ProfileController {
 	@HttpCode(HttpStatus.OK)
 	public async me(@Id() id: string) {
 		return this.profileService.me(id);
+	}
+
+	@ApiOperation({
+		summary: 'Получить всех пользователей, только для администратора'
+	})
+	@ApiOkResponse({ type: MeResponse })
+	@ApiBearerAuth()
+	@Authorization(Role.ADMIN)
+	@Get('all')
+	@HttpCode(HttpStatus.OK)
+	public async all(@Id() id: string) {
+		return { ок: true };
 	}
 }

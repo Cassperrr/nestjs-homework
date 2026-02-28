@@ -3,13 +3,13 @@ import {
 	Injectable,
 	NotFoundException
 } from '@nestjs/common';
+import { ProfileRepository } from 'src/infra';
 
 import {
 	CreateProfileRequest,
 	ProfileResponse,
 	UpdateProfileRequest
 } from './dto';
-import { ProfileRepository } from './profile.repository';
 
 @Injectable()
 export class ProfileService {

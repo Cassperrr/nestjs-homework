@@ -1,5 +1,6 @@
 import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { LoggerMiddleware } from 'src/common';
+import { JwtStrategy, LoggerMiddleware, RolesGuard } from 'src/common';
+import { RepositoriesModule } from 'src/infra';
 
 import { HashModule } from './hash';
 import { JwtTokenModule } from './jwt';
@@ -14,8 +15,10 @@ import { ThrottleRequestModule } from './throttler';
 		HashModule,
 		JwtTokenModule,
 		OtpModule,
-		SessionModule
+		SessionModule,
+		RepositoriesModule
 	],
+	providers: [JwtStrategy, RolesGuard],
 	exports: [
 		ThrottleRequestModule,
 		HashModule,

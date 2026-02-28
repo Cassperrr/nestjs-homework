@@ -6,6 +6,6 @@ import { FeatModule } from './feat';
 import { InfraModule } from './infra';
 
 @Module({
-	imports: [AppConfigModule, CoreModule, InfraModule, FeatModule]
+	imports: [AppConfigModule, InfraModule, CoreModule, FeatModule]
 })
 export class AppModule {}

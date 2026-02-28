@@ -4,10 +4,13 @@ import {
 	UnauthorizedException
 } from '@nestjs/common';
 import type { Request } from 'express';
+import type { ReqUser } from 'src/shared';
 
 export const Id = createParamDecorator((_: unknown, ctx: ExecutionContext) => {
 	const req = ctx.switchToHttp().getRequest() as Request;
-	if (!req.user)
-		throw new UnauthorizedException('Пользователь не авторизован');
-	return req.user.id;
+	const user = req.user as ReqUser;
+
+	if (!user) throw new UnauthorizedException('Пользователь не авторизован');
+
+	return user.id;
 });

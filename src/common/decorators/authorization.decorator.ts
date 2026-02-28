@@ -1,7 +1,10 @@
 import { applyDecorators, UseGuards } from '@nestjs/common';
+import { Role } from 'prisma/generated/enums';
 
-import { JwtGuard } from '../guards';
+import { JwtGuard, RolesGuard } from '../guards';
 
-export const Authorization = () => {
-	return applyDecorators(UseGuards(JwtGuard));
+import { SetRoles } from './set-roles.decorator';
+
+export const Authorization = (...roles: Role[]) => {
+	return applyDecorators(SetRoles(...roles), UseGuards(JwtGuard, RolesGuard));
 };

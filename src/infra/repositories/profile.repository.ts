@@ -3,10 +3,6 @@ import { Profile } from 'prisma/generated/client';
 import { PrismaService } from 'src/infra';
 import { uuidv7 } from 'uuidv7';
 
-import { CreateProfileRequest } from './dto';
-
-//дто в репу не нада, надо думать
-
 @Injectable()
 export class ProfileRepository {
 	public constructor(private readonly prisma: PrismaService) {}
@@ -17,7 +13,15 @@ export class ProfileRepository {
 		});
 	}
 
-	public async create(accountId: string, profile: CreateProfileRequest) {
+	public async create(
+		accountId: string,
+		profile: {
+			firstName: string;
+			lastName: string;
+			age: number;
+			description?: string; // TODO чет надо придумать некрасиво
+		}
+	) {
 		return this.prisma.profile.create({
 			data: {
 				id: uuidv7(),

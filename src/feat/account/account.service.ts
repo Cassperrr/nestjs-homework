@@ -1,8 +1,8 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { HASH_SERVICE, HashService, OTP_SERVICE, OtpService } from 'src/core';
+import { AccountRepository } from 'src/infra';
 import { OtpKey } from 'src/shared';
 
-import { AccountRepository } from './account.repository';
 import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
 
 @Injectable()

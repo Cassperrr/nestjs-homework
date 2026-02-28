@@ -19,9 +19,8 @@ import {
 	SESSION_SERVICE,
 	SessionService
 } from 'src/core';
+import { AccountRepository } from 'src/infra';
 import { OtpKey } from 'src/shared';
-
-import { AccountRepository } from '../account/account.repository';
 
 import type {
 	AccessTokenResponse,

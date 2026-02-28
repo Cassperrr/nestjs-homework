@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { JwtStrategy } from 'src/common';
 import { EnvTypes } from 'src/config';
 
 import { JwtTokenService } from './jwt.service';
@@ -44,8 +43,7 @@ export const JWT_TOKEN_SERVICE = Symbol('JWT_TOKEN_SERVICE');
 				return new JwtTokenService(jwtService, accessTtl, refreshTtl);
 			},
 			inject: [JwtService, ConfigService]
-		},
-		JwtStrategy
+		}
 	],
 	exports: [JWT_TOKEN_SERVICE]
 })
