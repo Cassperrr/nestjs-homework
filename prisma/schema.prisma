@@ -1,0 +1,42 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "./generated"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  id String @id
+
+  username   String  @unique
+  password   String  @db.VarChar(255)
+  email      String  @unique
+  isVerified Boolean @default(false) @map("is_verified")
+
+  profile Profile?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("accounts")
+}
+
+model Profile {
+  id String @id
+
+  firstName   String  @map("first_name") @db.VarChar(50)
+  lastName    String  @map("last_name") @db.VarChar(50)
+  age         Int
+  description String? @db.VarChar(1000)
+
+  accountId String  @unique @map("account_id")
+  account   Account @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
