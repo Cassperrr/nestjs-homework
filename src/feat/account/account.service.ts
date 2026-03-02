@@ -9,6 +9,8 @@ import {
 } from 'src/core';
 import { OtpKey } from 'src/shared';
 
+import { OtpCodeResponse } from '../auth/dto';
+
 import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
 
 @Injectable()
@@ -20,7 +22,10 @@ export class AccountService {
 		private readonly userRepo: UserRepository
 	) {}
 
-	public async changePassword(id: string, dto: ChangePasswordRequest) {
+	public async changePassword(
+		id: string,
+		dto: ChangePasswordRequest
+	): Promise<OtpCodeResponse> {
 		const { oldPassword } = dto;
 
 		const user = await this.userRepo.findAccount({ id });

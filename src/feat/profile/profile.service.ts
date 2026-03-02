@@ -43,7 +43,7 @@ export class ProfileService {
 		return this.userRepo.updateProfile(accountId, dto);
 	}
 
-	public async getMe(accountId: string): Promise<UserResponse | null> {
+	public async getMe(accountId: string): Promise<UserResponse> {
 		const user = await this.userRepo.findUser({ id: accountId });
 
 		if (!user || user.deletedAt)
@@ -68,15 +68,17 @@ export class ProfileService {
 	public async findUserByUsername(
 		accountId: string,
 		query: FindUserRequest
-	): Promise<UserResponse | null> {
+	): Promise<UserResponse> {
 		const existing = await this.userRepo.findUser({ id: accountId });
 
 		if (!existing || existing.deletedAt)
 			throw new NotFoundException('Нет доступа');
 
 		const { username } = query;
+
 		const user = await this.userRepo.findUser({ username });
 		if (!user) throw new NotFoundException('Пользователь не найден');
+
 		return user;
 	}
 }

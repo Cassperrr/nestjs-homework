@@ -135,7 +135,10 @@ export class AuthService {
 		return this._authenticate(res, user.id, user.role);
 	}
 
-	public async refresh(req: Request, res: Response) {
+	public async refresh(
+		req: Request,
+		res: Response
+	): Promise<AccessTokenResponse> {
 		const refreshToken = req.cookies['refreshToken'];
 		if (!refreshToken) throw new UnauthorizedException('Токен не найден');
 		const { id } = this.jwtPassport.verify(refreshToken);
@@ -165,7 +168,11 @@ export class AuthService {
 		return { message: 'Выход выполнен' };
 	}
 
-	private async _authenticate(res: Response, id: string, role: Role) {
+	private async _authenticate(
+		res: Response,
+		id: string,
+		role: Role
+	): Promise<AccessTokenResponse> {
 		const { accessToken, refreshToken, refreshTtl } =
 			this.jwtPassport.signTokens({ id, role });
 

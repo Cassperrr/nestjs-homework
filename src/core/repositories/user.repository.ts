@@ -43,7 +43,6 @@ export class UserRepository {
 		username?: string;
 	}) {
 		const { id, email, username } = params;
-		if (!id && !email && !username) return null;
 
 		return this.prisma.account.findFirst({
 			where: {
@@ -101,7 +100,6 @@ export class UserRepository {
 		username?: string;
 	}) {
 		const { id, email, username } = params;
-		if (!id && !email && !username) return null;
 
 		return this.prisma.account.findFirst({
 			where: {
