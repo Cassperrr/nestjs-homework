@@ -18,9 +18,9 @@ import {
 	OTP_SERVICE,
 	OtpService,
 	SESSION_SERVICE,
-	SessionService
+	SessionService,
+	UserRepository
 } from 'src/core';
-import { UserRepository } from 'src/infra';
 import { OtpKey } from 'src/shared';
 
 import type {

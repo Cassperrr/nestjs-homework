@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Account, Profile } from 'prisma/generated/browser';
+import { PrismaService } from 'src/infra';
 import { uuidv7 } from 'uuidv7';
-
-import { PrismaService } from '../prisma';
 
 @Injectable()
 export class UserRepository {

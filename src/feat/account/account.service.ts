@@ -1,7 +1,12 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import type { Response } from 'express';
-import { HASH_SERVICE, HashService, OTP_SERVICE, OtpService } from 'src/core';
-import { UserRepository } from 'src/infra';
+import {
+	HASH_SERVICE,
+	HashService,
+	OTP_SERVICE,
+	OtpService,
+	UserRepository
+} from 'src/core';
 import { OtpKey } from 'src/shared';
 
 import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';

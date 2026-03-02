@@ -114,9 +114,9 @@ async function main() {
 			password + process.env.HASH_PEPPER,
 			{
 				type: argon2.argon2id,
-				memoryCost: 65536,
-				timeCost: 3,
-				parallelism: 4
+				memoryCost: Number(process.env.MEMORY_COST),
+				timeCost: Number(process.env.TIME_COST),
+				parallelism: Number(process.env.PARALLELISM)
 			}
 		);
 

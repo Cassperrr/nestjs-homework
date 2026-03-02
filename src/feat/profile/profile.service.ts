@@ -3,7 +3,7 @@ import {
 	Injectable,
 	NotFoundException
 } from '@nestjs/common';
-import { UserRepository } from 'src/infra';
+import { UserRepository } from 'src/core';
 
 import {
 	AllUsersResponse,

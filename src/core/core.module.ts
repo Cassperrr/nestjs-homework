@@ -4,6 +4,7 @@ import { JwtStrategy, LoggerMiddleware, RolesGuard } from 'src/common';
 import { HashModule } from './hash';
 import { JwtPassportModule } from './jwt';
 import { OtpModule } from './otp';
+import { RepositoriesModule } from './repositories';
 import { SessionModule } from './session';
 import { ThrottleRequestModule } from './throttler';
 
@@ -14,7 +15,8 @@ import { ThrottleRequestModule } from './throttler';
 		HashModule,
 		JwtPassportModule,
 		OtpModule,
-		SessionModule
+		SessionModule,
+		RepositoriesModule
 	],
 	providers: [JwtStrategy, RolesGuard],
 	exports: [
@@ -22,7 +24,8 @@ import { ThrottleRequestModule } from './throttler';
 		HashModule,
 		JwtPassportModule,
 		OtpModule,
-		SessionModule
+		SessionModule,
+		RepositoriesModule
 	]
 })
 export class CoreModule implements NestModule {

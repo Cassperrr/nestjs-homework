@@ -4,6 +4,7 @@
 /build
 prisma/generated
 todo
+/trash
 
 # Logs
 logs
