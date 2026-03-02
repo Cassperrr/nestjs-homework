@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EnvTypes } from 'src/config';
-import { RedisModule, RedisService } from 'src/infra';
+import { RedisService } from 'src/infra';
 
 import { SessionService } from './session.service';
 
 export const SESSION_SERVICE = Symbol('SESSION_SERVICE');
 
 @Module({
-	imports: [RedisModule],
 	providers: [
 		{
 			provide: SESSION_SERVICE,

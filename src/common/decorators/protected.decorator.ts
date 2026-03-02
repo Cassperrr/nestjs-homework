@@ -5,6 +5,6 @@ import { JwtGuard, RolesGuard } from '../guards';
 
 import { SetRoles } from './set-roles.decorator';
 
-export const Authorization = (...roles: Role[]) => {
+export const Protected = (...roles: Role[]) => {
 	return applyDecorators(SetRoles(...roles), UseGuards(JwtGuard, RolesGuard));
 };

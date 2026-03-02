@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { EnvTypes } from 'src/config';
 
-import { JwtTokenService } from './jwt.service';
+import { JwtPassportService } from './jwt.service';
 
-export const JWT_TOKEN_SERVICE = Symbol('JWT_TOKEN_SERVICE');
+export const JWT_PASSPORT_SERVICE = Symbol('JWT_PASSPORT_SERVICE');
 
 @Module({
 	imports: [
@@ -29,7 +29,7 @@ export const JWT_TOKEN_SERVICE = Symbol('JWT_TOKEN_SERVICE');
 	],
 	providers: [
 		{
-			provide: JWT_TOKEN_SERVICE,
+			provide: JWT_PASSPORT_SERVICE,
 			useFactory: (
 				jwtService: JwtService,
 				configService: ConfigService<EnvTypes, true>
@@ -40,11 +40,15 @@ export const JWT_TOKEN_SERVICE = Symbol('JWT_TOKEN_SERVICE');
 				const refreshTtl = configService.get('JWT_REFRESH_TOKEN_TTL', {
 					infer: true
 				});
-				return new JwtTokenService(jwtService, accessTtl, refreshTtl);
+				return new JwtPassportService(
+					jwtService,
+					accessTtl,
+					refreshTtl
+				);
 			},
 			inject: [JwtService, ConfigService]
 		}
 	],
-	exports: [JWT_TOKEN_SERVICE]
+	exports: [JWT_PASSPORT_SERVICE]
 })
-export class JwtTokenModule {}
+export class JwtPassportModule {}

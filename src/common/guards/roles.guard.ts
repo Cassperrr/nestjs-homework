@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { Role } from 'prisma/generated/enums';
-import type { ReqUser } from 'src/shared';
+import type { JwtPayload } from 'src/shared';
 
 import { ROLES_KEY } from '../decorators/set-roles.decorator';
 
@@ -24,7 +24,7 @@ export class RolesGuard implements CanActivate {
 		if (!requiredRoles || requiredRoles.length === 0) return true;
 
 		const req = context.switchToHttp().getRequest() as Request;
-		const user = req.user as ReqUser;
+		const user = req.user as JwtPayload;
 
 		if (!user) throw new ForbiddenException('Доступ запрещён');
 

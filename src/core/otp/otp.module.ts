@@ -1,14 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EnvTypes } from 'src/config';
-import { RedisModule, RedisService } from 'src/infra';
+import { RedisService } from 'src/infra';
 
 import { OtpService } from './otp.service';
 
 export const OTP_SERVICE = Symbol('OTP_SERVICE');
 
 @Module({
-	imports: [RedisModule],
 	providers: [
 		{
 			provide: OTP_SERVICE,

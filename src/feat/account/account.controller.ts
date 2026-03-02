@@ -7,7 +7,7 @@ import {
 	Post
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { Authorization, Id } from 'src/common';
+import { Id, Protected } from 'src/common';
 
 import { OtpCodeResponse } from '../auth/dto';
 
@@ -23,7 +23,7 @@ export class AccountController {
 	})
 	@ApiBearerAuth()
 	@ApiOkResponse({ type: OtpCodeResponse })
-	@Authorization()
+	@Protected()
 	@Post('password/change')
 	@HttpCode(HttpStatus.OK)
 	public async changePassword(
@@ -37,7 +37,7 @@ export class AccountController {
 		summary: 'Подтверждение смены пароля пользователя'
 	})
 	@ApiBearerAuth()
-	@Authorization()
+	@Protected()
 	@Patch('password/confirm')
 	@HttpCode(HttpStatus.OK)
 	public async confirmPassword(

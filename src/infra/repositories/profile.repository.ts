@@ -7,7 +7,7 @@ import { uuidv7 } from 'uuidv7';
 export class ProfileRepository {
 	public constructor(private readonly prisma: PrismaService) {}
 
-	public async findByAccountId(accountId: string) {
+	public async findProfileByAccountId(accountId: string) {
 		return this.prisma.profile.findUnique({
 			where: { accountId }
 		});
@@ -50,9 +50,66 @@ export class ProfileRepository {
 		});
 	}
 
-	public async findMeByAccountId(accountId: string) {
-		return this.prisma.profile.findUnique({
-			where: { accountId },
+	public async findUserByAccountId(accountId: string) {
+		return this.prisma.account.findUnique({
+			where: { id: accountId },
+			select: {
+				id: true,
+				username: true,
+				email: true,
+				createdAt: true,
+				profile: {
+					select: {
+						firstName: true,
+						lastName: true,
+						age: true,
+						description: true
+					}
+				}
+			}
+		});
+	}
+
+	public async findUserByUsername(username: string) {
+		return this.prisma.account.findFirst({
+			where: { username },
+			select: {
+				id: true,
+				username: true,
+				email: true,
+				createdAt: true,
+				profile: {
+					select: {
+						firstName: true,
+						lastName: true,
+						age: true,
+						description: true
+					}
+				}
+			}
+		});
+	}
+
+	public async findвывAllUsers(
+		cursor: string | undefined,
+		limit: number = 10,
+		username: string | undefined
+	) {
+		const accounts = await this.prisma.profile.findMany({
+			where: username
+				? {
+						account: {
+							username: {
+								contains: username,
+								mode: 'insensitive'
+							}
+						}
+					}
+				: {},
+			take: limit + 1,
+			skip: cursor ? 1 : 0,
+			cursor: cursor ? { accountId: cursor } : undefined,
+			orderBy: { createdAt: 'asc' },
 			select: {
 				firstName: true,
 				lastName: true,
@@ -60,6 +117,7 @@ export class ProfileRepository {
 				description: true,
 				account: {
 					select: {
+						id: true,
 						username: true,
 						email: true,
 						createdAt: true
@@ -67,5 +125,60 @@ export class ProfileRepository {
 				}
 			}
 		});
+
+		const hasNextPage = accounts.length > limit;
+		if (hasNextPage) accounts.pop();
+
+		return {
+			data: accounts,
+			nextCursor: hasNextPage
+				? accounts[accounts.length - 1].account.id
+				: null,
+			hasNextPage
+		};
+	}
+
+	public async findAllUsers(
+		cursor: string | undefined,
+		limit: number = 10,
+		username: string | undefined
+	) {
+		const accounts = await this.prisma.account.findMany({
+			where: username
+				? {
+						username: {
+							contains: username,
+							mode: 'insensitive'
+						}
+					}
+				: {},
+			take: limit + 1,
+			skip: cursor ? 1 : 0,
+			cursor: cursor ? { id: cursor } : undefined,
+			orderBy: { createdAt: 'asc' },
+			select: {
+				id: true,
+				username: true,
+				email: true,
+				createdAt: true,
+				profile: {
+					select: {
+						firstName: true,
+						lastName: true,
+						age: true,
+						description: true
+					}
+				}
+			}
+		});
+
+		const hasNextPage = accounts.length > limit;
+		if (hasNextPage) accounts.pop();
+
+		return {
+			data: accounts,
+			nextCursor: hasNextPage ? accounts[accounts.length - 1].id : null,
+			hasNextPage
+		};
 	}
 }

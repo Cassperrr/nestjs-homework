@@ -5,17 +5,21 @@ import {
 	HttpCode,
 	HttpStatus,
 	Post,
-	Put
+	Put,
+	Query
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { Role } from 'prisma/generated/enums';
-import { Authorization, Id } from 'src/common';
+import { Id, Protected } from 'src/common';
 
 import {
+	AllUsersResponse,
 	CreateProfileRequest,
-	MeResponse,
+	FindAllUserRequest,
+	FindUserRequest,
 	ProfileResponse,
-	UpdateProfileRequest
+	UpdateProfileRequest,
+	UserResponse
 } from './dto';
 import { ProfileService } from './profile.service';
 
@@ -28,7 +32,7 @@ export class ProfileController {
 	})
 	@ApiOkResponse({ type: ProfileResponse })
 	@ApiBearerAuth()
-	@Authorization()
+	@Protected()
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	public async create(@Id() id: string, @Body() dto: CreateProfileRequest) {
@@ -40,7 +44,7 @@ export class ProfileController {
 	})
 	@ApiOkResponse({ type: ProfileResponse })
 	@ApiBearerAuth()
-	@Authorization()
+	@Protected()
 	@Put()
 	@HttpCode(HttpStatus.OK)
 	public async update(@Id() id: string, @Body() dto: UpdateProfileRequest) {
@@ -48,11 +52,11 @@ export class ProfileController {
 	}
 
 	@ApiOperation({
-		summary: 'Получить полный профиль пользователя'
+		summary: 'Получить полный профиль моего пользователя'
 	})
-	@ApiOkResponse({ type: MeResponse })
+	@ApiOkResponse({ type: UserResponse })
 	@ApiBearerAuth()
-	@Authorization()
+	@Protected()
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	public async me(@Id() id: string) {
@@ -62,12 +66,24 @@ export class ProfileController {
 	@ApiOperation({
 		summary: 'Получить всех пользователей, только для администратора'
 	})
-	@ApiOkResponse({ type: MeResponse })
+	@ApiOkResponse({ type: AllUsersResponse })
 	@ApiBearerAuth()
-	@Authorization(Role.ADMIN)
+	@Protected(Role.ADMIN)
 	@Get('all')
 	@HttpCode(HttpStatus.OK)
-	public async all(@Id() id: string) {
-		return { ок: true };
+	public async all(@Query() query: FindAllUserRequest) {
+		return this.profileService.findAllUsers(query);
+	}
+
+	@ApiOperation({
+		summary: 'Найти пользователя по username, только для админинистратора'
+	})
+	@ApiOkResponse({ type: UserResponse })
+	@ApiBearerAuth()
+	@Protected(Role.ADMIN)
+	@Get(':username')
+	@HttpCode(HttpStatus.OK)
+	public async user(@Query() query: FindUserRequest) {
+		return this.profileService.findUserByUsername(query);
 	}
 }

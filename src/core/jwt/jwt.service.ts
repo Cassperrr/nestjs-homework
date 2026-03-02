@@ -4,7 +4,7 @@ import type { StringValue } from 'ms';
 import { JwtPayload } from 'src/shared';
 
 @Injectable()
-export class JwtTokenService {
+export class JwtPassportService {
 	public constructor(
 		private readonly jwtService: JwtService,
 		private readonly accessTtl: StringValue,

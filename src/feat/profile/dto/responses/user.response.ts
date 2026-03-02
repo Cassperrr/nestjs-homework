@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AccountResponse } from './account.response';
 import { ProfileResponse } from './profile.response';
 
-export class MeResponse extends ProfileResponse {
-	@ApiProperty({ type: () => AccountResponse, required: false })
-	public account?: AccountResponse;
+export class UserResponse extends AccountResponse {
+	@ApiProperty({ type: () => ProfileResponse, required: false })
+	public profile: ProfileResponse | null;
 }

@@ -1,2 +1,2 @@
-export * from './authorization.decorator';
+export * from './protected.decorator';
 export * from './id.decorator';

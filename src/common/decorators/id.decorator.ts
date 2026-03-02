@@ -4,11 +4,11 @@ import {
 	UnauthorizedException
 } from '@nestjs/common';
 import type { Request } from 'express';
-import type { ReqUser } from 'src/shared';
+import type { JwtPayload } from 'src/shared';
 
 export const Id = createParamDecorator((_: unknown, ctx: ExecutionContext) => {
 	const req = ctx.switchToHttp().getRequest() as Request;
-	const user = req.user as ReqUser;
+	const user = req.user as JwtPayload;
 
 	if (!user) throw new UnauthorizedException('Пользователь не авторизован');
 

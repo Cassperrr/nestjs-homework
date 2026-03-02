@@ -8,12 +8,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import type { Request, Response } from 'express';
 import ms from 'ms';
+import { Role } from 'prisma/generated/enums';
 import { EnvTypes } from 'src/config';
 import {
 	HASH_SERVICE,
 	HashService,
-	JWT_TOKEN_SERVICE,
-	JwtTokenService,
+	JWT_PASSPORT_SERVICE,
+	JwtPassportService,
 	OTP_SERVICE,
 	OtpService,
 	SESSION_SERVICE,
@@ -39,7 +40,8 @@ export class AuthService {
 	public constructor(
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
-		@Inject(JWT_TOKEN_SERVICE) private readonly jwtService: JwtTokenService,
+		@Inject(JWT_PASSPORT_SERVICE)
+		private readonly jwtPassport: JwtPassportService,
 		@Inject(SESSION_SERVICE) private readonly session: SessionService,
 
 		private readonly configService: ConfigService<EnvTypes, true>,
@@ -104,7 +106,7 @@ export class AuthService {
 			isVerified: true
 		});
 
-		return this._authenticate(res, patched.id);
+		return this._authenticate(res, patched.id, patched.role);
 	}
 
 	public async login(
@@ -126,13 +128,13 @@ export class AuthService {
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
-		return this._authenticate(res, account.id);
+		return this._authenticate(res, account.id, account.role);
 	}
 
 	public async refresh(req: Request, res: Response) {
 		const refreshToken = req.cookies['refreshToken'];
 		if (!refreshToken) throw new UnauthorizedException('Токен не найден');
-		const { id } = this.jwtService.verify(refreshToken);
+		const { id } = this.jwtPassport.verify(refreshToken);
 
 		const storedToken = await this.session.get(id);
 		if (!storedToken || refreshToken !== storedToken)
@@ -141,7 +143,7 @@ export class AuthService {
 		const account = await this.accountRepo.findById(id);
 		if (!account) throw new UnauthorizedException('Недействительный токен');
 
-		return this._authenticate(res, account.id);
+		return this._authenticate(res, account.id, account.role);
 	}
 
 	public async logout(req: Request, res: Response) {
@@ -149,7 +151,7 @@ export class AuthService {
 
 		if (refreshToken) {
 			try {
-				const { id } = this.jwtService.verify(refreshToken);
+				const { id } = this.jwtPassport.verify(refreshToken);
 				await this.session.delete(id);
 			} catch {}
 		}
@@ -158,9 +160,9 @@ export class AuthService {
 		return { message: 'Выход выполнен' };
 	}
 
-	private async _authenticate(res: Response, id: string) {
+	private async _authenticate(res: Response, id: string, role: Role) {
 		const { accessToken, refreshToken, refreshTtl } =
-			this.jwtService.signTokens({ id });
+			this.jwtPassport.signTokens({ id, role });
 
 		await this.session.set(id, refreshToken);
 
