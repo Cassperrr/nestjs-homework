@@ -1,12 +1,15 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	HttpCode,
 	HttpStatus,
 	Patch,
-	Post
+	Post,
+	Res
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import type { Response } from 'express';
 import { Id, Protected } from 'src/common';
 
 import { OtpCodeResponse } from '../auth/dto';
@@ -45,5 +48,19 @@ export class AccountController {
 		@Body() dto: ConfirmPasswordRequest
 	) {
 		return this.accountService.confirmPassword(id, dto);
+	}
+
+	@ApiOperation({
+		summary: 'Удалить аккаунта пользователя'
+	})
+	@ApiBearerAuth()
+	@Protected()
+	@Delete('delete')
+	@HttpCode(HttpStatus.OK)
+	public async delete(
+		@Res({ passthrough: true }) res: Response,
+		@Id() id: string
+	) {
+		return this.accountService.delete(res, id);
 	}
 }

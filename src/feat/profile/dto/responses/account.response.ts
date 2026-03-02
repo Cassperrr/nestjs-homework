@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class AccountResponse {
 	@ApiProperty({
 		description: 'Id пользователя',
-		example: '019ca435-6422-7274-93bb-610bb137e977'
+		example: 'uuid'
 	})
 	public id: string;
 

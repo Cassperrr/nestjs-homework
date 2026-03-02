@@ -1,19 +1,63 @@
 import { Injectable } from '@nestjs/common';
-import { Profile } from 'prisma/generated/client';
-import { PrismaService } from 'src/infra';
+import { Account, Profile } from 'prisma/generated/browser';
 import { uuidv7 } from 'uuidv7';
 
+import { PrismaService } from '../prisma';
+
 @Injectable()
-export class ProfileRepository {
+export class UserRepository {
 	public constructor(private readonly prisma: PrismaService) {}
 
-	public async findProfileByAccountId(accountId: string) {
-		return this.prisma.profile.findUnique({
-			where: { accountId }
+	public async createAccount(account: {
+		email: string;
+		username: string;
+		password: string; // TODO чет надо придумать некрасиво
+	}) {
+		const { id } = await this.prisma.account.create({
+			data: {
+				id: uuidv7(),
+				...account
+			}
+		});
+
+		return id;
+	}
+
+	public async updateAccount(id: string, account: Partial<Account>) {
+		return this.prisma.account.update({
+			where: { id },
+			data: { ...account }
 		});
 	}
 
-	public async create(
+	public async findAccountByEmailOrUsername(email: string, username: string) {
+		return this.prisma.account.findFirst({
+			where: {
+				OR: [{ email }, { username }]
+			}
+		});
+	}
+
+	public async findAccount(params: {
+		id?: string;
+		email?: string;
+		username?: string;
+	}) {
+		const { id, email, username } = params;
+		if (!id && !email && !username) return null;
+
+		return this.prisma.account.findFirst({
+			where: {
+				OR: [
+					id ? { id } : undefined,
+					email ? { email } : undefined,
+					username ? { username } : undefined
+				].filter(Boolean) as any[]
+			}
+		});
+	}
+
+	public async createProfile(
 		accountId: string,
 		profile: {
 			firstName: string;
@@ -29,6 +73,7 @@ export class ProfileRepository {
 				account: { connect: { id: accountId } }
 			},
 			select: {
+				id: true,
 				firstName: true,
 				lastName: true,
 				age: true,
@@ -37,11 +82,12 @@ export class ProfileRepository {
 		});
 	}
 
-	public async update(accountId: string, profile: Partial<Profile>) {
+	public async updateProfile(accountId: string, profile: Partial<Profile>) {
 		return this.prisma.profile.update({
 			where: { accountId },
 			data: { ...profile },
 			select: {
+				id: true,
 				firstName: true,
 				lastName: true,
 				age: true,
@@ -50,36 +96,31 @@ export class ProfileRepository {
 		});
 	}
 
-	public async findUserByAccountId(accountId: string) {
-		return this.prisma.account.findUnique({
-			where: { id: accountId },
-			select: {
-				id: true,
-				username: true,
-				email: true,
-				createdAt: true,
-				profile: {
-					select: {
-						firstName: true,
-						lastName: true,
-						age: true,
-						description: true
-					}
-				}
-			}
-		});
-	}
+	public async findUser(params: {
+		id?: string;
+		email?: string;
+		username?: string;
+	}) {
+		const { id, email, username } = params;
+		if (!id && !email && !username) return null;
 
-	public async findUserByUsername(username: string) {
 		return this.prisma.account.findFirst({
-			where: { username },
+			where: {
+				OR: [
+					id ? { id } : undefined,
+					email ? { email } : undefined,
+					username ? { username } : undefined
+				].filter(Boolean) as any[]
+			},
 			select: {
 				id: true,
 				username: true,
 				email: true,
 				createdAt: true,
+				deletedAt: true,
 				profile: {
 					select: {
+						id: true,
 						firstName: true,
 						lastName: true,
 						age: true,
@@ -115,6 +156,7 @@ export class ProfileRepository {
 				createdAt: true,
 				profile: {
 					select: {
+						id: true,
 						firstName: true,
 						lastName: true,
 						age: true,

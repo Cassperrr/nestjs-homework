@@ -3,7 +3,7 @@ import {
 	Injectable,
 	NotFoundException
 } from '@nestjs/common';
-import { ProfileRepository } from 'src/infra';
+import { UserRepository } from 'src/infra';
 
 import {
 	AllUsersResponse,
@@ -17,48 +17,65 @@ import {
 
 @Injectable()
 export class ProfileService {
-	public constructor(private readonly profileRepo: ProfileRepository) {}
+	public constructor(private readonly userRepo: UserRepository) {}
 
 	public async create(
 		accountId: string,
 		dto: CreateProfileRequest
 	): Promise<ProfileResponse> {
-		const existing =
-			await this.profileRepo.findProfileByAccountId(accountId);
+		const user = await this.userRepo.findUser({ id: accountId });
 
-		if (existing) throw new ConflictException('Профиль уже существует');
+		if (!user || user.profile || user.deletedAt)
+			throw new ConflictException('Нельзя создать профиль');
 
-		return this.profileRepo.create(accountId, dto);
+		return this.userRepo.createProfile(accountId, dto);
 	}
 
 	public async update(
 		accountId: string,
 		dto: UpdateProfileRequest
 	): Promise<ProfileResponse> {
-		const existing =
-			await this.profileRepo.findProfileByAccountId(accountId);
+		const user = await this.userRepo.findUser({ id: accountId });
 
-		if (!existing) throw new NotFoundException('Профиля не существует');
+		if (!user || !user.profile || user.deletedAt)
+			throw new NotFoundException('Нельзя изменить профиль');
 
-		return this.profileRepo.update(accountId, dto);
+		return this.userRepo.updateProfile(accountId, dto);
 	}
 
-	public async me(accountId: string): Promise<UserResponse | null> {
-		return this.profileRepo.findUserByAccountId(accountId);
+	public async getMe(accountId: string): Promise<UserResponse | null> {
+		const user = await this.userRepo.findUser({ id: accountId });
+
+		if (!user || user.deletedAt)
+			throw new NotFoundException('Профиль не найден');
+
+		return user;
 	}
 
 	public async findAllUsers(
+		accountId: string,
 		query: FindAllUserRequest
 	): Promise<AllUsersResponse> {
+		const existing = await this.userRepo.findUser({ id: accountId });
+
+		if (!existing || existing.deletedAt)
+			throw new NotFoundException('Нет доступа');
+
 		const { cursor, limit = 10, username } = query;
-		return this.profileRepo.findAllUsers(cursor, limit, username);
+		return this.userRepo.findAllUsers(cursor, limit, username);
 	}
 
 	public async findUserByUsername(
+		accountId: string,
 		query: FindUserRequest
 	): Promise<UserResponse | null> {
+		const existing = await this.userRepo.findUser({ id: accountId });
+
+		if (!existing || existing.deletedAt)
+			throw new NotFoundException('Нет доступа');
+
 		const { username } = query;
-		const user = await this.profileRepo.findUserByUsername(username);
+		const user = await this.userRepo.findUser({ username });
 		if (!user) throw new NotFoundException('Пользователь не найден');
 		return user;
 	}

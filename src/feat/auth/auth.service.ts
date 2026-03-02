@@ -20,7 +20,7 @@ import {
 	SESSION_SERVICE,
 	SessionService
 } from 'src/core';
-import { AccountRepository } from 'src/infra';
+import { UserRepository } from 'src/infra';
 import { OtpKey } from 'src/shared';
 
 import type {
@@ -45,7 +45,7 @@ export class AuthService {
 		@Inject(SESSION_SERVICE) private readonly session: SessionService,
 
 		private readonly configService: ConfigService<EnvTypes, true>,
-		private readonly accountRepo: AccountRepository
+		private readonly userRepo: UserRepository
 	) {
 		this.COOKIE_DOMAIN = configService.get('COOKIE_DOMAIN', {
 			infer: true
@@ -58,18 +58,22 @@ export class AuthService {
 	public async register(dto: RegisterRequest): Promise<OtpCodeResponse> {
 		const { email, username, password } = dto;
 
-		const existing = await this.accountRepo.findByEmailOrUsername(
+		const account = await this.userRepo.findAccountByEmailOrUsername(
 			email,
 			username
 		);
 
-		if (existing)
+		if (account)
 			throw new ConflictException(
 				'Аккаунт с такими данными уже существует'
 			);
 
 		const hash = await this.hashService.hash(password);
-		const id = await this.accountRepo.create(email, username, hash);
+		const id = await this.userRepo.createAccount({
+			email,
+			username,
+			password: hash
+		});
 
 		return this.otpService.generate(id, OtpKey.EMAIL);
 	}
@@ -77,14 +81,14 @@ export class AuthService {
 	public async resend(dto: ResendRequest): Promise<OtpCodeResponse> {
 		const { email } = dto;
 
-		const account = await this.accountRepo.findByEmail(email);
+		const user = await this.userRepo.findAccount({ email });
 
-		if (!account || account.isVerified)
+		if (!user || user.isVerified || user.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
 			);
 
-		return this.otpService.generate(account.id, OtpKey.EMAIL);
+		return this.otpService.generate(user.id, OtpKey.EMAIL);
 	}
 
 	public async verify(
@@ -93,16 +97,16 @@ export class AuthService {
 	): Promise<AccessTokenResponse> {
 		const { email, code } = dto;
 
-		const account = await this.accountRepo.findByEmail(email);
+		const user = await this.userRepo.findAccount({ email });
 
-		if (!account || account.isVerified)
+		if (!user || user.isVerified || user.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
 			);
 
-		await this.otpService.verify(account.id, code, OtpKey.EMAIL);
+		await this.otpService.verify(user.id, code, OtpKey.EMAIL);
 
-		const patched = await this.accountRepo.update(account.id, {
+		const patched = await this.userRepo.updateAccount(user.id, {
 			isVerified: true
 		});
 
@@ -115,20 +119,20 @@ export class AuthService {
 	): Promise<AccessTokenResponse> {
 		const { username, password } = dto;
 
-		const account = await this.accountRepo.findByUsername(username);
+		const user = await this.userRepo.findAccount({ username });
 
-		if (!account || !account.isVerified)
+		if (!user || !user.isVerified || user.deletedAt)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
 		const isValidPassword = await this.hashService.verify(
-			account.password,
+			user.password,
 			password
 		);
 
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
-		return this._authenticate(res, account.id, account.role);
+		return this._authenticate(res, user.id, user.role);
 	}
 
 	public async refresh(req: Request, res: Response) {
@@ -140,10 +144,11 @@ export class AuthService {
 		if (!storedToken || refreshToken !== storedToken)
 			throw new UnauthorizedException('Время сессии истекло');
 
-		const account = await this.accountRepo.findById(id);
-		if (!account) throw new UnauthorizedException('Недействительный токен');
+		const user = await this.userRepo.findAccount({ id });
+		if (!user || user.deletedAt)
+			throw new UnauthorizedException('Недействительный токен');
 
-		return this._authenticate(res, account.id, account.role);
+		return this._authenticate(res, user.id, user.role);
 	}
 
 	public async logout(req: Request, res: Response) {

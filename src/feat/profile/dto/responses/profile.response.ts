@@ -2,6 +2,12 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ProfileResponse {
 	@ApiProperty({
+		description: 'Id профиля',
+		example: 'uuid'
+	})
+	public id: string;
+
+	@ApiProperty({
 		description: 'Имя пользователя',
 		example: 'Джеймс'
 	})

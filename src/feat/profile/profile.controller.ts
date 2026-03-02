@@ -60,7 +60,7 @@ export class ProfileController {
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	public async me(@Id() id: string) {
-		return this.profileService.me(id);
+		return this.profileService.getMe(id);
 	}
 
 	@ApiOperation({
@@ -71,19 +71,19 @@ export class ProfileController {
 	@Protected(Role.ADMIN)
 	@Get('all')
 	@HttpCode(HttpStatus.OK)
-	public async all(@Query() query: FindAllUserRequest) {
-		return this.profileService.findAllUsers(query);
+	public async all(@Id() id: string, @Query() query: FindAllUserRequest) {
+		return this.profileService.findAllUsers(id, query);
 	}
 
 	@ApiOperation({
-		summary: 'Найти пользователя по username, только для админинистратора'
+		summary: 'Найти пользователя, только для админинистратора'
 	})
 	@ApiOkResponse({ type: UserResponse })
 	@ApiBearerAuth()
 	@Protected(Role.ADMIN)
 	@Get(':username')
 	@HttpCode(HttpStatus.OK)
-	public async user(@Query() query: FindUserRequest) {
-		return this.profileService.findUserByUsername(query);
+	public async user(@Id() id: string, @Query() query: FindUserRequest) {
+		return this.profileService.findUserByUsername(id, query);
 	}
 }

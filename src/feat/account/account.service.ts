@@ -1,6 +1,7 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import type { Response } from 'express';
 import { HASH_SERVICE, HashService, OTP_SERVICE, OtpService } from 'src/core';
-import { AccountRepository } from 'src/infra';
+import { UserRepository } from 'src/infra';
 import { OtpKey } from 'src/shared';
 
 import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
@@ -11,21 +12,19 @@ export class AccountService {
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
 
-		private readonly accountRepo: AccountRepository
+		private readonly userRepo: UserRepository
 	) {}
 
 	public async changePassword(id: string, dto: ChangePasswordRequest) {
 		const { oldPassword } = dto;
 
-		const account = await this.accountRepo.findById(id);
+		const user = await this.userRepo.findAccount({ id });
 
-		if (!account)
-			throw new UnauthorizedException(
-				'Аккаунт либо не существует, либо удален'
-			);
+		if (!user || user.deletedAt)
+			throw new UnauthorizedException('Аккаунт не существует');
 
 		const isVerified = await this.hashService.verify(
-			account.password,
+			user.password,
 			oldPassword
 		);
 
@@ -37,19 +36,30 @@ export class AccountService {
 	public async confirmPassword(id: string, dto: ConfirmPasswordRequest) {
 		const { code, newPassword } = dto;
 
-		const account = await this.accountRepo.findById(id);
+		const user = await this.userRepo.findAccount({ id });
 
-		if (!account)
-			throw new UnauthorizedException(
-				'Аккаунт либо не существует, либо удален'
-			);
+		if (!user || user.deletedAt)
+			throw new UnauthorizedException('Аккаунт либо не существует');
 
-		await this.otpService.verify(account.id, code, OtpKey.PASSWORD);
+		await this.otpService.verify(user.id, code, OtpKey.PASSWORD);
 
 		const hash = await this.hashService.hash(newPassword);
 
-		await this.accountRepo.update(account.id, { password: hash });
+		await this.userRepo.updateAccount(user.id, { password: hash });
 
 		return { message: 'Пароль изменен' };
+	}
+
+	public async delete(res: Response, id: string) {
+		const user = await this.userRepo.findAccount({ id });
+
+		if (!user || user.deletedAt)
+			throw new UnauthorizedException('Аккаунт не существует');
+
+		await this.userRepo.updateAccount(id, { deletedAt: new Date() });
+
+		res.clearCookie('refreshToken');
+
+		return { message: 'Аккаунт удален' };
 	}
 }
