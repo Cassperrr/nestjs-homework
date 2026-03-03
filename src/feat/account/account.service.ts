@@ -49,7 +49,7 @@ export class AccountService {
 		const user = await this.userRepo.findAccount({ id });
 
 		if (!user || user.deletedAt)
-			throw new UnauthorizedException('Аккаунт либо не существует');
+			throw new UnauthorizedException('Аккаунт не существует');
 
 		await this.otpService.verify(user.id, code, OtpKey.PASSWORD);
 
