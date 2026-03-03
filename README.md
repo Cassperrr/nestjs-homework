@@ -84,6 +84,12 @@ yarn run prisma db push
 yarn run prisma:seed
 ```
 
+> Для сброса хранилища postgres и повторить 2-3 шаг
+
+```bash
+yarn run docker:down
+```
+
 ### 4. Запустить приложение
 
 ```bash
