@@ -71,7 +71,7 @@ src/
 yarn install
 ```
 
-### 2. Поднять Docker-контейнеры
+### 2. Поднять Docker-контейнеры и создать БД
 
 ```bash
 yarn run docker:up
@@ -80,6 +80,7 @@ yarn run docker:up
 ### 3. Заполнить БД
 
 ```bash
+yarn run prisma db push
 yarn run prisma:seed
 ```
 
