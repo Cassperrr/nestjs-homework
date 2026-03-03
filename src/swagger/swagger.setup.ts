@@ -1,17 +1,27 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import fs from 'fs';
+import yaml from 'js-yaml';
 
 export const swaggerSetup = (app: INestApplication, isDev: boolean) => {
-	const config = new DocumentBuilder()
-		.setTitle('NestJs API Homework')
-		.setVersion('1.0.0')
-		.setDescription('Open API for review project')
-		.addBearerAuth()
-		.build();
+	const configFile = fs.readFileSync('src/swagger/swagger.yml', 'utf8');
 
-	const document = SwaggerModule.createDocument(app, config);
+	const configYaml = yaml.load(configFile) as {
+		title: string;
+		version: string;
+		description: string;
+		path: string;
+	};
 
-	SwaggerModule.setup('/docs', app, document, {
+	const builder = new DocumentBuilder()
+		.setTitle(configYaml.title)
+		.setVersion(configYaml.version)
+		.setDescription(configYaml.description)
+		.addBearerAuth();
+
+	const document = SwaggerModule.createDocument(app, builder.build());
+
+	SwaggerModule.setup(configYaml.path, app, document, {
 		swaggerOptions: {
 			persistAuthorization: isDev // Ток дев
 		}
