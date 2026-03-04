@@ -31,10 +31,19 @@ export default tseslint.config(
 	},
 	{
 		rules: {
-			'@typescript-eslint/no-explicit-any': 'off',
-			'@typescript-eslint/no-floating-promises': 'warn',
-			'@typescript-eslint/no-unsafe-argument': 'warn',
-			'@typescript-eslint/no-redundant-type-constituents': 'off',
+			'@typescript-eslint/no-explicit-any': 'warn', // Разрешён any везде
+			'@typescript-eslint/no-floating-promises': 'warn', // Предупреждает о необработанных промисах
+			'@typescript-eslint/no-unsafe-argument': 'warn', // Предупреждение при передаче any в функции
+			'@typescript-eslint/no-redundant-type-constituents': 'off', // Отключено из-за ReplyError проблемы
+			'@typescript-eslint/no-unused-vars': [
+				// Не использованные переменные
+				'warn',
+				{
+					argsIgnorePattern: '^_',
+					varsIgnorePattern: '^_'
+				}
+			],
+			'no-console': 'warn',
 			'prettier/prettier': ['error', { endOfLine: 'auto' }]
 		}
 	},
