@@ -5,11 +5,10 @@ import {
 	HttpStatus,
 	Patch,
 	Post,
-	Req,
 	Res
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { RefreshToken } from 'src/common';
 
 import { AuthService } from './auth.service';

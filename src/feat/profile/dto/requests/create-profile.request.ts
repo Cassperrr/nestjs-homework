@@ -9,6 +9,7 @@ import {
 	Max,
 	MaxLength
 } from 'class-validator';
+import type { TransformValue } from 'src/shared';
 
 export class CreateProfileRequest {
 	@ApiProperty({
@@ -18,7 +19,7 @@ export class CreateProfileRequest {
 	@IsNotEmpty({ message: 'Имя должно быть заполнено' })
 	@IsString({ message: 'Имя должно быть строкой' })
 	@MaxLength(50, { message: 'Имя должно быть до 50 символов' })
-	@Transform(({ value }) => value?.trim())
+	@Transform(({ value }: TransformValue) => value.trim())
 	public firstName: string;
 
 	@ApiProperty({
@@ -28,7 +29,7 @@ export class CreateProfileRequest {
 	@IsNotEmpty({ message: 'Фамилия должна быть заполнена' })
 	@IsString({ message: 'Фамилия должна быть строкой' })
 	@MaxLength(50, { message: 'Фамилия должна быть до 50 символов' })
-	@Transform(({ value }) => value?.trim())
+	@Transform(({ value }: TransformValue) => value.trim())
 	public lastName: string;
 
 	@ApiProperty({
@@ -52,6 +53,6 @@ export class CreateProfileRequest {
 	@IsOptional()
 	@IsString({ message: 'Описание должно быть строкой' })
 	@MaxLength(500, { message: 'Описание должно быть до 500 символов' })
-	@Transform(({ value }) => value?.trim())
+	@Transform(({ value }: TransformValue) => value.trim())
 	public description?: string;
 }

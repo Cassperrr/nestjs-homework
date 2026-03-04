@@ -7,7 +7,7 @@ import type { Request } from 'express';
 
 export const RefreshToken = createParamDecorator(
 	(_: unknown, ctx: ExecutionContext) => {
-		const req = ctx.switchToHttp().getRequest() as Request;
+		const req = ctx.switchToHttp().getRequest<Request>();
 
 		const refreshToken = req.cookies['refreshToken'] as string;
 		if (!refreshToken)

@@ -10,9 +10,7 @@ export const JWT_PASSPORT_SERVICE = Symbol('JWT_PASSPORT_SERVICE');
 @Module({
 	imports: [
 		JwtModule.registerAsync({
-			useFactory: async (
-				configService: ConfigService<EnvTypes, true>
-			) => {
+			useFactory: (configService: ConfigService<EnvTypes, true>) => {
 				return {
 					secret: configService.get('JWT_SECRET', { infer: true }),
 					signOptions: {

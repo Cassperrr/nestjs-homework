@@ -8,6 +8,7 @@ import {
 	MaxLength,
 	MinLength
 } from 'class-validator';
+import type { TransformValue } from 'src/shared';
 
 export class RegisterRequest {
 	@ApiProperty({
@@ -24,7 +25,7 @@ export class RegisterRequest {
 		message:
 			'Username должен содержать минимум одну заглавную букву и одну цифру'
 	})
-	@Transform(({ value }) => value?.trim())
+	@Transform(({ value }: TransformValue) => value.trim())
 	public username: string;
 
 	@ApiProperty({
@@ -50,6 +51,6 @@ export class RegisterRequest {
 	})
 	@IsNotEmpty({ message: 'Email должен быть заполнен' })
 	@IsEmail({}, { message: 'Некорректный формат Email' })
-	@Transform(({ value }) => value?.trim().toLowerCase())
+	@Transform(({ value }: TransformValue) => value.trim().toLowerCase())
 	public email: string;
 }

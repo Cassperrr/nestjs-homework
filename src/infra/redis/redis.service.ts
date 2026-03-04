@@ -69,7 +69,7 @@ export class RedisService
 			this.logger.log('Redis connection closed');
 		} catch (e) {
 			this.logger.error('Error closing error connection', {
-				error: e.message ?? e
+				error: e instanceof Error ? e.message : String(e)
 			});
 		}
 	}

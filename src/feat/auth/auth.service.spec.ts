@@ -133,7 +133,9 @@ describe('AuthService', () => {
 
 			try {
 				await service.register(dto);
-			} catch {}
+			} catch {
+				// ignore
+			}
 
 			expect(mockUserRepo.createAccount).not.toHaveBeenCalled();
 		});

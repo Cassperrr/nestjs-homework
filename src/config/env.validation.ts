@@ -48,7 +48,7 @@ export function validate(config: Record<string, unknown>) {
 	if (!result.success) {
 		throw new Error(
 			`ENV validation error:\n${result.error.issues
-				.map(i => `${i.path}: ${i.message}`)
+				.map(i => `${i.path.join('.')}: ${i.message}`)
 				.join('\n')}`
 		);
 	}

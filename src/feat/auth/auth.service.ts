@@ -144,7 +144,9 @@ export class AuthService {
 		try {
 			const { id } = this.jwtPassport.verify(refreshToken);
 			await this.session.delete(id);
-		} catch {}
+		} catch {
+			// ignore
+		}
 
 		return { message: 'Выход выполнен' };
 	}

@@ -10,6 +10,7 @@ import type { Response } from 'express';
 import { ReplyError } from 'ioredis';
 import { Prisma } from 'prisma/generated/client';
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 @Catch(Prisma.PrismaClientKnownRequestError, ReplyError, ThrottlerException)
 export class InfrastructureFilter implements ExceptionFilter {
 	private readonly logger = new Logger(InfrastructureFilter.name);
@@ -43,9 +44,10 @@ export class InfrastructureFilter implements ExceptionFilter {
 		}
 
 		if (exception instanceof ReplyError) {
+			const redisError = exception as Error;
 			this.logger.error(
-				`Redis error: [${exception.name}] ${exception.message}`,
-				exception.stack
+				`Redis error: [${redisError.name}] ${redisError.message}`,
+				redisError.stack
 			);
 			return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
 				statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
