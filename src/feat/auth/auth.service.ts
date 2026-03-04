@@ -6,7 +6,7 @@ import {
 	UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { CookieOptions, Request, Response } from 'express';
+import type { CookieOptions } from 'express';
 import ms from 'ms';
 import { Role } from 'prisma/generated/enums';
 import { EnvTypes } from 'src/config';
@@ -24,7 +24,6 @@ import {
 import { OtpKey } from 'src/shared';
 
 import type {
-	AccessTokenResponse,
 	LoginRequest,
 	OtpCodeResponse,
 	RegisterRequest,
