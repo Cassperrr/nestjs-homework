@@ -6,7 +6,7 @@ import {
 	UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import type { Request, Response } from 'express';
+import type { CookieOptions, Request, Response } from 'express';
 import ms from 'ms';
 import { Role } from 'prisma/generated/enums';
 import { EnvTypes } from 'src/config';
@@ -91,14 +91,10 @@ export class AuthService {
 		return this.otpService.generate(user.id, OtpKey.EMAIL);
 	}
 
-	public async verify(
-		res: Response,
-		dto: VerifyRequest
-	): Promise<AccessTokenResponse> {
+	public async verify(dto: VerifyRequest) {
 		const { email, code } = dto;
 
 		const user = await this.userRepo.findAccount({ email });
-
 		if (!user || user.isVerified || user.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
@@ -110,17 +106,13 @@ export class AuthService {
 			isVerified: true
 		});
 
-		return this._authenticate(res, patched.id, patched.role);
+		return this._authenticate(patched.id, patched.role);
 	}
 
-	public async login(
-		res: Response,
-		dto: LoginRequest
-	): Promise<AccessTokenResponse> {
+	public async login(dto: LoginRequest) {
 		const { username, password } = dto;
 
 		const user = await this.userRepo.findAccount({ username });
-
 		if (!user || !user.isVerified || user.deletedAt)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
@@ -132,15 +124,10 @@ export class AuthService {
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
-		return this._authenticate(res, user.id, user.role);
+		return this._authenticate(user.id, user.role);
 	}
 
-	public async refresh(
-		req: Request,
-		res: Response
-	): Promise<AccessTokenResponse> {
-		const refreshToken = req.cookies['refreshToken'];
-		if (!refreshToken) throw new UnauthorizedException('Токен не найден');
+	public async refresh(refreshToken: string) {
 		const { id } = this.jwtPassport.verify(refreshToken);
 
 		const storedToken = await this.session.get(id);
@@ -151,41 +138,32 @@ export class AuthService {
 		if (!user || user.deletedAt)
 			throw new UnauthorizedException('Недействительный токен');
 
-		return this._authenticate(res, user.id, user.role);
+		return this._authenticate(user.id, user.role);
 	}
 
-	public async logout(req: Request, res: Response) {
-		const refreshToken = req.cookies['refreshToken'];
+	public async logout(refreshToken: string) {
+		try {
+			const { id } = this.jwtPassport.verify(refreshToken);
+			await this.session.delete(id);
+		} catch {}
 
-		if (refreshToken) {
-			try {
-				const { id } = this.jwtPassport.verify(refreshToken);
-				await this.session.delete(id);
-			} catch {}
-		}
-
-		res.clearCookie('refreshToken');
 		return { message: 'Выход выполнен' };
 	}
 
-	private async _authenticate(
-		res: Response,
-		id: string,
-		role: Role
-	): Promise<AccessTokenResponse> {
+	private async _authenticate(id: string, role: Role) {
 		const { accessToken, refreshToken, refreshTtl } =
 			this.jwtPassport.signTokens({ id, role });
 
 		await this.session.set(id, refreshToken);
 
-		res.cookie('refreshToken', refreshToken, {
+		const cookieOptions: CookieOptions = {
 			httpOnly: true,
 			expires: new Date(Date.now() + ms(refreshTtl)),
 			secure: !this.isDev,
 			sameSite: 'lax',
 			...(this.isDev ? {} : { domain: this.COOKIE_DOMAIN })
-		});
+		};
 
-		return { accessToken };
+		return { accessToken, refreshToken, cookieOptions };
 	}
 }

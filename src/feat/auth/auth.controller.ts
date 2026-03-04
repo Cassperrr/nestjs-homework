@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
+import { RefreshToken } from 'src/common';
 
 import { AuthService } from './auth.service';
 import {
@@ -55,7 +56,12 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response,
 		@Body() dto: VerifyRequest
 	) {
-		return this.authService.verify(res, dto);
+		const { accessToken, refreshToken, cookieOptions } =
+			await this.authService.verify(dto);
+
+		res.cookie('refreshToken', refreshToken, cookieOptions);
+
+		return { accessToken };
 	}
 
 	@ApiOperation({
@@ -68,20 +74,31 @@ export class AuthController {
 		@Res({ passthrough: true }) res: Response,
 		@Body() dto: LoginRequest
 	) {
-		return this.authService.login(res, dto);
+		const { accessToken, refreshToken, cookieOptions } =
+			await this.authService.login(dto);
+
+		res.cookie('refreshToken', refreshToken, cookieOptions);
+
+		return { accessToken };
 	}
 
 	@ApiOperation({
 		summary:
 			'Генерирует новый токен доступа для верифицированного пользователя'
 	})
+	@ApiOkResponse({ type: AccessTokenResponse })
 	@Post('refresh')
 	@HttpCode(HttpStatus.OK)
 	public async refresh(
-		@Req() req: Request,
+		@RefreshToken() storedRefreshToken: string,
 		@Res({ passthrough: true }) res: Response
 	) {
-		return this.authService.refresh(req, res);
+		const { accessToken, refreshToken, cookieOptions } =
+			await this.authService.refresh(storedRefreshToken);
+
+		res.cookie('refreshToken', refreshToken, cookieOptions);
+
+		return { accessToken };
 	}
 
 	@ApiOperation({
@@ -90,9 +107,13 @@ export class AuthController {
 	@Post('logout')
 	@HttpCode(HttpStatus.OK)
 	public async logout(
-		@Req() req: Request,
+		@RefreshToken() storedRefreshToken: string,
 		@Res({ passthrough: true }) res: Response
 	) {
-		return this.authService.logout(req, res);
+		const msg = await this.authService.logout(storedRefreshToken);
+
+		res.clearCookie('refreshToken');
+
+		return msg;
 	}
 }

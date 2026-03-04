@@ -60,15 +60,13 @@ export class AccountService {
 		return { message: 'Пароль изменен' };
 	}
 
-	public async delete(res: Response, id: string) {
+	public async delete(id: string) {
 		const user = await this.userRepo.findAccount({ id });
 
 		if (!user || user.deletedAt)
 			throw new UnauthorizedException('Аккаунт не существует');
 
 		await this.userRepo.updateAccount(id, { deletedAt: new Date() });
-
-		res.clearCookie('refreshToken');
 
 		return { message: 'Аккаунт удален' };
 	}

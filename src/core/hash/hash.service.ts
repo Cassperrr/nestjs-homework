@@ -10,7 +10,7 @@ export class HashService {
 		private readonly parallelism: number
 	) {}
 
-	async hash(password: string): Promise<string> {
+	public async hash(password: string): Promise<string> {
 		return argon2.hash(password + this.pepper, {
 			type: argon2.argon2id,
 			memoryCost: this.memoryCost,
@@ -19,7 +19,7 @@ export class HashService {
 		});
 	}
 
-	async verify(hash: string, password: string): Promise<boolean> {
+	public async verify(hash: string, password: string): Promise<boolean> {
 		return argon2.verify(hash, password + this.pepper);
 	}
 }

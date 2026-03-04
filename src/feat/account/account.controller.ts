@@ -61,6 +61,8 @@ export class AccountController {
 		@Res({ passthrough: true }) res: Response,
 		@UserId() id: string
 	) {
-		return this.accountService.delete(res, id);
+		const msg = await this.accountService.delete(id);
+		res.clearCookie('refreshToken');
+		return msg;
 	}
 }
