@@ -83,7 +83,7 @@
   "jest": {
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/src/$1",
-      "^prisma/generated/client$": "<rootDir>/src/__mocks__/prisma.mock.ts"
+      "^prisma/generated/client$": "<rootDir>/test/__mocks__/prisma.mock.ts"
     },
     "moduleFileExtensions": [
       "js",
