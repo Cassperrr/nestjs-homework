@@ -12,7 +12,7 @@
     "build": "nest build",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "husky": "husky",
+    "husky": "husky install",
     "pre-commit": "echo PRECOMMIT_WORKS",
     "start": "nest start",
     "start:dev": "cross-env NODE_ENV=development nest start --watch",
