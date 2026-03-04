@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { Role } from 'prisma/generated/enums';
-import { Protected, UserId } from 'src/common';
+import { AccountId, Protected } from 'src/common';
 
 import {
 	AllUsersResponse,
@@ -36,7 +36,7 @@ export class ProfileController {
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
 	public async create(
-		@UserId() id: string,
+		@AccountId() id: string,
 		@Body() dto: CreateProfileRequest
 	) {
 		return this.profileService.create(id, dto);
@@ -51,7 +51,7 @@ export class ProfileController {
 	@Put()
 	@HttpCode(HttpStatus.OK)
 	public async update(
-		@UserId() id: string,
+		@AccountId() id: string,
 		@Body() dto: UpdateProfileRequest
 	) {
 		return this.profileService.update(id, dto);
@@ -65,7 +65,7 @@ export class ProfileController {
 	@Protected()
 	@Get()
 	@HttpCode(HttpStatus.OK)
-	public async me(@UserId() id: string) {
+	public async me(@AccountId() id: string) {
 		return this.profileService.getMe(id);
 	}
 
@@ -77,7 +77,10 @@ export class ProfileController {
 	@Protected(Role.ADMIN)
 	@Get('all')
 	@HttpCode(HttpStatus.OK)
-	public async all(@UserId() id: string, @Query() query: FindAllUserRequest) {
+	public async all(
+		@AccountId() id: string,
+		@Query() query: FindAllUserRequest
+	) {
 		return this.profileService.findAllUsers(id, query);
 	}
 
@@ -89,7 +92,10 @@ export class ProfileController {
 	@Protected(Role.ADMIN)
 	@Get(':username')
 	@HttpCode(HttpStatus.OK)
-	public async user(@UserId() id: string, @Query() query: FindUserRequest) {
+	public async user(
+		@AccountId() id: string,
+		@Query() query: FindUserRequest
+	) {
 		return this.profileService.findUserByUsername(id, query);
 	}
 }

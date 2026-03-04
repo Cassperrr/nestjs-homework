@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import type { Response } from 'express';
-import { Protected, UserId } from 'src/common';
+import { AccountId, Protected } from 'src/common';
 
 import { OtpCodeResponse } from '../auth/dto';
 
@@ -30,7 +30,7 @@ export class AccountController {
 	@Post('password/change')
 	@HttpCode(HttpStatus.OK)
 	public async changePassword(
-		@UserId() id: string,
+		@AccountId() id: string,
 		@Body() dto: ChangePasswordRequest
 	) {
 		return this.accountService.changePassword(id, dto);
@@ -44,7 +44,7 @@ export class AccountController {
 	@Patch('password/confirm')
 	@HttpCode(HttpStatus.OK)
 	public async confirmPassword(
-		@UserId() id: string,
+		@AccountId() id: string,
 		@Body() dto: ConfirmPasswordRequest
 	) {
 		return this.accountService.confirmPassword(id, dto);
@@ -59,7 +59,7 @@ export class AccountController {
 	@HttpCode(HttpStatus.OK)
 	public async delete(
 		@Res({ passthrough: true }) res: Response,
-		@UserId() id: string
+		@AccountId() id: string
 	) {
 		const msg = await this.accountService.delete(id);
 		res.clearCookie('refreshToken');

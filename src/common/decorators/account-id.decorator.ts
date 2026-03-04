@@ -6,7 +6,7 @@ import {
 import type { Request } from 'express';
 import type { JwtPayload } from 'src/shared';
 
-export const UserId = createParamDecorator(
+export const AccountId = createParamDecorator(
 	(_: unknown, ctx: ExecutionContext) => {
 		const req = ctx.switchToHttp().getRequest<Request>();
 		const user = req.user as JwtPayload;
