@@ -9,7 +9,7 @@ export const envSchema = z.object({
 	POSTGRES_USER: z.string().nonempty(),
 	POSTGRES_PASSWORD: z.string().nonempty(),
 	POSTGRES_PORT: z.coerce.number().min(1).max(65535).default(5432),
-	POSTGRES_NAME: z.string().nonempty(),
+	POSTGRES_DB: z.string().nonempty(),
 	POSTGRES_HOST: z.string().default('127.0.0.1'),
 
 	REDIS_USER: z.string().nonempty(),

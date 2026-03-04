@@ -22,7 +22,7 @@ export class PrismaService
 			password: configService.get('POSTGRES_PASSWORD', { infer: true }),
 			host: configService.get('POSTGRES_HOST', { infer: true }),
 			port: configService.get('POSTGRES_PORT', { infer: true }),
-			database: configService.get('POSTGRES_NAME', { infer: true })
+			database: configService.get('POSTGRES_DB', { infer: true })
 		});
 
 		super({ adapter });
