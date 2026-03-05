@@ -43,6 +43,12 @@ model Profile {
   @@map("profiles")
 }
 
+model Avatars {
+  id String @id
+
+  @@map("avatars")
+}
+
 enum Role {
   USER
   ADMIN
