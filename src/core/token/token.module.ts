@@ -3,9 +3,9 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { EnvTypes } from 'src/config';
 
-import { JWT_PASSPORT_SERVICE } from '../constants';
+import { TOKEN_SERVICE } from '../constants';
 
-import { JwtPassportService } from './jwt.service';
+import { TokenService } from './token.service';
 
 @Module({
 	imports: [
@@ -27,10 +27,10 @@ import { JwtPassportService } from './jwt.service';
 	],
 	providers: [
 		{
-			provide: JWT_PASSPORT_SERVICE,
-			useClass: JwtPassportService
+			provide: TOKEN_SERVICE,
+			useClass: TokenService
 		}
 	],
-	exports: [JWT_PASSPORT_SERVICE]
+	exports: [TOKEN_SERVICE]
 })
-export class JwtPassportModule {}
+export class TokenModule {}

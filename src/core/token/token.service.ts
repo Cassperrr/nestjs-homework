@@ -6,8 +6,8 @@ import { EnvTypes } from 'src/config';
 import { IJwtPayload } from 'src/shared';
 
 @Injectable()
-export class JwtPassportService {
-	private readonly logger = new Logger(JwtPassportService.name);
+export class TokenService {
+	private readonly logger = new Logger(TokenService.name);
 
 	private readonly accessTtl: StringValue;
 	private readonly refreshTtl: StringValue;
@@ -23,7 +23,7 @@ export class JwtPassportService {
 			infer: true
 		});
 
-		this.logger.debug(`${JwtPassportService.name} created`);
+		this.logger.debug(`${TokenService.name} created`);
 	}
 
 	public sign(payload: IJwtPayload, type: 'access' | 'refresh') {

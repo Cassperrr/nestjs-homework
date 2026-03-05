@@ -13,12 +13,12 @@ import { EnvTypes } from 'src/config';
 import {
 	HASH_SERVICE,
 	HashService,
-	JWT_PASSPORT_SERVICE,
-	JwtPassportService,
 	OTP_SERVICE,
 	OtpService,
 	SESSION_SERVICE,
 	SessionService,
+	TOKEN_SERVICE,
+	TokenService,
 	UserRepository
 } from 'src/core';
 import { OtpKey } from 'src/shared';
@@ -39,8 +39,8 @@ export class AuthService {
 	public constructor(
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
-		@Inject(JWT_PASSPORT_SERVICE)
-		private readonly jwtPassport: JwtPassportService,
+		@Inject(TOKEN_SERVICE)
+		private readonly tokenService: TokenService,
 		@Inject(SESSION_SERVICE) private readonly session: SessionService,
 
 		private readonly configService: ConfigService<EnvTypes, true>,
@@ -127,7 +127,7 @@ export class AuthService {
 	}
 
 	public async refresh(refreshToken: string) {
-		const { id } = this.jwtPassport.verify(refreshToken);
+		const { id } = this.tokenService.verify(refreshToken);
 
 		const storedToken = await this.session.get(id);
 		if (!storedToken || refreshToken !== storedToken)
@@ -142,7 +142,7 @@ export class AuthService {
 
 	public async logout(refreshToken: string) {
 		try {
-			const { id } = this.jwtPassport.verify(refreshToken);
+			const { id } = this.tokenService.verify(refreshToken);
 			await this.session.delete(id);
 		} catch {
 			// ignore
@@ -153,7 +153,7 @@ export class AuthService {
 
 	private async _authenticate(id: string, role: Role) {
 		const { accessToken, refreshToken, refreshTtl } =
-			this.jwtPassport.signTokens({ id, role });
+			this.tokenService.signTokens({ id, role });
 
 		await this.session.set(id, refreshToken);
 

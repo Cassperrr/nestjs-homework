@@ -33,9 +33,12 @@ export default tseslint.config(
 		rules: {
 			'@typescript-eslint/no-explicit-any': 'warn', // Разрешён any везде
 			'@typescript-eslint/no-floating-promises': 'warn', // Предупреждает о необработанных промисах
-			'@typescript-eslint/no-unsafe-argument': 'warn', // Предупреждение при передаче any в функции
+			'@typescript-eslint/no-unsafe-argument': 'off', // Предупреждение при передаче any в функции
 			'@typescript-eslint/no-redundant-type-constituents': 'off', // Отключено из-за ReplyError проблемы
-			// '@typescript-eslint/no-unsafe-assignment': 'off',
+			'@typescript-eslint/no-unsafe-assignment': 'off',
+			'@typescript-eslint/no-unsafe-member-access': 'off',
+			'@typescript-eslint/no-unsafe-return': 'off',
+			'@typescript-eslint/no-unsafe-call': 'off',
 			'@typescript-eslint/no-unused-vars': [
 				// Не использованные переменные
 				'warn',

@@ -3,18 +3,18 @@ import { JwtStrategy, LoggerMiddleware, RolesGuard } from 'src/common';
 
 import { FilesModule } from './files';
 import { HashModule } from './hash';
-import { JwtPassportModule } from './jwt';
 import { OtpModule } from './otp';
 import { RepositoriesModule } from './repositories';
 import { SessionModule } from './session';
 import { ThrottleRequestModule } from './throttler';
+import { TokenModule } from './token';
 
 @Global()
 @Module({
 	imports: [
 		ThrottleRequestModule,
 		HashModule,
-		JwtPassportModule,
+		TokenModule,
 		OtpModule,
 		SessionModule,
 		FilesModule,
@@ -24,7 +24,7 @@ import { ThrottleRequestModule } from './throttler';
 	exports: [
 		ThrottleRequestModule,
 		HashModule,
-		JwtPassportModule,
+		TokenModule,
 		OtpModule,
 		SessionModule,
 		FilesModule,
