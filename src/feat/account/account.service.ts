@@ -1,5 +1,4 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import type { Response } from 'express';
 import {
 	HASH_SERVICE,
 	HashService,

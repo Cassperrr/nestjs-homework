@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
-import type { TransformValue } from 'src/shared';
+import type { ITransformValue } from 'src/shared';
 
 export class FindAllUserRequest {
 	@ApiProperty({
@@ -11,8 +11,8 @@ export class FindAllUserRequest {
 	})
 	@IsOptional()
 	@IsString({ message: 'Username должен быть строкой' })
-	@Transform(({ value }: TransformValue) => value.trim())
-	public username?: string;
+	@Transform(({ value }: ITransformValue) => value.trim())
+	readonly username?: string;
 
 	@ApiProperty({
 		description: 'Следующий пользователь',
@@ -21,7 +21,7 @@ export class FindAllUserRequest {
 	})
 	@IsOptional()
 	@IsString({ message: 'Cursor должен быть строкой' })
-	public cursor?: string;
+	readonly cursor?: string;
 
 	@ApiProperty({
 		description: 'Количество аккаунтов пользователей',
@@ -33,6 +33,6 @@ export class FindAllUserRequest {
 	@IsInt({ message: 'Limit должен быть положительным числом' })
 	@IsPositive({ message: 'Limit должен быть положительным числом' })
 	@Max(100, { message: 'Limit не должен превышать 100 пользователей за раз' })
-	@Transform(({ value }: TransformValue) => parseInt(value))
-	public limit?: number = 10;
+	@Transform(({ value }: ITransformValue) => parseInt(value))
+	readonly limit?: number = 10;
 }

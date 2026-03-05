@@ -5,5 +5,5 @@ import { ProfileResponse } from './profile.response';
 
 export class UserResponse extends AccountResponse {
 	@ApiProperty({ type: () => ProfileResponse, required: false })
-	public profile: ProfileResponse | null;
+	readonly profile: ProfileResponse | null;
 }

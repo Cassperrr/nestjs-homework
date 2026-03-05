@@ -3,26 +3,33 @@ import { z } from 'zod';
 
 export const envSchema = z.object({
 	NODE_ENV: z.enum(['development', 'production']).default('development'),
-	APP_PORT: z.coerce.number().min(1).max(65535).default(3000),
+	APP_PORT: z.coerce.number().min(1).max(65535),
 	COOKIE_DOMAIN: z.string().default('localhost'),
 
 	POSTGRES_USER: z.string().nonempty(),
 	POSTGRES_PASSWORD: z.string().nonempty(),
-	POSTGRES_PORT: z.coerce.number().min(1).max(65535).default(5432),
+	POSTGRES_PORT: z.coerce.number().min(1).max(65535),
 	POSTGRES_DB: z.string().nonempty(),
-	POSTGRES_HOST: z.string().default('127.0.0.1'),
+	POSTGRES_HOST: z.string().nonempty(),
 
 	REDIS_USER: z.string().nonempty(),
 	REDIS_PASSWORD: z.string().nonempty(),
-	REDIS_HOST: z.string().default('127.0.0.1'),
-	REDIS_PORT: z.coerce.number().min(1).max(65535).default(5432),
+	REDIS_HOST: z.string().nonempty(),
+	REDIS_PORT: z.coerce.number().min(1).max(65535),
 
-	THROTTLER_TTL: z.coerce.number().min(1000).default(10000),
-	THROTTLER_LIMIT: z.coerce.number().min(1).default(20),
+	MINIO_ENDPOINT: z.string().nonempty(),
+	MINIO_ACCESS_KEY: z.string().nonempty(),
+	MINIO_SECRET_KEY: z.string().nonempty(),
+	MINIO_REGION: z.string().nonempty(),
 
-	OTP_CODE_TTL: z.coerce.number().min(100).default(300),
-	OTP_ATTEMPTS_COUNT: z.coerce.number().min(1).default(3),
-	COOLDOWN_TTL: z.coerce.number().positive().default(60),
+	MINIO_BUCKET_NAME: z.string().nonempty(),
+
+	THROTTLER_TTL: z.coerce.number().min(1000),
+	THROTTLER_LIMIT: z.coerce.number().min(1),
+
+	OTP_CODE_TTL: z.coerce.number().min(100),
+	OTP_ATTEMPTS_COUNT: z.coerce.number().min(1),
+	COOLDOWN_TTL: z.coerce.number().positive().min(30),
 
 	HASH_PEPPER: z.string().nonempty(),
 	MEMORY_COST: z.coerce.number().positive().default(65536),

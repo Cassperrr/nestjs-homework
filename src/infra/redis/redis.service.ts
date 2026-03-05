@@ -27,6 +27,8 @@ export class RedisService
 			maxRetriesPerRequest: 5,
 			enableOfflineQueue: true
 		});
+
+		this.logger.debug(`${RedisService.name} created`);
 	}
 
 	public async onModuleInit() {

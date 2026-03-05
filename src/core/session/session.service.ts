@@ -1,13 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import ms, { type StringValue } from 'ms';
+import { EnvTypes } from 'src/config';
 import { RedisService } from 'src/infra';
 
 @Injectable()
 export class SessionService {
+	private readonly logger = new Logger(SessionService.name);
+	private readonly sessionTtl: StringValue;
+
 	public constructor(
 		private readonly redis: RedisService,
-		private readonly sessionTtl: StringValue
-	) {}
+		private readonly configService: ConfigService<EnvTypes, true>
+	) {
+		this.sessionTtl = configService.get('JWT_REFRESH_TOKEN_TTL', {
+			infer: true
+		});
+
+		this.logger.debug(`${SessionService.name} created`);
+	}
 
 	public async set(id: string, refreshToken: string) {
 		const ttlSeconds = ms(this.sessionTtl) / 1000;

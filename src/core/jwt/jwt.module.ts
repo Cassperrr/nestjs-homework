@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { EnvTypes } from 'src/config';
 
-import { JwtPassportService } from './jwt.service';
+import { JWT_PASSPORT_SERVICE } from '../constants';
 
-export const JWT_PASSPORT_SERVICE = Symbol('JWT_PASSPORT_SERVICE');
+import { JwtPassportService } from './jwt.service';
 
 @Module({
 	imports: [
@@ -28,23 +28,7 @@ export const JWT_PASSPORT_SERVICE = Symbol('JWT_PASSPORT_SERVICE');
 	providers: [
 		{
 			provide: JWT_PASSPORT_SERVICE,
-			useFactory: (
-				jwtService: JwtService,
-				configService: ConfigService<EnvTypes, true>
-			) => {
-				const accessTtl = configService.get('JWT_ACCESS_TOKEN_TTL', {
-					infer: true
-				});
-				const refreshTtl = configService.get('JWT_REFRESH_TOKEN_TTL', {
-					infer: true
-				});
-				return new JwtPassportService(
-					jwtService,
-					accessTtl,
-					refreshTtl
-				);
-			},
-			inject: [JwtService, ConfigService]
+			useClass: JwtPassportService
 		}
 	],
 	exports: [JWT_PASSPORT_SERVICE]

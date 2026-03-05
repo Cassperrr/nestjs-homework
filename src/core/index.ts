@@ -4,4 +4,6 @@ export * from './otp';
 export * from './session';
 export * from './throttler';
 export * from './repositories';
+export * from './constants';
+export * from './files';
 export * from './core.module';

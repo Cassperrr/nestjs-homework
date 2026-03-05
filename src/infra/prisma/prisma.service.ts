@@ -26,6 +26,8 @@ export class PrismaService
 		});
 
 		super({ adapter });
+
+		this.logger.debug(`${PrismaService.name} created`);
 	}
 
 	public async onModuleInit() {

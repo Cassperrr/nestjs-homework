@@ -1,6 +1,7 @@
 import { Global, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { JwtStrategy, LoggerMiddleware, RolesGuard } from 'src/common';
 
+import { FilesModule } from './files';
 import { HashModule } from './hash';
 import { JwtPassportModule } from './jwt';
 import { OtpModule } from './otp';
@@ -16,6 +17,7 @@ import { ThrottleRequestModule } from './throttler';
 		JwtPassportModule,
 		OtpModule,
 		SessionModule,
+		FilesModule,
 		RepositoriesModule
 	],
 	providers: [JwtStrategy, RolesGuard],
@@ -25,6 +27,7 @@ import { ThrottleRequestModule } from './throttler';
 		JwtPassportModule,
 		OtpModule,
 		SessionModule,
+		FilesModule,
 		RepositoriesModule
 	]
 })

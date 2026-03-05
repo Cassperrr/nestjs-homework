@@ -5,5 +5,5 @@ export class OtpCodeResponse {
 		description: 'Otp code',
 		example: '600700'
 	})
-	public code: string;
+	readonly code: string;
 }

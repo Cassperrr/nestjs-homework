@@ -1,3 +1,3 @@
-export interface TransformValue {
+export interface ITransformValue {
 	value: string;
 }

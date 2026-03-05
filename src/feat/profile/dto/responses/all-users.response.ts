@@ -8,17 +8,17 @@ export class AllUsersResponse {
 		type: () => UserResponse,
 		isArray: true
 	})
-	public data: UserResponse[];
+	readonly data: UserResponse[];
 
 	@ApiProperty({
 		description: 'Следующий пользователь',
 		example: 'uuid',
 		nullable: true
 	})
-	public nextCursor: string | null;
+	readonly nextCursor: string | null;
 
 	@ApiProperty({
 		description: 'Существует ли следующая старница'
 	})
-	public hasNextPage: boolean;
+	readonly hasNextPage: boolean;
 }
