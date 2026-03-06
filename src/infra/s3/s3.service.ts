@@ -1,12 +1,20 @@
-import { ListBucketsCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+	DeleteObjectCommand,
+	ListBucketsCommand,
+	PutObjectCommand,
+	S3Client
+} from '@aws-sdk/client-s3';
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { extname } from 'path';
+import { RemoveFileException, UploadFileException } from 'src/common';
 import { EnvTypes } from 'src/config';
 import {
 	IFileService,
-	IRemoveFilePayload,
-	IUploadFilePayload
+	type IRemoveFilePayload,
+	type IUploadFilePayload
 } from 'src/shared';
+import { uuidv7 } from 'uuidv7';
 
 @Injectable()
 export class S3Service extends IFileService implements OnModuleInit {
@@ -42,8 +50,57 @@ export class S3Service extends IFileService implements OnModuleInit {
 			throw new Error('S3 connection failed');
 		}
 	}
-	// public async uploadFile(
-	// 	payload: IUploadFilePayload
-	// ): Promise<{ path: string }> {}
-	// public async removeFile(payload: IRemoveFilePayload): Promise<void> {}
+
+	public async uploadFile(
+		payload: IUploadFilePayload
+	): Promise<{ path: string }> {
+		const { file, folder } = payload;
+		const path = `${folder}/${uuidv7()}${extname(file.originalname)}`;
+
+		this.logger.debug('Beginning of uploading file to bucket');
+
+		const command = new PutObjectCommand({
+			Bucket: this.bucketName,
+			Key: path,
+			Body: file.buffer,
+			ACL: 'public-read',
+			ContentType: file.mimetype
+		});
+
+		try {
+			await this.S3.send(command);
+
+			this.logger.debug('Uploading was successful');
+
+			return { path };
+		} catch (e) {
+			this.logger.error(`❌ File upload error with path: ${path}`);
+
+			throw new UploadFileException(
+				e instanceof Error ? e.message : String(e)
+			);
+		}
+	}
+
+	public async removeFile(payload: IRemoveFilePayload): Promise<void> {
+		const { path } = payload;
+		this.logger.log('Beginning of removing file from bucket');
+
+		const command = new DeleteObjectCommand({
+			Bucket: this.bucketName,
+			Key: path
+		});
+
+		try {
+			await this.S3.send(command);
+
+			this.logger.log('Removing was successful');
+		} catch (error) {
+			this.logger.error(`File remove error with path: ${path}`);
+
+			throw new RemoveFileException(
+				error instanceof Error ? error.message : String(error)
+			);
+		}
+	}
 }

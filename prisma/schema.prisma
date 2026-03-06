@@ -9,7 +9,7 @@ datasource db {
 }
 
 model Account {
-  id String @id
+  id String @id @db.Char(36)
 
   username   String  @unique
   password   String  @db.VarChar(255)
@@ -27,15 +27,17 @@ model Account {
 }
 
 model Profile {
-  id String @id
+  id String @id @db.Char(36)
 
   firstName   String  @map("first_name") @db.VarChar(50)
   lastName    String  @map("last_name") @db.VarChar(50)
   age         Int
   description String? @db.VarChar(1000)
 
-  accountId String  @unique @map("account_id")
+  accountId String  @unique @map("account_id") @db.Char(36)
   account   Account @relation(fields: [accountId], references: [id])
+
+  avatars Avatar[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -43,8 +45,17 @@ model Profile {
   @@map("profiles")
 }
 
-model Avatars {
-  id String @id
+model Avatar {
+  id String @id @db.Char(36)
+
+  name String
+
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String  @map("profile_id") @db.Char(36)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
 
   @@map("avatars")
 }
