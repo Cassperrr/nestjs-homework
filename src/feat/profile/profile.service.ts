@@ -1,6 +1,7 @@
 import {
 	ConflictException,
 	Injectable,
+	Logger,
 	NotFoundException
 } from '@nestjs/common';
 import { UserRepository } from 'src/core';
@@ -17,6 +18,8 @@ import {
 
 @Injectable()
 export class ProfileService {
+	private readonly logger = new Logger(ProfileService.name);
+
 	public constructor(private readonly userRepo: UserRepository) {}
 
 	public async create(
@@ -28,7 +31,13 @@ export class ProfileService {
 		if (!user || user.profile || user.deletedAt)
 			throw new ConflictException('Нельзя создать профиль');
 
-		return this.userRepo.createProfile(accountId, dto);
+		const profile = await this.userRepo.createProfile(accountId, dto);
+
+		this.logger.log(
+			`[${user.id}] [${user.role}] Профиль создан - ${profile.id}`
+		);
+
+		return profile;
 	}
 
 	public async update(
@@ -40,7 +49,13 @@ export class ProfileService {
 		if (!user || !user.profile || user.deletedAt)
 			throw new NotFoundException('Нельзя изменить профиль');
 
-		return this.userRepo.updateProfile(accountId, dto);
+		const pathedProfile = await this.userRepo.updateProfile(accountId, dto);
+
+		this.logger.log(
+			`[${user.id}] [${user.role}] Профиль обновлен - ${pathedProfile.id}`
+		);
+
+		return pathedProfile;
 	}
 
 	public async getMe(accountId: string): Promise<UserResponse> {
@@ -62,7 +77,13 @@ export class ProfileService {
 			throw new NotFoundException('Нет доступа');
 
 		const { cursor, limit = 10, username } = query;
-		return this.userRepo.findAllUsers(cursor, limit, username);
+		const users = await this.userRepo.findAllUsers(cursor, limit, username);
+
+		this.logger.log(
+			`[${existing.id}] [${existing.role}] Выданы данные об аккаунтах - ${limit} шт. | ${username ? `username=${username}` : ''}`
+		);
+
+		return users;
 	}
 
 	public async findUserByUsername(
@@ -78,6 +99,10 @@ export class ProfileService {
 
 		const user = await this.userRepo.findUser({ username });
 		if (!user) throw new NotFoundException('Пользователь не найден');
+
+		this.logger.log(
+			`[${existing.id}] [${existing.role}] Выданы данные об аккаунте - ${user.id}`
+		);
 
 		return user;
 	}

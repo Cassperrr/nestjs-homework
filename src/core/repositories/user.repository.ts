@@ -12,14 +12,16 @@ export class UserRepository {
 		username: string;
 		password: string; // TODO чет надо придумать некрасиво
 	}) {
-		const { id } = await this.prisma.account.create({
+		return this.prisma.account.create({
 			data: {
 				id: uuidv7(),
 				...account
+			},
+			select: {
+				id: true,
+				role: true
 			}
 		});
-
-		return id;
 	}
 
 	public async updateAccount(id: string, account: Partial<Account>) {
@@ -113,6 +115,7 @@ export class UserRepository {
 				id: true,
 				username: true,
 				email: true,
+				role: true,
 				createdAt: true,
 				deletedAt: true,
 				profile: {

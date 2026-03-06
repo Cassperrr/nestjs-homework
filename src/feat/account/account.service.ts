@@ -1,4 +1,9 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+	Inject,
+	Injectable,
+	Logger,
+	UnauthorizedException
+} from '@nestjs/common';
 import {
 	HASH_SERVICE,
 	HashService,
@@ -14,6 +19,8 @@ import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
 
 @Injectable()
 export class AccountService {
+	private readonly logger = new Logger(AccountService.name);
+
 	public constructor(
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
@@ -39,6 +46,10 @@ export class AccountService {
 
 		if (!isVerified) throw new UnauthorizedException('Неверный пароль');
 
+		this.logger.log(
+			`[${user.id}] [${user.role}] Иницализация смены пароля`
+		);
+
 		return this.otpService.generate(id, OtpKey.PASSWORD);
 	}
 
@@ -56,6 +67,10 @@ export class AccountService {
 
 		await this.userRepo.updateAccount(user.id, { password: hash });
 
+		this.logger.log(
+			`[${user.id}] [${user.role}] Подтверждение смены пароля, пароль изменен`
+		);
+
 		return { message: 'Пароль изменен' };
 	}
 
@@ -66,6 +81,8 @@ export class AccountService {
 			throw new UnauthorizedException('Аккаунт не существует');
 
 		await this.userRepo.updateAccount(id, { deletedAt: new Date() });
+
+		this.logger.log(`[${user.id}] [${user.role}] Аккаунт удален`);
 
 		return { message: 'Аккаунт удален' };
 	}

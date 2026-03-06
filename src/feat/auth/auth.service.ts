@@ -3,6 +3,7 @@ import {
 	ConflictException,
 	Inject,
 	Injectable,
+	Logger,
 	UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -33,6 +34,7 @@ import type {
 
 @Injectable()
 export class AuthService {
+	private readonly logger = new Logger(AuthService.name);
 	private readonly COOKIE_DOMAIN: string;
 	private readonly isDev: boolean;
 
@@ -68,11 +70,13 @@ export class AuthService {
 			);
 
 		const hash = await this.hashService.hash(password);
-		const id = await this.userRepo.createAccount({
+		const { id, role } = await this.userRepo.createAccount({
 			email,
 			username,
 			password: hash
 		});
+
+		this.logger.log(`[${id}] [${role}] Аккаунт зарегистрирован`);
 
 		return this.otpService.generate(id, OtpKey.EMAIL);
 	}
@@ -86,6 +90,8 @@ export class AuthService {
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
 			);
+
+		this.logger.log(`[${user.id}] [${user.role}] Перевыпуск OTP кода`);
 
 		return this.otpService.generate(user.id, OtpKey.EMAIL);
 	}
@@ -105,6 +111,8 @@ export class AuthService {
 			isVerified: true
 		});
 
+		this.logger.log(`[${user.id}] [${user.role}] Аккаунт верифицирован`);
+
 		return this._authenticate(patched.id, patched.role);
 	}
 
@@ -123,6 +131,8 @@ export class AuthService {
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
+		this.logger.log(`[${user.id}] [${user.role}] Вход в систему`);
+
 		return this._authenticate(user.id, user.role);
 	}
 
@@ -137,13 +147,18 @@ export class AuthService {
 		if (!user || user.deletedAt)
 			throw new UnauthorizedException('Недействительный токен');
 
+		this.logger.log(`[${user.id}] [${user.role}] Обновление сессии`);
+
 		return this._authenticate(user.id, user.role);
 	}
 
 	public async logout(refreshToken: string) {
 		try {
-			const { id } = this.tokenService.verify(refreshToken);
+			const { id, role } = this.tokenService.verify(refreshToken);
+
 			await this.session.delete(id);
+
+			this.logger.log(`[${id}] [${role}] Выход из системы`);
 		} catch {
 			// ignore
 		}

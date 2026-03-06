@@ -4,5 +4,3 @@ export * from './guards';
 export * from './middlewares';
 export * from './strategies';
 export * from './exceptions';
-export * from './interceptors';
-export * from './utils';
