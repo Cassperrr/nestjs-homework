@@ -124,7 +124,14 @@ export class UserRepository {
 						firstName: true,
 						lastName: true,
 						age: true,
-						description: true
+						description: true,
+						avatars: {
+							where: { deletedAt: null },
+							select: {
+								id: true,
+								name: true
+							}
+						}
 					}
 				}
 			}
@@ -174,5 +181,19 @@ export class UserRepository {
 			nextCursor: hasNextPage ? accounts[accounts.length - 1].id : null,
 			hasNextPage
 		};
+	}
+
+	public async createAvatar(profileId: string, name: string) {
+		return this.prisma.avatar.create({
+			data: {
+				id: uuidv7(),
+				name,
+				profile: { connect: { id: profileId } }
+			},
+			select: {
+				id: true,
+				name: true
+			}
+		});
 	}
 }

@@ -38,6 +38,7 @@ export const envSchema = z.object({
 
 	AVATAR_MAX_SIZE_MB: z.coerce.number().positive().min(1),
 	AVATAR_ALLOWED_TYPES: z.string().nonempty().default('jpeg|png'),
+	MAX_AVATARS_FOR_PROFILE: z.coerce.number().positive().min(1),
 
 	JWT_SECRET: z.string().nonempty(),
 	JWT_ACCESS_TOKEN_TTL: z

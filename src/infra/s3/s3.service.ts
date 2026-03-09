@@ -57,7 +57,9 @@ export class S3Service extends IFileService implements OnModuleInit {
 		const { file, folder } = payload;
 		const path = `${folder}/${uuidv7()}${extname(file.originalname)}`;
 
-		this.logger.debug('Beginning of uploading file to bucket');
+		this.logger.debug(
+			`Beginning of uploading file to bucket. Path: ${path}`
+		);
 
 		const command = new PutObjectCommand({
 			Bucket: this.bucketName,
@@ -70,11 +72,11 @@ export class S3Service extends IFileService implements OnModuleInit {
 		try {
 			await this.S3.send(command);
 
-			this.logger.debug('Uploading was successful');
+			this.logger.debug(`Uploading was successful. Path: ${path}`);
 
 			return { path };
 		} catch (e) {
-			this.logger.error(`❌ File upload error with path: ${path}`);
+			this.logger.error(`File upload error with path: ${path}`);
 
 			throw new UploadFileException(
 				e instanceof Error ? e.message : String(e)
@@ -84,7 +86,8 @@ export class S3Service extends IFileService implements OnModuleInit {
 
 	public async removeFile(payload: IRemoveFilePayload): Promise<void> {
 		const { path } = payload;
-		this.logger.log('Beginning of removing file from bucket');
+
+		this.logger.debug('Beginning of removing file from bucket');
 
 		const command = new DeleteObjectCommand({
 			Bucket: this.bucketName,
@@ -94,7 +97,7 @@ export class S3Service extends IFileService implements OnModuleInit {
 		try {
 			await this.S3.send(command);
 
-			this.logger.log('Removing was successful');
+			this.logger.debug('Removing was successful');
 		} catch (error) {
 			this.logger.error(`File remove error with path: ${path}`);
 

@@ -10,7 +10,6 @@ import {
 	AllUsersResponse,
 	CreateProfileRequest,
 	FindAllUserRequest,
-	FindUserRequest,
 	ProfileResponse,
 	UpdateProfileRequest,
 	UserResponse
@@ -86,24 +85,24 @@ export class ProfileService {
 		return users;
 	}
 
-	public async findUserByUsername(
-		accountId: string,
-		query: FindUserRequest
-	): Promise<UserResponse> {
-		const existing = await this.userRepo.findUser({ id: accountId });
+	// public async findUserByUsername(
+	// 	accountId: string,
+	// 	query: FindUserRequest
+	// ): Promise<UserResponse> {
+	// 	const existing = await this.userRepo.findUser({ id: accountId });
 
-		if (!existing || existing.deletedAt)
-			throw new NotFoundException('Нет доступа');
+	// 	if (!existing || existing.deletedAt)
+	// 		throw new NotFoundException('Нет доступа');
 
-		const { username } = query;
+	// 	const { username } = query;
 
-		const user = await this.userRepo.findUser({ username });
-		if (!user) throw new NotFoundException('Пользователь не найден');
+	// 	const user = await this.userRepo.findUser({ username });
+	// 	if (!user) throw new NotFoundException('Пользователь не найден');
 
-		this.logger.log(
-			`[${existing.id}] [${existing.role}] Выданы данные об аккаунте - ${user.id}`
-		);
+	// 	this.logger.log(
+	// 		`[${existing.id}] [${existing.role}] Выданы данные об аккаунте - ${user.id}`
+	// 	);
 
-		return user;
-	}
+	// 	return user;
+	// }
 }

@@ -72,7 +72,8 @@ export class ProfileController {
 	}
 
 	@ApiOperation({
-		summary: 'Получить всех пользователей, только для администратора'
+		summary:
+			'Получить всех пользователей или найти пользователя по username, только для администратора'
 	})
 	@ApiOkResponse({ type: AllUsersResponse })
 	@ApiBearerAuth()
@@ -83,31 +84,15 @@ export class ProfileController {
 		return this.profileService.findAllUsers(id, query);
 	}
 
-	@ApiOperation({
-		summary: 'Загрузить аватар пользователя'
-	})
-	// @ApiOkResponse({ type: AllUsersResponse })
-	@ApiBearerAuth()
-	@Protected()
-	@Post('avatar/upload')
-	@FileUpload()
-	@HttpCode(HttpStatus.CREATED)
-	public uploadAvatar(
-		@AccountId() id: string,
-		@UploadedAvatar() avatar: Express.Multer.File
-	) {
-		return { size: avatar.size, type: avatar.originalname };
-	}
-
-	@ApiOperation({
-		summary: 'Найти пользователя, только для админинистратора'
-	})
-	@ApiOkResponse({ type: UserResponse })
-	@ApiBearerAuth()
-	@Protected(Role.ADMIN)
-	@Get(':username')
-	@HttpCode(HttpStatus.OK)
-	public getUser(@AccountId() id: string, @Query() query: FindUserRequest) {
-		return this.profileService.findUserByUsername(id, query);
-	}
+	// @ApiOperation({
+	// 	summary: 'Найти пользователя, только для админинистратора'
+	// })
+	// @ApiOkResponse({ type: UserResponse })
+	// @ApiBearerAuth()
+	// @Protected(Role.ADMIN)
+	// @Get(':username')
+	// @HttpCode(HttpStatus.OK)
+	// public getUser(@AccountId() id: string, @Query() query: FindUserRequest) {
+	// 	return this.profileService.findUserByUsername(id, query);
+	// }
 }
