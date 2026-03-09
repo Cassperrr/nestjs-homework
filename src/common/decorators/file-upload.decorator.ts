@@ -1,8 +1,9 @@
 import { applyDecorators, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { StorageEngine } from 'multer';
 
-export const FileUpload = (fieldName = 'file') =>
+export const FileUpload = (fieldName = 'file', storage?: StorageEngine) =>
 	applyDecorators(
 		ApiConsumes('multipart/form-data'),
 		ApiBody({
@@ -13,5 +14,5 @@ export const FileUpload = (fieldName = 'file') =>
 				}
 			}
 		}),
-		UseInterceptors(FileInterceptor(fieldName))
+		UseInterceptors(FileInterceptor(fieldName, storage ? { storage } : {}))
 	);

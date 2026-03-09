@@ -14,33 +14,35 @@ import { UploadAvatarResponse } from './dto';
 @Injectable()
 export class AvatarService {
 	private readonly logger = new Logger(AvatarService.name);
+	private readonly maxAvatars: number;
 
 	public constructor(
 		private readonly userRepo: UserRepository,
 		private readonly fileService: IFileService,
 
 		private readonly configService: ConfigService<EnvTypes, true>
-	) {}
+	) {
+		this.maxAvatars = configService.get('MAX_AVATARS_FOR_PROFILE', {
+			infer: true
+		});
+	}
 
 	public async uploadAvatar(
 		accountId: string,
 		avatar: Express.Multer.File
 	): Promise<UploadAvatarResponse> {
 		const user = await this.userRepo.findUser({ id: accountId });
-		const maxAvatars = this.configService.get('MAX_AVATARS_FOR_PROFILE', {
-			infer: true
-		});
 
 		if (!user || user.deletedAt || !user.profile)
 			throw new NotFoundException('Нет доступа');
 
-		if (user.profile.avatars.length >= maxAvatars)
+		if (user.profile.avatars.length >= this.maxAvatars)
 			throw new BadRequestException(
-				`Максимальное количество аватарок - ${maxAvatars} шт.`
+				`Максимальное количество аватарок - ${this.maxAvatars} шт.`
 			);
 
 		this.logger.log(
-			`[${user.id}] [${user.role}] Start uploading avatar ${user.profile.avatars.length + 1}/${maxAvatars}...`
+			`[${user.id}] [${user.role}] Start uploading avatar ${user.profile.avatars.length + 1}/${this.maxAvatars}...`
 		);
 
 		const { path } = await this.fileService.uploadFile({
@@ -55,5 +57,39 @@ export class AvatarService {
 		);
 
 		return { path };
+	}
+
+	public async saveAvatarPath(
+		accountId: string,
+		path: string
+	): Promise<UploadAvatarResponse> {
+		try {
+			const user = await this.userRepo.findUser({ id: accountId });
+
+			if (!user || user.deletedAt || !user.profile)
+				throw new NotFoundException('Нет доступа');
+
+			if (user.profile.avatars.length >= this.maxAvatars)
+				throw new BadRequestException(
+					`Максимальное количество аватарок - ${this.maxAvatars} шт.`
+				);
+
+			await this.userRepo.createAvatar(
+				user.profile.id,
+				path.split('/')[1]
+			);
+
+			this.logger.log(
+				`[${user.id}] [${user.role}] Avatar uploaded. Path: ${path}`
+			);
+
+			return { path };
+		} catch (e) {
+			this.logger.error(
+				`Ошибка загрузки аватара (stream), удаление аватара из хранилища: ${path}:\n${e}`
+			);
+			await this.fileService.removeFile({ path }).catch(() => null);
+			throw e;
+		}
 	}
 }

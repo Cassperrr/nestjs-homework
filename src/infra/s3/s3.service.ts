@@ -61,16 +61,16 @@ export class S3Service extends IFileService implements OnModuleInit {
 			`Beginning of uploading file to bucket. Path: ${path}`
 		);
 
-		const command = new PutObjectCommand({
-			Bucket: this.bucketName,
-			Key: path,
-			Body: file.buffer,
-			ACL: 'public-read',
-			ContentType: file.mimetype
-		});
-
 		try {
-			await this.S3.send(command);
+			await this.S3.send(
+				new PutObjectCommand({
+					Bucket: this.bucketName,
+					Key: path,
+					Body: file.buffer,
+					ACL: 'public-read',
+					ContentType: file.mimetype
+				})
+			);
 
 			this.logger.debug(`Uploading was successful. Path: ${path}`);
 
@@ -89,13 +89,13 @@ export class S3Service extends IFileService implements OnModuleInit {
 
 		this.logger.debug('Beginning of removing file from bucket');
 
-		const command = new DeleteObjectCommand({
-			Bucket: this.bucketName,
-			Key: path
-		});
-
 		try {
-			await this.S3.send(command);
+			await this.S3.send(
+				new DeleteObjectCommand({
+					Bucket: this.bucketName,
+					Key: path
+				})
+			);
 
 			this.logger.debug('Removing was successful');
 		} catch (error) {
