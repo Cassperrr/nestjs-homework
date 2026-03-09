@@ -27,6 +27,7 @@ services:
 
   minio:
     image: minio/minio
+    restart: always
     command: server /data --console-address ":9001"
     env_file:
       - .env.development.local
