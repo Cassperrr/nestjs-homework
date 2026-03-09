@@ -10,7 +10,6 @@ import type { Response } from 'express';
 import { ReplyError } from 'ioredis';
 import { Prisma } from 'prisma/generated/client';
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 @Catch(Prisma.PrismaClientKnownRequestError, ReplyError, ThrottlerException)
 export class InfrastructureFilter implements ExceptionFilter {
 	private readonly logger = new Logger(InfrastructureFilter.name);

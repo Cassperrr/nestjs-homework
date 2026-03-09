@@ -36,6 +36,9 @@ export const envSchema = z.object({
 	TIME_COST: z.coerce.number().positive().default(3),
 	PARALLELISM: z.coerce.number().positive().default(4),
 
+	AVATAR_MAX_SIZE_MB: z.coerce.number().positive().min(1),
+	AVATAR_ALLOWED_TYPES: z.string().nonempty().default('jpeg|png'),
+
 	JWT_SECRET: z.string().nonempty(),
 	JWT_ACCESS_TOKEN_TTL: z
 		.custom<StringValue>(

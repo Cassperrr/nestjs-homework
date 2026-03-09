@@ -55,7 +55,7 @@ export class PrismaService
 		try {
 			await this.$disconnect();
 
-			this.logger.log('Databse connection close');
+			this.logger.log('Database connection close');
 		} catch (e) {
 			this.logger.error('Failed disconnect from database', e);
 

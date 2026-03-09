@@ -6,11 +6,19 @@ import {
 	HttpStatus,
 	Post,
 	Put,
-	Query
+	Query,
+	UseInterceptors
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+	ApiBearerAuth,
+	ApiBody,
+	ApiConsumes,
+	ApiOkResponse,
+	ApiOperation
+} from '@nestjs/swagger';
 import { Role } from 'prisma/generated/enums';
-import { AccountId, Protected } from 'src/common';
+import { AccountId, FileUpload, Protected, UploadedAvatar } from 'src/common';
 
 import {
 	AllUsersResponse,
@@ -35,10 +43,7 @@ export class ProfileController {
 	@Protected()
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
-	public async create(
-		@AccountId() id: string,
-		@Body() dto: CreateProfileRequest
-	) {
+	public create(@AccountId() id: string, @Body() dto: CreateProfileRequest) {
 		return this.profileService.create(id, dto);
 	}
 
@@ -50,10 +55,7 @@ export class ProfileController {
 	@Protected()
 	@Put()
 	@HttpCode(HttpStatus.OK)
-	public async update(
-		@AccountId() id: string,
-		@Body() dto: UpdateProfileRequest
-	) {
+	public update(@AccountId() id: string, @Body() dto: UpdateProfileRequest) {
 		return this.profileService.update(id, dto);
 	}
 
@@ -65,7 +67,7 @@ export class ProfileController {
 	@Protected()
 	@Get()
 	@HttpCode(HttpStatus.OK)
-	public async me(@AccountId() id: string) {
+	public getMe(@AccountId() id: string) {
 		return this.profileService.getMe(id);
 	}
 
@@ -77,11 +79,24 @@ export class ProfileController {
 	@Protected(Role.ADMIN)
 	@Get('all')
 	@HttpCode(HttpStatus.OK)
-	public async all(
-		@AccountId() id: string,
-		@Query() query: FindAllUserRequest
-	) {
+	public getAll(@AccountId() id: string, @Query() query: FindAllUserRequest) {
 		return this.profileService.findAllUsers(id, query);
+	}
+
+	@ApiOperation({
+		summary: 'Загрузить аватар пользователя'
+	})
+	// @ApiOkResponse({ type: AllUsersResponse })
+	@ApiBearerAuth()
+	@Protected()
+	@Post('avatar/upload')
+	@FileUpload()
+	@HttpCode(HttpStatus.CREATED)
+	public uploadAvatar(
+		@AccountId() id: string,
+		@UploadedAvatar() avatar: Express.Multer.File
+	) {
+		return { size: avatar.size, type: avatar.originalname };
 	}
 
 	@ApiOperation({
@@ -92,10 +107,7 @@ export class ProfileController {
 	@Protected(Role.ADMIN)
 	@Get(':username')
 	@HttpCode(HttpStatus.OK)
-	public async user(
-		@AccountId() id: string,
-		@Query() query: FindUserRequest
-	) {
+	public getUser(@AccountId() id: string, @Query() query: FindUserRequest) {
 		return this.profileService.findUserByUsername(id, query);
 	}
 }
