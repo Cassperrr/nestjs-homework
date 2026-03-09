@@ -7,8 +7,10 @@ import {
 import { UserRepository } from 'src/core';
 
 import {
+	ActiveUserResponse,
 	AllUsersResponse,
 	CreateProfileRequest,
+	FindActiveUsersRequest,
 	FindAllUserRequest,
 	ProfileResponse,
 	UpdateProfileRequest,
@@ -83,6 +85,21 @@ export class ProfileService {
 		);
 
 		return users;
+	}
+
+	public async findActiveUsers(
+		accountId: string,
+		query: FindActiveUsersRequest
+	): Promise<ActiveUserResponse[]> {
+		const existing = await this.userRepo.findUser({ id: accountId });
+
+		if (!existing || existing.deletedAt)
+			throw new NotFoundException('Нет доступа');
+
+		const { minAge, maxAge } = query;
+		return this.userRepo.findActiveUsers(minAge, maxAge) as Promise<
+			ActiveUserResponse[]
+		>;
 	}
 
 	// public async findUserByUsername(

@@ -21,8 +21,10 @@ import { Role } from 'prisma/generated/enums';
 import { AccountId, FileUpload, Protected, UploadedAvatar } from 'src/common';
 
 import {
+	ActiveUserResponse,
 	AllUsersResponse,
 	CreateProfileRequest,
+	FindActiveUsersRequest,
 	FindAllUserRequest,
 	FindUserRequest,
 	ProfileResponse,
@@ -82,6 +84,22 @@ export class ProfileController {
 	@HttpCode(HttpStatus.OK)
 	public getAll(@AccountId() id: string, @Query() query: FindAllUserRequest) {
 		return this.profileService.findAllUsers(id, query);
+	}
+
+	@ApiOperation({
+		summary:
+			'Получить всех пользователей активных пользователей, только для администратора'
+	})
+	@ApiOkResponse({ type: ActiveUserResponse, isArray: true })
+	@ApiBearerAuth()
+	@Protected()
+	@Get('active')
+	@HttpCode(HttpStatus.OK)
+	public getActive(
+		@AccountId() id: string,
+		@Query() query: FindActiveUsersRequest
+	) {
+		return this.profileService.findActiveUsers(id, query);
 	}
 
 	// @ApiOperation({

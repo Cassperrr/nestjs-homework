@@ -85,7 +85,7 @@ export class AvatarService {
 
 			return { path };
 		} catch (e) {
-			this.logger.error(
+			this.logger.warn(
 				`Ошибка загрузки аватара (stream), удаление аватара из хранилища: ${path}:\n${e}`
 			);
 			await this.fileService.removeFile({ path }).catch(() => null);

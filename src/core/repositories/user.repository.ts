@@ -211,4 +211,36 @@ export class UserRepository {
 			}
 		});
 	}
+
+	// я хз как это нормально переписать на призму поэтому надежней так :)
+	// ==== условия активных юзеров ====
+	// > 2 АКТИВНЫX аватарок
+	// есть описание
+	// переданный диапазон возраста
+	// === индексы поставил на возраст (на описание не стал потому что предположил что 90% профилей будет заполнено) и partional (deleted_at IS NULL) на аватар
+	// !!!! блок с LEFT JOIN писала нейронка потмоу что у меня в коррелированном подзапросе на получение последней аватарки (через сортировку по убыванию) возникала n+1 и мозгов не хватило написать оконку
+	public async findActiveUsers(minAge: number, maxAge: number) {
+		return this.prisma.$queryRaw`
+			SELECT accounts.id,
+				last_avatar.name AS last_loaded_avatar
+			FROM accounts
+				JOIN profiles ON profiles.account_id = accounts.id
+				JOIN avatars ON profiles.id = avatars.profile_id
+
+				LEFT JOIN (
+					SELECT profile_id, name, ROW_NUMBER() OVER (
+						PARTITION BY profile_id 
+						ORDER BY created_at DESC
+					) AS rn
+					FROM avatars
+					WHERE deleted_at IS NULL
+				) AS last_avatar ON last_avatar.profile_id = profiles.id AND last_avatar.rn = 1
+
+			WHERE profiles.age BETWEEN ${minAge} AND ${maxAge}
+				AND avatars.deleted_at IS NULL
+				AND profiles.description IS NOT NULL
+			GROUP BY accounts.id, profiles.id, last_avatar.name
+			HAVING count(avatars.id) > 2
+		`;
+	}
 }
