@@ -5,3 +5,4 @@ export * from './middlewares';
 export * from './strategies';
 export * from './exceptions';
 export * from './pipes';
+export * from './interceptors';
