@@ -1,4 +1,4 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { StorageEngine } from 'multer';
@@ -6,7 +6,7 @@ import { extname } from 'path';
 import { uuidv7 } from 'uuidv7';
 
 export class S3StreamStorage implements StorageEngine {
-	// тут можно не париться, zod уже проверил все envы
+	// ==== зод все провалидирвоал на старте приложения, поэтому пох на кофиг сервис ====
 
 	private readonly s3 = new S3Client({
 		endpoint: process.env.MINIO_ENDPOINT,
@@ -32,7 +32,7 @@ export class S3StreamStorage implements StorageEngine {
 		file: Express.Multer.File,
 		callback: (error?: any, info?: Partial<Express.Multer.File>) => void
 	): void {
-		// ручная валидация формата и размера файла
+		// ==== ручная валидация формата и размера файла ====
 		if (
 			!this.allowedMimeTypes
 				.split('|')
@@ -60,6 +60,8 @@ export class S3StreamStorage implements StorageEngine {
 		});
 
 		file.stream.on('error', err => callback(err));
+
+		// ==== дальше грузим потоком в s3 ====
 
 		const upload = new Upload({
 			client: this.s3,
