@@ -9,7 +9,7 @@ import { EnvTypes } from 'src/config';
 import { UserRepository } from 'src/core';
 import { IFileService } from 'src/shared';
 
-import { UploadAvatarResponse } from './dto';
+import { DeleteAvatarRequest, UploadAvatarResponse } from './dto';
 
 @Injectable()
 export class AvatarService {
@@ -91,5 +91,24 @@ export class AvatarService {
 			await this.fileService.removeFile({ path }).catch(() => null);
 			throw e;
 		}
+	}
+
+	public async deleteAvatar(accountId: string, dto: DeleteAvatarRequest) {
+		const user = await this.userRepo.findUser({ id: accountId });
+
+		if (!user || user.deletedAt || !user.profile)
+			throw new NotFoundException('Нет доступа');
+
+		const { fileName } = dto;
+
+		const avatar = await this.userRepo
+			.updateAvatar(accountId, fileName, {
+				deletedAt: new Date()
+			})
+			.catch(() => {
+				throw new BadRequestException('Нет прав');
+			});
+
+		return { message: `Аватар ${avatar.name} удален` };
 	}
 }

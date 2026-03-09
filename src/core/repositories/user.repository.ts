@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Account, Profile } from 'prisma/generated/browser';
+import { Account, Avatar, Profile } from 'prisma/generated/browser';
 import { PrismaService } from 'src/infra';
 import { uuidv7 } from 'uuidv7';
 
@@ -190,6 +190,21 @@ export class UserRepository {
 				name,
 				profile: { connect: { id: profileId } }
 			},
+			select: {
+				id: true,
+				name: true
+			}
+		});
+	}
+
+	public async updateAvatar(
+		accountId: string,
+		fileName: string,
+		avatar: Partial<Avatar>
+	) {
+		return this.prisma.avatar.update({
+			where: { profile: { accountId }, name: fileName },
+			data: { ...avatar },
 			select: {
 				id: true,
 				name: true

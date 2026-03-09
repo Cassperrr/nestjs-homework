@@ -1,10 +1,17 @@
-import { Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+	Controller,
+	Delete,
+	HttpCode,
+	HttpStatus,
+	Post,
+	Query
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AccountId, FileUpload, Protected, UploadedAvatar } from 'src/common';
 
 import { avatarStreamStorage } from './avatar-stream.storage';
 import { AvatarService } from './avatar.service';
-import { UploadAvatarResponse } from './dto';
+import { DeleteAvatarRequest, UploadAvatarResponse } from './dto';
 
 @Controller('avatar')
 export class AvatarController {
@@ -40,5 +47,19 @@ export class AvatarController {
 		@UploadedAvatar({ pipe: false }) avatar: Express.Multer.File
 	) {
 		return this.avatarService.saveAvatarPath(id, avatar.path);
+	}
+
+	@ApiOperation({
+		summary: 'Удалить аватар'
+	})
+	@ApiBearerAuth()
+	@Protected()
+	@Delete(':fileName')
+	@HttpCode(HttpStatus.OK)
+	public deleteAvatar(
+		@AccountId() id: string,
+		@Query() dto: DeleteAvatarRequest
+	) {
+		return this.avatarService.deleteAvatar(id, dto);
 	}
 }

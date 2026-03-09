@@ -48,7 +48,7 @@ model Profile {
 model Avatar {
   id String @id @db.Char(36)
 
-  name String
+  name String @unique
 
   profile   Profile @relation(fields: [profileId], references: [id])
   profileId String  @map("profile_id") @db.Char(36)
