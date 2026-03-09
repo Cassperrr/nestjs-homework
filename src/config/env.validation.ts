@@ -6,11 +6,11 @@ export const envSchema = z.object({
 	APP_PORT: z.coerce.number().min(1).max(65535),
 	COOKIE_DOMAIN: z.string().default('localhost'),
 
-	POSTGRES_USER: z.string().nonempty(),
-	POSTGRES_PASSWORD: z.string().nonempty(),
-	POSTGRES_PORT: z.coerce.number().min(1).max(65535),
-	POSTGRES_DB: z.string().nonempty(),
-	POSTGRES_HOST: z.string().nonempty(),
+	DATABASE_USER: z.string().nonempty(),
+	DATABASE_PASSWORD: z.string().nonempty(),
+	DATABASE_PORT: z.coerce.number().min(1).max(65535),
+	DATABASE_NAME: z.string().nonempty(),
+	DATABASE_HOST: z.string().nonempty(),
 
 	REDIS_USER: z.string().nonempty(),
 	REDIS_PASSWORD: z.string().nonempty(),
@@ -21,7 +21,6 @@ export const envSchema = z.object({
 	MINIO_ACCESS_KEY: z.string().nonempty(),
 	MINIO_SECRET_KEY: z.string().nonempty(),
 	MINIO_REGION: z.string().nonempty(),
-
 	MINIO_BUCKET_NAME: z.string().nonempty(),
 
 	THROTTLER_TTL: z.coerce.number().min(1000),

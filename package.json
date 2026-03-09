@@ -6,8 +6,8 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
-		"docker:up": "docker compose up -d --build",
-		"docker:down": "docker compose down -v",
+		"docker:up": "docker compose -f docker/docker-compose.yml up -d --build",
+		"docker:down": "docker compose -f docker/docker-compose.yml down -v",
 		"prisma:seed": "tsx prisma/seeds/seed.ts",
 		"prisma:push": "yarn prisma db push",
 		"prisma:gen": "yarn prisma generate",

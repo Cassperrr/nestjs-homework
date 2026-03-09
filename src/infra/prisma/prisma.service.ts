@@ -18,11 +18,11 @@ export class PrismaService
 
 	public constructor(configService: ConfigService<EnvTypes, true>) {
 		const adapter = new PrismaPg({
-			user: configService.get('POSTGRES_USER', { infer: true }),
-			password: configService.get('POSTGRES_PASSWORD', { infer: true }),
-			host: configService.get('POSTGRES_HOST', { infer: true }),
-			port: configService.get('POSTGRES_PORT', { infer: true }),
-			database: configService.get('POSTGRES_DB', { infer: true })
+			user: configService.get('DATABASE_USER', { infer: true }),
+			password: configService.get('DATABASE_PASSWORD', { infer: true }),
+			host: configService.get('DATABASE_HOST', { infer: true }),
+			port: configService.get('DATABASE_PORT', { infer: true }),
+			database: configService.get('DATABASE_NAME', { infer: true })
 		});
 
 		super({ adapter });
