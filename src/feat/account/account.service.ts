@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
+	AccountRepository,
 	CACHE_EVENTS,
 	HASH_SERVICE,
 	HashService,
 	OTP_SERVICE,
-	OtpService,
-	UserRepository
+	OtpService
 } from 'src/core';
 import { OtpKey } from 'src/shared';
 
@@ -24,7 +24,7 @@ export class AccountService {
 	private readonly logger = new Logger(AccountService.name);
 
 	public constructor(
-		private readonly userRepo: UserRepository,
+		private readonly accountRepo: AccountRepository,
 		private readonly eventEmmiter: EventEmitter2,
 
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
@@ -37,7 +37,7 @@ export class AccountService {
 	): Promise<OtpCodeResponse> {
 		const { oldPassword } = dto;
 
-		const user = await this.userRepo.findAccount({ id });
+		const user = await this.accountRepo.findBy({ id });
 
 		if (!user || user.deletedAt)
 			throw new UnauthorizedException('Аккаунт не существует');
@@ -59,7 +59,7 @@ export class AccountService {
 	public async confirmPassword(id: string, dto: ConfirmPasswordRequest) {
 		const { code, newPassword } = dto;
 
-		const user = await this.userRepo.findAccount({ id });
+		const user = await this.accountRepo.findBy({ id });
 
 		if (!user || user.deletedAt)
 			throw new UnauthorizedException('Аккаунт не существует');
@@ -68,7 +68,7 @@ export class AccountService {
 
 		const hash = await this.hashService.hash(newPassword);
 
-		await this.userRepo.updateAccount(user.id, { password: hash });
+		await this.accountRepo.update(user.id, { password: hash });
 
 		this.logger.log(
 			`[${user.id}] [${user.role}] Подтверждение смены пароля, пароль изменен`
@@ -78,12 +78,12 @@ export class AccountService {
 	}
 
 	public async delete(id: string) {
-		const user = await this.userRepo.findAccount({ id });
+		const user = await this.accountRepo.findBy({ id });
 
 		if (!user || user.deletedAt)
 			throw new UnauthorizedException('Аккаунт не существует');
 
-		await this.userRepo.updateAccount(id, { deletedAt: new Date() });
+		await this.accountRepo.update(id, { deletedAt: new Date() });
 
 		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 

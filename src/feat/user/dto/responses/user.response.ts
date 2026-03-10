@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-import { AccountResponse } from './account.response';
-import { ProfileResponse } from './profile.response';
+import { AccountResponse, ProfileResponse } from 'src/feat/profile/dto';
 
 export class UserResponse extends AccountResponse {
 	@ApiProperty({ type: () => ProfileResponse, required: false })

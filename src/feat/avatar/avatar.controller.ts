@@ -4,7 +4,8 @@ import {
 	HttpCode,
 	HttpStatus,
 	Post,
-	Query
+	Query,
+	UnprocessableEntityException
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AccountId, FileUpload, Protected, UploadedAvatar } from 'src/common';
@@ -46,7 +47,7 @@ export class AvatarController {
 		@AccountId() id: string,
 		@UploadedAvatar({ pipe: false }) avatar: Express.Multer.File
 	) {
-		return this.avatarService.saveAvatarPath(id, avatar.path);
+		return this.avatarService.saveAvatarPath(id, avatar);
 	}
 
 	@ApiOperation({

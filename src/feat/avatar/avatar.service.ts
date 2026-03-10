@@ -2,12 +2,13 @@ import {
 	BadRequestException,
 	Injectable,
 	Logger,
-	NotFoundException
+	NotFoundException,
+	UnprocessableEntityException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EnvTypes } from 'src/config';
-import { CACHE_EVENTS, UserRepository } from 'src/core';
+import { AvatarRepository, CACHE_EVENTS, UserRepository } from 'src/core';
 import { IFileService } from 'src/shared';
 
 import { DeleteAvatarRequest, UploadAvatarResponse } from './dto';
@@ -19,6 +20,7 @@ export class AvatarService {
 
 	public constructor(
 		private readonly userRepo: UserRepository,
+		private readonly avatarRepo: AvatarRepository,
 		private readonly fileService: IFileService,
 		private readonly configService: ConfigService<EnvTypes, true>,
 		private readonly eventEmmiter: EventEmitter2
@@ -32,7 +34,7 @@ export class AvatarService {
 		accountId: string,
 		avatar: Express.Multer.File
 	): Promise<UploadAvatarResponse> {
-		const user = await this.userRepo.findUser({ id: accountId });
+		const user = await this.userRepo.findBy({ id: accountId });
 
 		if (!user || user.deletedAt || !user.profile)
 			throw new NotFoundException('Нет доступа');
@@ -51,7 +53,7 @@ export class AvatarService {
 			file: avatar
 		});
 
-		await this.userRepo.createAvatar(user.profile.id, path.split('/')[1]);
+		await this.avatarRepo.create(user.profile.id, path.split('/')[1]);
 
 		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
@@ -64,10 +66,15 @@ export class AvatarService {
 
 	public async saveAvatarPath(
 		accountId: string,
-		path: string
+		avatar: Express.Multer.File
 	): Promise<UploadAvatarResponse> {
+		if (!avatar)
+			throw new UnprocessableEntityException('Файл не был загружен');
+
+		const { path } = avatar;
+
 		try {
-			const user = await this.userRepo.findUser({ id: accountId });
+			const user = await this.userRepo.findBy({ id: accountId });
 
 			if (!user || user.deletedAt || !user.profile)
 				throw new NotFoundException('Нет доступа');
@@ -77,10 +84,7 @@ export class AvatarService {
 					`Максимальное количество аватарок - ${this.maxAvatars} шт.`
 				);
 
-			await this.userRepo.createAvatar(
-				user.profile.id,
-				path.split('/')[1]
-			);
+			await this.avatarRepo.create(user.profile.id, path.split('/')[1]);
 
 			this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
@@ -99,15 +103,15 @@ export class AvatarService {
 	}
 
 	public async deleteAvatar(accountId: string, dto: DeleteAvatarRequest) {
-		const user = await this.userRepo.findUser({ id: accountId });
+		const user = await this.userRepo.findBy({ id: accountId });
 
 		if (!user || user.deletedAt || !user.profile)
 			throw new NotFoundException('Нет доступа');
 
 		const { fileName } = dto;
 
-		const avatar = await this.userRepo
-			.updateAvatar(accountId, fileName, {
+		const avatar = await this.avatarRepo
+			.update(accountId, fileName, {
 				deletedAt: new Date()
 			})
 			.catch(() => {

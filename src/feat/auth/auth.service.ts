@@ -13,6 +13,7 @@ import ms from 'ms';
 import { Role } from 'prisma/generated/enums';
 import { EnvTypes } from 'src/config';
 import {
+	AccountRepository,
 	CACHE_EVENTS,
 	HASH_SERVICE,
 	HashService,
@@ -21,8 +22,7 @@ import {
 	SESSION_SERVICE,
 	SessionService,
 	TOKEN_SERVICE,
-	TokenService,
-	UserRepository
+	TokenService
 } from 'src/core';
 import { OtpKey } from 'src/shared';
 
@@ -42,7 +42,7 @@ export class AuthService {
 
 	public constructor(
 		private readonly configService: ConfigService<EnvTypes, true>,
-		private readonly userRepo: UserRepository,
+		private readonly accountRepo: AccountRepository,
 		private readonly eventEmmiter: EventEmitter2,
 
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
@@ -62,10 +62,7 @@ export class AuthService {
 	public async register(dto: RegisterRequest): Promise<OtpCodeResponse> {
 		const { email, username, password } = dto;
 
-		const account = await this.userRepo.findAccountByEmailOrUsername(
-			email,
-			username
-		);
+		const account = await this.accountRepo.findBy({ email, username });
 
 		if (account)
 			throw new ConflictException(
@@ -73,7 +70,7 @@ export class AuthService {
 			);
 
 		const hash = await this.hashService.hash(password);
-		const { id, role } = await this.userRepo.createAccount({
+		const { id, role } = await this.accountRepo.create({
 			email,
 			username,
 			password: hash
@@ -89,36 +86,40 @@ export class AuthService {
 	public async resend(dto: ResendRequest): Promise<OtpCodeResponse> {
 		const { email } = dto;
 
-		const user = await this.userRepo.findAccount({ email });
+		const account = await this.accountRepo.findBy({ email });
 
-		if (!user || user.isVerified || user.deletedAt)
+		if (!account || account.isVerified || account.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
 			);
 
-		this.logger.log(`[${user.id}] [${user.role}] Перевыпуск OTP кода`);
+		this.logger.log(
+			`[${account.id}] [${account.role}] Перевыпуск OTP кода`
+		);
 
-		return this.otpService.generate(user.id, OtpKey.EMAIL);
+		return this.otpService.generate(account.id, OtpKey.EMAIL);
 	}
 
 	public async verify(dto: VerifyRequest) {
 		const { email, code } = dto;
 
-		const user = await this.userRepo.findAccount({ email });
-		if (!user || user.isVerified || user.deletedAt)
+		const account = await this.accountRepo.findBy({ email });
+		if (!account || account.isVerified || account.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
 			);
 
-		await this.otpService.verify(user.id, code, OtpKey.EMAIL);
+		await this.otpService.verify(account.id, code, OtpKey.EMAIL);
 
-		const patched = await this.userRepo.updateAccount(user.id, {
+		const patched = await this.accountRepo.update(account.id, {
 			isVerified: true
 		});
 
 		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
-		this.logger.log(`[${user.id}] [${user.role}] Аккаунт верифицирован`);
+		this.logger.log(
+			`[${account.id}] [${account.role}] Аккаунт верифицирован`
+		);
 
 		return this._authenticate(patched.id, patched.role);
 	}
@@ -126,21 +127,21 @@ export class AuthService {
 	public async login(dto: LoginRequest) {
 		const { username, password } = dto;
 
-		const user = await this.userRepo.findAccount({ username });
-		if (!user || !user.isVerified || user.deletedAt)
+		const account = await this.accountRepo.findBy({ username });
+		if (!account || !account.isVerified || account.deletedAt)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
 		const isValidPassword = await this.hashService.verify(
-			user.password,
+			account.password,
 			password
 		);
 
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
-		this.logger.log(`[${user.id}] [${user.role}] Вход в систему`);
+		this.logger.log(`[${account.id}] [${account.role}] Вход в систему`);
 
-		return this._authenticate(user.id, user.role);
+		return this._authenticate(account.id, account.role);
 	}
 
 	public async refresh(refreshToken: string) {
@@ -150,13 +151,13 @@ export class AuthService {
 		if (!storedToken || refreshToken !== storedToken)
 			throw new UnauthorizedException('Время сессии истекло');
 
-		const user = await this.userRepo.findAccount({ id });
-		if (!user || user.deletedAt)
+		const account = await this.accountRepo.findBy({ id });
+		if (!account || account.deletedAt)
 			throw new UnauthorizedException('Недействительный токен');
 
-		this.logger.log(`[${user.id}] [${user.role}] Обновление сессии`);
+		this.logger.log(`[${account.id}] [${account.role}] Обновление сессии`);
 
-		return this._authenticate(user.id, user.role);
+		return this._authenticate(account.id, account.role);
 	}
 
 	public async logout(refreshToken: string) {

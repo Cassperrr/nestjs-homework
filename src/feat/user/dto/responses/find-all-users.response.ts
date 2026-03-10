@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { UserResponse } from './user.response';
 
-export class AllUsersResponse {
+export class FindAllUsersResponse {
 	@ApiProperty({
 		description: 'Список пользователей',
 		type: () => UserResponse,

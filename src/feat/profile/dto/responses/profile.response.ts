@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AvatarResponse } from 'src/feat/avatar/dto';
 
 export class ProfileResponse {
 	@ApiProperty({
@@ -32,4 +33,11 @@ export class ProfileResponse {
 		nullable: true
 	})
 	readonly description: string | null;
+
+	@ApiProperty({
+		description: 'Аватары пользователя',
+		type: () => AvatarResponse,
+		isArray: true
+	})
+	readonly avatars?: AvatarResponse[];
 }

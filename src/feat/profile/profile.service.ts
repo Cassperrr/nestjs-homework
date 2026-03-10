@@ -1,27 +1,16 @@
 import {
 	ConflictException,
-	Inject,
 	Injectable,
 	Logger,
 	NotFoundException
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import {
-	CACHE_EVENTS,
-	CACHE_SERVICE,
-	CacheService,
-	UserRepository
-} from 'src/core';
+import { CACHE_EVENTS, ProfileRepository, UserRepository } from 'src/core';
 
 import {
-	ActiveUserResponse,
-	AllUsersResponse,
 	CreateProfileRequest,
-	FindActiveUsersRequest,
-	FindAllUserRequest,
 	ProfileResponse,
-	UpdateProfileRequest,
-	UserResponse
+	UpdateProfileRequest
 } from './dto';
 
 @Injectable()
@@ -29,22 +18,21 @@ export class ProfileService {
 	private readonly logger = new Logger(ProfileService.name);
 
 	public constructor(
+		private readonly profileRepo: ProfileRepository,
 		private readonly userRepo: UserRepository,
-		private readonly eventEmmiter: EventEmitter2,
-
-		@Inject(CACHE_SERVICE) private readonly cacheService: CacheService
+		private readonly eventEmmiter: EventEmitter2
 	) {}
 
 	public async create(
 		accountId: string,
 		dto: CreateProfileRequest
 	): Promise<ProfileResponse> {
-		const user = await this.userRepo.findUser({ id: accountId });
+		const user = await this.userRepo.findBy({ id: accountId });
 
 		if (!user || user.profile || user.deletedAt)
 			throw new ConflictException('Нельзя создать профиль');
 
-		const profile = await this.userRepo.createProfile(accountId, dto);
+		const profile = await this.profileRepo.create(accountId, dto);
 
 		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
@@ -59,12 +47,12 @@ export class ProfileService {
 		accountId: string,
 		dto: UpdateProfileRequest
 	): Promise<ProfileResponse> {
-		const user = await this.userRepo.findUser({ id: accountId });
+		const user = await this.userRepo.findBy({ id: accountId });
 
 		if (!user || !user.profile || user.deletedAt)
 			throw new NotFoundException('Нельзя изменить профиль');
 
-		const pathedProfile = await this.userRepo.updateProfile(accountId, dto);
+		const pathedProfile = await this.profileRepo.update(accountId, dto);
 
 		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
@@ -74,81 +62,4 @@ export class ProfileService {
 
 		return pathedProfile;
 	}
-
-	public async getMe(accountId: string): Promise<UserResponse> {
-		const user = await this.userRepo.findUser({ id: accountId });
-
-		if (!user || user.deletedAt)
-			throw new NotFoundException('Профиль не найден');
-
-		return user;
-	}
-
-	public async findAllUsers(
-		accountId: string,
-		query: FindAllUserRequest
-	): Promise<AllUsersResponse> {
-		const existing = await this.userRepo.findUser({ id: accountId });
-
-		if (!existing || existing.deletedAt)
-			throw new NotFoundException('Нет доступа');
-
-		const { cursor, limit = 10, username } = query;
-
-		const { key, ttl } = this.cacheService.usersKeyOptions({
-			username,
-			cursor,
-			limit
-		});
-
-		const cached = await this.cacheService.getBuffer<AllUsersResponse>(key);
-		if (cached) {
-			this.logger.log(`[${existing.id}] Cache HIT: ${key}`);
-			return cached;
-		}
-
-		const users = await this.userRepo.findAllUsers(cursor, limit, username);
-
-		await this.cacheService.setBuffers<AllUsersResponse>(key, users, ttl);
-
-		this.logger.log(`[${existing.id}] [${existing.role}] Cache MISS`);
-
-		return users;
-	}
-
-	public async findActiveUsers(
-		accountId: string,
-		query: FindActiveUsersRequest
-	): Promise<ActiveUserResponse[]> {
-		const existing = await this.userRepo.findUser({ id: accountId });
-
-		if (!existing || existing.deletedAt)
-			throw new NotFoundException('Нет доступа');
-
-		const { minAge, maxAge } = query;
-		return this.userRepo.findActiveUsers(minAge, maxAge) as Promise<
-			ActiveUserResponse[]
-		>;
-	}
-
-	// public async findUserByUsername(
-	// 	accountId: string,
-	// 	query: FindUserRequest
-	// ): Promise<UserResponse> {
-	// 	const existing = await this.userRepo.findUser({ id: accountId });
-
-	// 	if (!existing || existing.deletedAt)
-	// 		throw new NotFoundException('Нет доступа');
-
-	// 	const { username } = query;
-
-	// 	const user = await this.userRepo.findUser({ username });
-	// 	if (!user) throw new NotFoundException('Пользователь не найден');
-
-	// 	this.logger.log(
-	// 		`[${existing.id}] [${existing.role}] Выданы данные об аккаунте - ${user.id}`
-	// 	);
-
-	// 	return user;
-	// }
 }
