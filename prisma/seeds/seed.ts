@@ -130,6 +130,12 @@ async function main() {
 				password: hashedPassword,
 				isVerified: true,
 				role: Role.USER,
+				balance: {
+					create: {
+						id: uuidv7(),
+						amount: 0n
+					}
+				},
 				...(i < WITH_PROFILE
 					? {
 							profile: {

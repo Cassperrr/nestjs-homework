@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { AccountModule } from './account/account.module';
 import { AuthModule } from './auth/auth.module';
 import { AvatarModule } from './avatar/avatar.module';
+import { BalanceModule } from './balance/balance.module';
 import { ProfileModule } from './profile/profile.module';
 import { UserModule } from './user/user.module';
 
@@ -12,7 +13,8 @@ import { UserModule } from './user/user.module';
 		AccountModule,
 		ProfileModule,
 		AvatarModule,
-		UserModule
+		UserModule,
+		BalanceModule
 	]
 })
 export class FeatModule {}
