@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { Account } from 'prisma/generated/client';
 import { EnvTypes } from 'src/config';
 import { AvatarRepository, CACHE_EVENTS, UserRepository } from 'src/core';
 import { IFileService } from 'src/shared';
@@ -30,14 +31,22 @@ export class AvatarService {
 		});
 	}
 
-	public async uploadAvatar(
-		accountId: string,
-		avatar: Express.Multer.File
-	): Promise<UploadAvatarResponse> {
+	private async _findAndCheckUser(accountId: string) {
 		const user = await this.userRepo.findBy({ id: accountId });
 
 		if (!user || user.deletedAt || !user.profile)
 			throw new NotFoundException('Нет доступа');
+
+		return user as typeof user & {
+			profile: NonNullable<(typeof user)['profile']>;
+		};
+	}
+
+	public async uploadAvatar(
+		accountId: string,
+		avatar: Express.Multer.File
+	): Promise<UploadAvatarResponse> {
+		const user = await this._findAndCheckUser(accountId);
 
 		if (user.profile.avatars.length >= this.maxAvatars)
 			throw new BadRequestException(
@@ -74,10 +83,7 @@ export class AvatarService {
 		const { path } = avatar;
 
 		try {
-			const user = await this.userRepo.findBy({ id: accountId });
-
-			if (!user || user.deletedAt || !user.profile)
-				throw new NotFoundException('Нет доступа');
+			const user = await this._findAndCheckUser(accountId);
 
 			if (user.profile.avatars.length >= this.maxAvatars)
 				throw new BadRequestException(
@@ -103,10 +109,7 @@ export class AvatarService {
 	}
 
 	public async deleteAvatar(accountId: string, dto: DeleteAvatarRequest) {
-		const user = await this.userRepo.findBy({ id: accountId });
-
-		if (!user || user.deletedAt || !user.profile)
-			throw new NotFoundException('Нет доступа');
+		await this._findAndCheckUser(accountId);
 
 		const { fileName } = dto;
 

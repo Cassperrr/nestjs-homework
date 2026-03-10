@@ -1,16 +1,24 @@
 import {
 	Controller,
 	Get,
+	Headers,
 	HttpCode,
 	HttpStatus,
 	Patch,
-	Post
+	Post,
+	Req
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+	ApiBearerAuth,
+	ApiHeader,
+	ApiOkResponse,
+	ApiOperation
+} from '@nestjs/swagger';
 import { Role } from 'prisma/generated/enums';
-import { AccountId, Protected } from 'src/common';
+import { AccountId, IdempotencyKey, Protected } from 'src/common';
 
 import { BalanceService } from './balance.service';
+import { BalanceResponse } from './dto';
 
 @Controller('balance')
 export class BalanceController {
@@ -20,12 +28,12 @@ export class BalanceController {
 		summary: 'Показать мой баланс USD'
 	})
 	@ApiBearerAuth()
-	// @ApiOkResponse({ type: OtpCodeResponse })
+	@ApiOkResponse({ type: BalanceResponse })
 	@Protected()
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	public getBalance(@AccountId() id: string) {
-		return { balance: 'Заглушка' };
+		return this.balanceService.findBalance(id);
 	}
 
 	@ApiOperation({
@@ -57,13 +65,21 @@ export class BalanceController {
 	@ApiOperation({
 		summary: 'Пополнить баланс USD'
 	})
+	@ApiHeader({
+		name: 'Idempotency-Key',
+		description: 'В swagger генерация автоматическая, V4',
+		required: false
+	})
 	@ApiBearerAuth()
-	// @ApiOkResponse({ type: OtpCodeResponse })
 	@Protected()
 	@Post('deposit')
-	@HttpCode(HttpStatus.CREATED)
-	public deposit(@AccountId() id: string) {
-		return { balance: 'заглушка' };
+	@HttpCode(HttpStatus.OK)
+	public deposit(
+		@IdempotencyKey() idempotencyKey: string,
+		@AccountId() id: string,
+		dto: any
+	) {
+		return { idempotencyKey };
 	}
 
 	@ApiOperation({

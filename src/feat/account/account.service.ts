@@ -31,63 +31,63 @@ export class AccountService {
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService
 	) {}
 
+	private async _findAndCheckAccount(id: string) {
+		const account = await this.accountRepo.findBy({ id });
+
+		if (!account || account.deletedAt)
+			throw new UnauthorizedException('Аккаунт не существует');
+
+		return account;
+	}
+
 	public async changePassword(
 		id: string,
 		dto: ChangePasswordRequest
 	): Promise<OtpCodeResponse> {
+		const account = await this._findAndCheckAccount(id);
+
 		const { oldPassword } = dto;
 
-		const user = await this.accountRepo.findBy({ id });
-
-		if (!user || user.deletedAt)
-			throw new UnauthorizedException('Аккаунт не существует');
-
 		const isVerified = await this.hashService.verify(
-			user.password,
+			account.password,
 			oldPassword
 		);
 
 		if (!isVerified) throw new UnauthorizedException('Неверный пароль');
 
 		this.logger.log(
-			`[${user.id}] [${user.role}] Иницализация смены пароля`
+			`[${account.id}] [${account.role}] Иницализация смены пароля`
 		);
 
 		return this.otpService.generate(id, OtpKey.PASSWORD);
 	}
 
 	public async confirmPassword(id: string, dto: ConfirmPasswordRequest) {
+		const account = await this._findAndCheckAccount(id);
+
 		const { code, newPassword } = dto;
 
-		const user = await this.accountRepo.findBy({ id });
-
-		if (!user || user.deletedAt)
-			throw new UnauthorizedException('Аккаунт не существует');
-
-		await this.otpService.verify(user.id, code, OtpKey.PASSWORD);
+		await this.otpService.verify(account.id, code, OtpKey.PASSWORD);
 
 		const hash = await this.hashService.hash(newPassword);
 
-		await this.accountRepo.update(user.id, { password: hash });
+		await this.accountRepo.update(account.id, { password: hash });
 
 		this.logger.log(
-			`[${user.id}] [${user.role}] Подтверждение смены пароля, пароль изменен`
+			`[${account.id}] [${account.role}] Подтверждение смены пароля, пароль изменен`
 		);
 
 		return { message: 'Пароль изменен' };
 	}
 
 	public async delete(id: string) {
-		const user = await this.accountRepo.findBy({ id });
-
-		if (!user || user.deletedAt)
-			throw new UnauthorizedException('Аккаунт не существует');
+		const account = await this._findAndCheckAccount(id);
 
 		await this.accountRepo.update(id, { deletedAt: new Date() });
 
 		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
-		this.logger.log(`[${user.id}] [${user.role}] Аккаунт удален`);
+		this.logger.log(`[${account.id}] [${account.role}] Аккаунт удален`);
 
 		return { message: 'Аккаунт удален' };
 	}

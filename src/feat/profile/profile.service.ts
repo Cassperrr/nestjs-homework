@@ -23,14 +23,22 @@ export class ProfileService {
 		private readonly eventEmmiter: EventEmitter2
 	) {}
 
+	private async _findAndCheckUser(accountId: string) {
+		const user = await this.userRepo.findBy({ id: accountId });
+
+		if (!user || user.deletedAt)
+			throw new NotFoundException('Пользователя не существует');
+
+		return user;
+	}
+
 	public async create(
 		accountId: string,
 		dto: CreateProfileRequest
 	): Promise<ProfileResponse> {
-		const user = await this.userRepo.findBy({ id: accountId });
+		const user = await this._findAndCheckUser(accountId);
 
-		if (!user || user.profile || user.deletedAt)
-			throw new ConflictException('Нельзя создать профиль');
+		if (user.profile) throw new ConflictException('Профиль уже существует');
 
 		const profile = await this.profileRepo.create(accountId, dto);
 
@@ -47,10 +55,10 @@ export class ProfileService {
 		accountId: string,
 		dto: UpdateProfileRequest
 	): Promise<ProfileResponse> {
-		const user = await this.userRepo.findBy({ id: accountId });
+		const user = await this._findAndCheckUser(accountId);
 
-		if (!user || !user.profile || user.deletedAt)
-			throw new NotFoundException('Нельзя изменить профиль');
+		if (!user.profile)
+			throw new NotFoundException('Сначала создайте профиль');
 
 		const pathedProfile = await this.profileRepo.update(accountId, dto);
 

@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import fs from 'fs';
 import yaml from 'js-yaml';
+import { uuidv7 } from 'uuidv7';
 
 export const swaggerSetup = (app: INestApplication, isDev: boolean) => {
 	const configFile = fs.readFileSync('src/swagger/swagger.yml', 'utf8');
@@ -23,7 +24,16 @@ export const swaggerSetup = (app: INestApplication, isDev: boolean) => {
 
 	SwaggerModule.setup(configYaml.path, app, document, {
 		swaggerOptions: {
-			persistAuthorization: isDev // Ток дев
+			persistAuthorization: isDev,
+			requestInterceptor: (req: any) => {
+				return {
+					...req,
+					headers: {
+						...req.headers,
+						'Idempotency-Key': crypto.randomUUID()
+					}
+				};
+			}
 		}
 	});
 };

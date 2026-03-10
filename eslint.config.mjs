@@ -31,6 +31,7 @@ export default tseslint.config(
 	},
 	{
 		rules: {
+			'@typescript-eslint/require-await': 'off',
 			'@typescript-eslint/no-explicit-any': 'warn', // Разрешён any везде
 			'@typescript-eslint/no-floating-promises': 'warn', // Предупреждает о необработанных промисах
 			'@typescript-eslint/no-unsafe-argument': 'off', // Предупреждение при передаче any в функции

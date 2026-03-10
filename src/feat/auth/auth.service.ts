@@ -105,6 +105,7 @@ export class AuthService {
 		const { email, code } = dto;
 
 		const account = await this.accountRepo.findBy({ email });
+
 		if (!account || account.isVerified || account.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
@@ -129,6 +130,7 @@ export class AuthService {
 		const { username, password } = dto;
 
 		const account = await this.accountRepo.findBy({ username });
+
 		if (!account || !account.isVerified || account.deletedAt)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
@@ -153,6 +155,7 @@ export class AuthService {
 			throw new UnauthorizedException('Время сессии истекло');
 
 		const account = await this.accountRepo.findBy({ id });
+
 		if (!account || account.deletedAt)
 			throw new UnauthorizedException('Недействительный токен');
 
