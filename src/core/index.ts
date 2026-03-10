@@ -6,4 +6,5 @@ export * from './throttler';
 export * from './repositories';
 export * from './constants';
 export * from './files';
+export * from './cache';
 export * from './core.module';

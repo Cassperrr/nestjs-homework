@@ -5,8 +5,9 @@ import {
 	NotFoundException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EnvTypes } from 'src/config';
-import { UserRepository } from 'src/core';
+import { CACHE_EVENTS, UserRepository } from 'src/core';
 import { IFileService } from 'src/shared';
 
 import { DeleteAvatarRequest, UploadAvatarResponse } from './dto';
@@ -19,8 +20,8 @@ export class AvatarService {
 	public constructor(
 		private readonly userRepo: UserRepository,
 		private readonly fileService: IFileService,
-
-		private readonly configService: ConfigService<EnvTypes, true>
+		private readonly configService: ConfigService<EnvTypes, true>,
+		private readonly eventEmmiter: EventEmitter2
 	) {
 		this.maxAvatars = configService.get('MAX_AVATARS_FOR_PROFILE', {
 			infer: true
@@ -52,6 +53,8 @@ export class AvatarService {
 
 		await this.userRepo.createAvatar(user.profile.id, path.split('/')[1]);
 
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
+
 		this.logger.log(
 			`[${user.id}] [${user.role}] Avatar uploaded. Path: ${path}`
 		);
@@ -78,6 +81,8 @@ export class AvatarService {
 				user.profile.id,
 				path.split('/')[1]
 			);
+
+			this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 			this.logger.log(
 				`[${user.id}] [${user.role}] Avatar uploaded. Path: ${path}`
@@ -108,6 +113,8 @@ export class AvatarService {
 			.catch(() => {
 				throw new BadRequestException('Нет прав');
 			});
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 		return { message: `Аватар ${avatar.name} удален` };
 	}

@@ -4,7 +4,9 @@ import {
 	Logger,
 	UnauthorizedException
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
+	CACHE_EVENTS,
 	HASH_SERVICE,
 	HashService,
 	OTP_SERVICE,
@@ -22,10 +24,11 @@ export class AccountService {
 	private readonly logger = new Logger(AccountService.name);
 
 	public constructor(
-		@Inject(HASH_SERVICE) private readonly hashService: HashService,
-		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
+		private readonly userRepo: UserRepository,
+		private readonly eventEmmiter: EventEmitter2,
 
-		private readonly userRepo: UserRepository
+		@Inject(HASH_SERVICE) private readonly hashService: HashService,
+		@Inject(OTP_SERVICE) private readonly otpService: OtpService
 	) {}
 
 	public async changePassword(
@@ -81,6 +84,8 @@ export class AccountService {
 			throw new UnauthorizedException('Аккаунт не существует');
 
 		await this.userRepo.updateAccount(id, { deletedAt: new Date() });
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 		this.logger.log(`[${user.id}] [${user.role}] Аккаунт удален`);
 

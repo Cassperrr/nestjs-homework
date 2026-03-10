@@ -140,7 +140,25 @@ async function main() {
 									age: faker.number.int({ min: 18, max: 80 }),
 									description: faker.datatype.boolean()
 										? faker.lorem.sentence()
-										: null
+										: null,
+									avatars: {
+										createMany: {
+											data: [
+												{
+													id: uuidv7(),
+													name: uuidv7() + '.jpeg'
+												},
+												{
+													id: uuidv7(),
+													name: uuidv7() + '.jpeg'
+												},
+												{
+													id: uuidv7(),
+													name: uuidv7() + '.jpeg'
+												}
+											]
+										}
+									}
 								}
 							}
 						}

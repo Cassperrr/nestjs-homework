@@ -7,11 +7,13 @@ import {
 	UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { CookieOptions } from 'express';
 import ms from 'ms';
 import { Role } from 'prisma/generated/enums';
 import { EnvTypes } from 'src/config';
 import {
+	CACHE_EVENTS,
 	HASH_SERVICE,
 	HashService,
 	OTP_SERVICE,
@@ -39,14 +41,15 @@ export class AuthService {
 	private readonly isDev: boolean;
 
 	public constructor(
+		private readonly configService: ConfigService<EnvTypes, true>,
+		private readonly userRepo: UserRepository,
+		private readonly eventEmmiter: EventEmitter2,
+
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
 		@Inject(TOKEN_SERVICE)
 		private readonly tokenService: TokenService,
-		@Inject(SESSION_SERVICE) private readonly session: SessionService,
-
-		private readonly configService: ConfigService<EnvTypes, true>,
-		private readonly userRepo: UserRepository
+		@Inject(SESSION_SERVICE) private readonly session: SessionService
 	) {
 		this.COOKIE_DOMAIN = configService.get('COOKIE_DOMAIN', {
 			infer: true
@@ -75,6 +78,8 @@ export class AuthService {
 			username,
 			password: hash
 		});
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 		this.logger.log(`[${id}] [${role}] Аккаунт зарегистрирован`);
 
@@ -110,6 +115,8 @@ export class AuthService {
 		const patched = await this.userRepo.updateAccount(user.id, {
 			isVerified: true
 		});
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 		this.logger.log(`[${user.id}] [${user.role}] Аккаунт верифицирован`);
 

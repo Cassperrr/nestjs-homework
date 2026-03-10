@@ -1,10 +1,17 @@
 import {
 	ConflictException,
+	Inject,
 	Injectable,
 	Logger,
 	NotFoundException
 } from '@nestjs/common';
-import { UserRepository } from 'src/core';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+	CACHE_EVENTS,
+	CACHE_SERVICE,
+	CacheService,
+	UserRepository
+} from 'src/core';
 
 import {
 	ActiveUserResponse,
@@ -21,7 +28,12 @@ import {
 export class ProfileService {
 	private readonly logger = new Logger(ProfileService.name);
 
-	public constructor(private readonly userRepo: UserRepository) {}
+	public constructor(
+		private readonly userRepo: UserRepository,
+		private readonly eventEmmiter: EventEmitter2,
+
+		@Inject(CACHE_SERVICE) private readonly cacheService: CacheService
+	) {}
 
 	public async create(
 		accountId: string,
@@ -33,6 +45,8 @@ export class ProfileService {
 			throw new ConflictException('Нельзя создать профиль');
 
 		const profile = await this.userRepo.createProfile(accountId, dto);
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 		this.logger.log(
 			`[${user.id}] [${user.role}] Профиль создан - ${profile.id}`
@@ -51,6 +65,8 @@ export class ProfileService {
 			throw new NotFoundException('Нельзя изменить профиль');
 
 		const pathedProfile = await this.userRepo.updateProfile(accountId, dto);
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 		this.logger.log(
 			`[${user.id}] [${user.role}] Профиль обновлен - ${pathedProfile.id}`
@@ -78,11 +94,24 @@ export class ProfileService {
 			throw new NotFoundException('Нет доступа');
 
 		const { cursor, limit = 10, username } = query;
+
+		const { key, ttl } = this.cacheService.usersKeyOptions({
+			username,
+			cursor,
+			limit
+		});
+
+		const cached = await this.cacheService.get(key);
+		if (cached) {
+			this.logger.log(`[${existing.id}] Cache HIT: ${key}`);
+			return JSON.parse(cached);
+		}
+
 		const users = await this.userRepo.findAllUsers(cursor, limit, username);
 
-		this.logger.log(
-			`[${existing.id}] [${existing.role}] Выданы данные об аккаунтах - ${limit} шт. | ${username ? `username=${username}` : ''}`
-		);
+		await this.cacheService.set(key, JSON.stringify(users), ttl);
+
+		this.logger.log(`[${existing.id}] [${existing.role}] Cache MISS`);
 
 		return users;
 	}

@@ -6,19 +6,11 @@ import {
 	HttpStatus,
 	Post,
 	Put,
-	Query,
-	UseInterceptors
+	Query
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import {
-	ApiBearerAuth,
-	ApiBody,
-	ApiConsumes,
-	ApiOkResponse,
-	ApiOperation
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { Role } from 'prisma/generated/enums';
-import { AccountId, FileUpload, Protected, UploadedAvatar } from 'src/common';
+import { AccountId, Protected } from 'src/common';
 
 import {
 	ActiveUserResponse,
@@ -26,7 +18,6 @@ import {
 	CreateProfileRequest,
 	FindActiveUsersRequest,
 	FindAllUserRequest,
-	FindUserRequest,
 	ProfileResponse,
 	UpdateProfileRequest,
 	UserResponse
@@ -88,11 +79,11 @@ export class ProfileController {
 
 	@ApiOperation({
 		summary:
-			'Получить всех пользователей активных пользователей, только для администратора'
+			'Получить всех активных пользователей, только для администратора'
 	})
 	@ApiOkResponse({ type: ActiveUserResponse, isArray: true })
 	@ApiBearerAuth()
-	@Protected()
+	@Protected(Role.ADMIN)
 	@Get('active')
 	@HttpCode(HttpStatus.OK)
 	public getActive(

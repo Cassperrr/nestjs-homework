@@ -22,7 +22,7 @@ export class SessionService {
 
 	public async set(id: string, refreshToken: string) {
 		const ttlSeconds = ms(this.sessionTtl) / 1000;
-		await this.redis.set(`refresh:${id}`, refreshToken, 'EX', ttlSeconds);
+		return this.redis.set(`refresh:${id}`, refreshToken, 'EX', ttlSeconds);
 	}
 
 	public async get(id: string) {
@@ -30,6 +30,6 @@ export class SessionService {
 	}
 
 	public async delete(id: string) {
-		await this.redis.del(`refresh:${id}`);
+		return this.redis.del(`refresh:${id}`);
 	}
 }

@@ -49,7 +49,13 @@ export const envSchema = z.object({
 		.custom<StringValue>(
 			val => typeof val === 'string' && ms(val as StringValue) > 0
 		)
-		.default('7d')
+		.default('7d'),
+
+	CACHE_USERS_TTL: z
+		.custom<StringValue>(
+			val => typeof val === 'string' && ms(val as StringValue) > 0
+		)
+		.default('30s')
 });
 
 export function validate(config: Record<string, unknown>) {
