@@ -101,15 +101,15 @@ export class ProfileService {
 			limit
 		});
 
-		const cached = await this.cacheService.get(key);
+		const cached = await this.cacheService.getBuffer<AllUsersResponse>(key);
 		if (cached) {
 			this.logger.log(`[${existing.id}] Cache HIT: ${key}`);
-			return JSON.parse(cached);
+			return cached;
 		}
 
 		const users = await this.userRepo.findAllUsers(cursor, limit, username);
 
-		await this.cacheService.set(key, JSON.stringify(users), ttl);
+		await this.cacheService.setBuffers<AllUsersResponse>(key, users, ttl);
 
 		this.logger.log(`[${existing.id}] [${existing.role}] Cache MISS`);
 
