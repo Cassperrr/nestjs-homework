@@ -18,8 +18,9 @@ model Account {
   isVerified Boolean @default(false) @map("is_verified")
   role       Role    @default(USER)
 
-  profile Profile?
-  balance Balance?
+  profile      Profile?
+  balance      Balance?
+  transactions Transaction[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -40,6 +41,23 @@ model Balance {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("balances")
+}
+
+model Transaction {
+  id String @id @db.Char(36)
+
+  amount BigInt
+  type   TransactionType
+
+  idempotencyKey String  @unique @map("idempotency_key")
+  accountId      String  @map("account_id") @db.Char(36)
+  account        Account @relation(fields: [accountId], references: [id])
+  referenceId    String? @map("reference_id") @db.Char(36)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([accountId])
+  @@map("transactions")
 }
 
 model Profile {
@@ -81,4 +99,13 @@ model Avatar {
 enum Role {
   USER
   ADMIN
+}
+
+enum TransactionType {
+  DEPOSIT // пополнение
+  // PURCHASE // покупка
+  // REFUND // возрат
+  WITHDRAWAL // вывод
+  TRANSFER_IN
+  TRANSFER_OUT
 }

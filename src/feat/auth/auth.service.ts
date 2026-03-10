@@ -70,6 +70,7 @@ export class AuthService {
 			);
 
 		const hash = await this.hashService.hash(password);
+
 		const { id, role } = await this.accountRepo.create({
 			email,
 			username,

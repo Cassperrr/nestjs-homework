@@ -15,7 +15,12 @@ export class AccountRepository {
 		return this.prisma.account.create({
 			data: {
 				id: uuidv7(),
-				...account
+				...account,
+				balance: {
+					create: {
+						id: uuidv7()
+					}
+				}
 			},
 			select: {
 				id: true,
