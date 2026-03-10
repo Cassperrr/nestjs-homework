@@ -19,12 +19,27 @@ model Account {
   role       Role    @default(USER)
 
   profile Profile?
+  balance Balance?
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
 
   @@map("accounts")
+}
+
+model Balance {
+  id String @id @db.Char(36)
+
+  amount BigInt @default(0)
+
+  accountId String  @unique @map("account_id") @db.Char(36)
+  account   Account @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("balances")
 }
 
 model Profile {
