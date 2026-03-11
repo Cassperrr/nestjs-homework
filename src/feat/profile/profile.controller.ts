@@ -6,25 +6,17 @@ import {
 	Post,
 	Put
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AccountId, Protected } from 'src/common';
 
-import {
-	CreateProfileRequest,
-	ProfileResponse,
-	UpdateProfileRequest
-} from './dto';
+import { ApiProfileCreate, ApiProfileUpdate } from './api';
+import { CreateProfileRequest, UpdateProfileRequest } from './dto';
 import { ProfileService } from './profile.service';
 
 @Controller('profile')
 export class ProfileController {
 	constructor(private readonly profileService: ProfileService) {}
 
-	@ApiOperation({
-		summary: 'Создать профиль пользователя'
-	})
-	@ApiOkResponse({ type: ProfileResponse })
-	@ApiBearerAuth()
+	@ApiProfileCreate()
 	@Protected()
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -32,11 +24,7 @@ export class ProfileController {
 		return this.profileService.create(id, dto);
 	}
 
-	@ApiOperation({
-		summary: 'Обновить данные профиля пользователя'
-	})
-	@ApiOkResponse({ type: ProfileResponse })
-	@ApiBearerAuth()
+	@ApiProfileUpdate()
 	@Protected()
 	@Put()
 	@HttpCode(HttpStatus.OK)

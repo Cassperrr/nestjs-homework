@@ -7,15 +7,20 @@ import {
 	Post,
 	Res
 } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { RefreshToken } from 'src/common';
 
+import {
+	ApiLogin,
+	ApiLogout,
+	ApiRefresh,
+	ApiRegister,
+	ApiResend,
+	ApiVerify
+} from './api';
 import { AuthService } from './auth.service';
 import {
-	AccessTokenResponse,
 	LoginRequest,
-	OtpCodeResponse,
 	RegisterRequest,
 	ResendRequest,
 	VerifyRequest
@@ -25,30 +30,21 @@ import {
 export class AuthController {
 	public constructor(private readonly authService: AuthService) {}
 
-	@ApiOperation({
-		summary: 'Регистрация аккаунта'
-	})
-	@ApiOkResponse({ type: OtpCodeResponse })
+	@ApiRegister()
 	@Post('register')
 	@HttpCode(HttpStatus.CREATED)
 	public async register(@Body() dto: RegisterRequest) {
 		return this.authService.register(dto);
 	}
 
-	@ApiOperation({
-		summary: 'Отправить OTP код заново'
-	})
-	@ApiOkResponse({ type: OtpCodeResponse })
+	@ApiResend()
 	@Post('resend')
 	@HttpCode(HttpStatus.OK)
 	public async resend(@Body() dto: ResendRequest) {
 		return this.authService.resend(dto);
 	}
 
-	@ApiOperation({
-		summary: 'Верификация аккаунта'
-	})
-	@ApiOkResponse({ type: AccessTokenResponse })
+	@ApiVerify()
 	@Patch('verify')
 	@HttpCode(HttpStatus.OK)
 	public async verify(
@@ -63,10 +59,7 @@ export class AuthController {
 		return { accessToken };
 	}
 
-	@ApiOperation({
-		summary: 'Вход в аккаунт для верифицированного пользователя'
-	})
-	@ApiOkResponse({ type: AccessTokenResponse })
+	@ApiLogin()
 	@Post('login')
 	@HttpCode(HttpStatus.OK)
 	public async login(
@@ -81,11 +74,7 @@ export class AuthController {
 		return { accessToken };
 	}
 
-	@ApiOperation({
-		summary:
-			'Генерирует новый токен доступа для верифицированного пользователя'
-	})
-	@ApiOkResponse({ type: AccessTokenResponse })
+	@ApiRefresh()
 	@Post('refresh')
 	@HttpCode(HttpStatus.OK)
 	public async refresh(
@@ -100,9 +89,7 @@ export class AuthController {
 		return { accessToken };
 	}
 
-	@ApiOperation({
-		summary: 'Выход из системы'
-	})
+	@ApiLogout()
 	@Post('logout')
 	@HttpCode(HttpStatus.OK)
 	public async logout(

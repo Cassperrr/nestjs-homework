@@ -1,34 +1,29 @@
 import {
 	Controller,
 	Get,
-	Headers,
 	HttpCode,
 	HttpStatus,
 	Patch,
-	Post,
-	Req
+	Post
 } from '@nestjs/common';
-import {
-	ApiBearerAuth,
-	ApiHeader,
-	ApiOkResponse,
-	ApiOperation
-} from '@nestjs/swagger';
 import { Role } from 'prisma/generated/enums';
 import { AccountId, IdempotencyKey, Protected } from 'src/common';
 
+import {
+	ApiAudit,
+	ApiDeposit,
+	ApiGetBalance,
+	ApiRestore,
+	ApiTransfer,
+	ApiWithdrawn
+} from './api';
 import { BalanceService } from './balance.service';
-import { BalanceResponse } from './dto';
 
 @Controller('balance')
 export class BalanceController {
 	constructor(private readonly balanceService: BalanceService) {}
 
-	@ApiOperation({
-		summary: 'Показать мой баланс USD'
-	})
-	@ApiBearerAuth()
-	@ApiOkResponse({ type: BalanceResponse })
+	@ApiGetBalance()
 	@Protected()
 	@Get()
 	@HttpCode(HttpStatus.OK)
@@ -36,12 +31,7 @@ export class BalanceController {
 		return this.balanceService.findBalance(id);
 	}
 
-	@ApiOperation({
-		summary:
-			'Проверить консистеность баланса USD пользователя по истории транзакций, только для администратора'
-	})
-	@ApiBearerAuth()
-	// @ApiOkResponse({ type: OtpCodeResponse })
+	@ApiAudit()
 	@Protected(Role.ADMIN)
 	@Get('audit')
 	@HttpCode(HttpStatus.OK)
@@ -49,12 +39,7 @@ export class BalanceController {
 		return { balance: { cached: 'заглушка', history: 'заглушка' } };
 	}
 
-	@ApiOperation({
-		summary:
-			'Восстановить консистеность баланса USD пользователя по истории транзакций, только для администратора'
-	})
-	@ApiBearerAuth()
-	// @ApiOkResponse({ type: OtpCodeResponse })
+	@ApiRestore()
 	@Protected(Role.ADMIN)
 	@Patch('restore')
 	@HttpCode(HttpStatus.OK)
@@ -62,15 +47,7 @@ export class BalanceController {
 		return { balance: { old: 'заглушка', new: 'заглушка' } };
 	}
 
-	@ApiOperation({
-		summary: 'Пополнить баланс USD'
-	})
-	@ApiHeader({
-		name: 'Idempotency-Key',
-		description: 'В swagger генерация автоматическая, V4',
-		required: false
-	})
-	@ApiBearerAuth()
+	@ApiDeposit()
 	@Protected()
 	@Post('deposit')
 	@HttpCode(HttpStatus.OK)
@@ -82,11 +59,7 @@ export class BalanceController {
 		return { idempotencyKey };
 	}
 
-	@ApiOperation({
-		summary: 'Вывод USD на другой счет'
-	})
-	@ApiBearerAuth()
-	// @ApiOkResponse({ type: OtpCodeResponse })
+	@ApiWithdrawn()
 	@Protected()
 	@Post('withdrawn')
 	@HttpCode(HttpStatus.CREATED)
@@ -94,11 +67,7 @@ export class BalanceController {
 		return { balance: 'заглушка' };
 	}
 
-	@ApiOperation({
-		summary: 'Перевести средства с одного аккаунта на другой'
-	})
-	@ApiBearerAuth()
-	// @ApiOkResponse({ type: OtpCodeResponse })
+	@ApiTransfer()
 	@Protected()
 	@Post('transfer')
 	@HttpCode(HttpStatus.CREATED)

@@ -8,24 +8,18 @@ import {
 	Post,
 	Res
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { AccountId, Protected } from 'src/common';
 
-import { OtpCodeResponse } from '../auth/dto';
-
 import { AccountService } from './account.service';
+import { ApiDeleteAccount, ApiPasswordChange, ApiPasswordConfirm } from './api';
 import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
 
 @Controller('account')
 export class AccountController {
 	constructor(private readonly accountService: AccountService) {}
 
-	@ApiOperation({
-		summary: 'Иницииализация смены пароля пользователя'
-	})
-	@ApiBearerAuth()
-	@ApiOkResponse({ type: OtpCodeResponse })
+	@ApiPasswordChange()
 	@Protected()
 	@Post('password/change')
 	@HttpCode(HttpStatus.OK)
@@ -36,10 +30,7 @@ export class AccountController {
 		return this.accountService.changePassword(id, dto);
 	}
 
-	@ApiOperation({
-		summary: 'Подтверждение смены пароля пользователя'
-	})
-	@ApiBearerAuth()
+	@ApiPasswordConfirm()
 	@Protected()
 	@Patch('password/confirm')
 	@HttpCode(HttpStatus.OK)
@@ -50,10 +41,7 @@ export class AccountController {
 		return this.accountService.confirmPassword(id, dto);
 	}
 
-	@ApiOperation({
-		summary: 'Удалить аккаунта пользователя'
-	})
-	@ApiBearerAuth()
+	@ApiDeleteAccount()
 	@Protected()
 	@Delete('delete')
 	@HttpCode(HttpStatus.OK)

@@ -4,25 +4,20 @@ import {
 	HttpCode,
 	HttpStatus,
 	Post,
-	Query,
-	UnprocessableEntityException
+	Query
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import { AccountId, FileUpload, Protected, UploadedAvatar } from 'src/common';
 
+import { ApiDeleteFile, ApiUploadFileBuffer, ApiUploadFileStream } from './api';
 import { avatarStreamStorage } from './avatar-stream.storage';
 import { AvatarService } from './avatar.service';
-import { DeleteAvatarRequest, UploadAvatarResponse } from './dto';
+import { DeleteAvatarRequest } from './dto';
 
 @Controller('avatar')
 export class AvatarController {
 	constructor(private readonly avatarService: AvatarService) {}
 
-	@ApiOperation({
-		summary: 'Загрузить аватар пользователя (buffer)'
-	})
-	@ApiOkResponse({ type: UploadAvatarResponse })
-	@ApiBearerAuth()
+	@ApiUploadFileBuffer()
 	@Protected()
 	@Post()
 	@FileUpload('avatar')
@@ -34,11 +29,7 @@ export class AvatarController {
 		return this.avatarService.uploadAvatar(id, avatar);
 	}
 
-	@ApiOperation({
-		summary: 'Загрузить аватар пользователя (stream)'
-	})
-	@ApiOkResponse({ type: UploadAvatarResponse })
-	@ApiBearerAuth()
+	@ApiUploadFileStream()
 	@Protected()
 	@Post('stream')
 	@FileUpload('avatar', avatarStreamStorage)
@@ -50,10 +41,7 @@ export class AvatarController {
 		return this.avatarService.saveAvatarPath(id, avatar);
 	}
 
-	@ApiOperation({
-		summary: 'Удалить аватар'
-	})
-	@ApiBearerAuth()
+	@ApiDeleteFile()
 	@Protected()
 	@Delete(':fileName')
 	@HttpCode(HttpStatus.OK)
