@@ -233,4 +233,8 @@ export class BalanceRepository {
 			return txOut;
 		});
 	}
+
+	public async resetAllBalances() {
+		return this.prisma.$executeRaw`UPDATE balances SET amount = 0`;
+	}
 }

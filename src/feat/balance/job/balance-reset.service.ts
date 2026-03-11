@@ -30,7 +30,7 @@ export class BalanceResetService
 	}
 
 	// кладет в очеред автоматически
-	@Cron(CronExpression.EVERY_10_SECONDS, { name: JOBS.BALANCE_RESET_ALL })
+	@Cron(CronExpression.EVERY_10_MINUTES, { name: JOBS.BALANCE_RESET_ALL })
 	public async cronEnequeu() {
 		return this.enqueue();
 	}
