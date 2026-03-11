@@ -16,7 +16,6 @@ export class UserService {
 
 	public constructor(
 		private readonly userRepo: UserRepository,
-		private readonly eventEmmiter: EventEmitter2,
 
 		@Inject(CACHE_SERVICE) private readonly cacheService: CacheService
 	) {}
@@ -34,10 +33,9 @@ export class UserService {
 		accountId: string,
 		query: FindAllUserRequest
 	): Promise<FindAllUsersResponse> {
-		const existing = await this.userRepo.findBy({ id: accountId });
+		const user = await this.userRepo.findBy({ id: accountId });
 
-		if (!existing || existing.deletedAt)
-			throw new NotFoundException('Нет доступа');
+		if (!user || user.deletedAt) throw new NotFoundException('Нет доступа');
 
 		const { cursor, limit = 10, username } = query;
 
@@ -50,7 +48,7 @@ export class UserService {
 		const cached =
 			await this.cacheService.getBuffer<FindAllUsersResponse>(key);
 		if (cached) {
-			this.logger.log(`[${existing.id}] Cache HIT: ${key}`);
+			this.logger.log(`[${user.id}] Cache HIT: ${key}`);
 			return cached;
 		}
 
@@ -62,7 +60,7 @@ export class UserService {
 			ttl
 		);
 
-		this.logger.log(`[${existing.id}] [${existing.role}] Cache MISS`);
+		this.logger.log(`[${user.id}] [${user.role}] Cache MISS`);
 
 		return users;
 	}
@@ -71,10 +69,9 @@ export class UserService {
 		accountId: string,
 		query: FindActiveUsersRequest
 	): Promise<ActiveUserResponse[]> {
-		const existing = await this.userRepo.findBy({ id: accountId });
+		const user = await this.userRepo.findBy({ id: accountId });
 
-		if (!existing || existing.deletedAt)
-			throw new NotFoundException('Нет доступа');
+		if (!user || user.deletedAt) throw new NotFoundException('Нет доступа');
 
 		const { minAge, maxAge } = query;
 		return this.userRepo.findActive(minAge, maxAge) as Promise<

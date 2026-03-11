@@ -7,6 +7,7 @@ import {
 } from '@nestjs/swagger';
 
 import {
+	AuditBalanceResponse,
 	BalanceResponse,
 	DepositAmountResponse,
 	TransferAmountResponse,
@@ -28,17 +29,7 @@ export const ApiAudit = () =>
 			summary:
 				'Проверить консистеность баланса USD пользователя по истории транзакций, только для администратора'
 		}),
-		// ApiOkResponse({ type: BalanceResponse }),
-		ApiBearerAuth()
-	);
-
-export const ApiRestore = () =>
-	applyDecorators(
-		ApiOperation({
-			summary:
-				'Восстановить консистеность баланса USD пользователя по истории транзакций, только для администратора'
-		}),
-		// ApiOkResponse({ type: BalanceResponse }),
+		ApiOkResponse({ type: AuditBalanceResponse }),
 		ApiBearerAuth()
 	);
 

@@ -10,6 +10,8 @@ import { AccountRepository, BalanceRepository } from 'src/core';
 import 'src/shared/extensions/bigint.extension';
 
 import {
+	AuditBalanceRequest,
+	AuditBalanceResponse,
 	BalanceResponse,
 	DepositAmountRequest,
 	DepositAmountResponse,
@@ -42,13 +44,44 @@ export class BalanceService {
 		return { balance: balance.amount.toDollars() };
 	}
 
+	public async auditBalance(
+		accountId: string,
+		dto: AuditBalanceRequest
+	): Promise<AuditBalanceResponse> {
+		const account = await this.accountRepo.findBy({ id: accountId });
+		if (!account || account.deletedAt)
+			throw new UnauthorizedException(
+				'Ваш аккаунт не существует или удален'
+			);
+
+		const auditingAccount = await this.accountRepo.findBy({
+			id: dto.accountId
+		});
+		if (!auditingAccount)
+			throw new UnauthorizedException(
+				'Аккаунт отправленный на аудит не существет'
+			);
+
+		const balance = await this.balanceRepo.findBalance(auditingAccount.id);
+		if (!balance) throw new NotFoundException('Баланс не найден');
+
+		const aggregate = await this.balanceRepo.aggregateTxAmounts(
+			auditingAccount.id
+		);
+
+		return {
+			balance: balance.amount.toDollars(),
+			aggregate: aggregate.toDollars(),
+			isConsistent: balance.amount === aggregate
+		};
+	}
+
 	public async deposit(
 		accountId: string,
 		idempotencyKey: string,
 		dto: DepositAmountRequest
 	): Promise<DepositAmountResponse> {
 		const account = await this.accountRepo.findBy({ id: accountId });
-
 		if (!account || account.deletedAt)
 			throw new UnauthorizedException('Аккаунт не существует');
 

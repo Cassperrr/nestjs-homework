@@ -17,6 +17,14 @@ export class BalanceRepository {
 		});
 	}
 
+	public async aggregateTxAmounts(accountId: string) {
+		const result = await this.prisma.transaction.aggregate({
+			where: { accountId },
+			_sum: { amount: true }
+		});
+		return result._sum.amount ?? 0n;
+	}
+
 	public async txDeposit(
 		accountId: string,
 		idempotencyKey: string,

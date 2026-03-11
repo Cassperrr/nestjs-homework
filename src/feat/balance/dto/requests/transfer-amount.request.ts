@@ -3,7 +3,7 @@ import {
 	IsNotEmpty,
 	IsNumber,
 	IsPositive,
-	IsString,
+	IsUUID,
 	Max,
 	Min
 } from 'class-validator';
@@ -28,7 +28,7 @@ export class TransferAmountRequest {
 		example: 'uuid'
 	})
 	@IsNotEmpty({ message: 'Account Id получателя должен быть заполнен' })
-	@IsString({ message: 'Account Id получателя должен быть строкой' })
+	@IsUUID('7', { message: 'Account Id должен быть валидным UUID' })
 	readonly toAccountId: string;
 
 	get amountInCents(): bigint {
