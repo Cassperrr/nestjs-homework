@@ -14,6 +14,9 @@ import {
 	ApiAudit,
 	ApiDeposit,
 	ApiGetBalance,
+	ApiReset,
+	ApiStartCron,
+	ApiStopCron,
 	ApiTransfer,
 	ApiWithdrawn
 } from './api';
@@ -24,10 +27,14 @@ import {
 	TransferAmountRequest,
 	WithdrawalAmountRequest
 } from './dto';
+import { BalanceResetService } from './job/balance-reset.service';
 
 @Controller('balance')
 export class BalanceController {
-	constructor(private readonly balanceService: BalanceService) {}
+	constructor(
+		private readonly balanceService: BalanceService,
+		private readonly balanceResetService: BalanceResetService
+	) {}
 
 	@ApiGetBalance()
 	@Protected()
@@ -79,5 +86,32 @@ export class BalanceController {
 		@Body() dto: TransferAmountRequest
 	) {
 		return this.balanceService.transfer(id, idempotencyKey, dto);
+	}
+
+	@ApiReset()
+	@Protected()
+	@Post('reset')
+	@HttpCode(HttpStatus.ACCEPTED)
+	public async reset(@AccountId() id: string) {
+		await this.balanceResetService.enqueueReset();
+		return { message: 'Job по обнулению баланса отправлен в очередь' };
+	}
+
+	@ApiStartCron()
+	@Protected()
+	@Post('cron/start')
+	@HttpCode(HttpStatus.ACCEPTED)
+	public startCron(@AccountId() id: string) {
+		this.balanceResetService.startCron();
+		return { message: 'Job по обнулению баланса запущен' };
+	}
+
+	@ApiStopCron()
+	@Protected()
+	@Post('cron/stop')
+	@HttpCode(HttpStatus.ACCEPTED)
+	public stopCron(@AccountId() id: string) {
+		this.balanceResetService.stopCron();
+		return { message: 'Job по обнулению баланса остановлен' };
 	}
 }

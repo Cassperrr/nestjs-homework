@@ -7,4 +7,5 @@ export * from './repositories';
 export * from './constants';
 export * from './files';
 export * from './cache';
+export * from './queue';
 export * from './core.module';

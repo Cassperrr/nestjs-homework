@@ -9,3 +9,8 @@ export const CACHE_SERVICE = Symbol('CACHE_SERVICE');
 export const CACHE_EVENTS = {
 	USERS_INVALIDATE: 'cache.users.invalidate'
 } as const;
+
+// == Queue ==
+export enum QUEUE_EVENTS {
+	BALANCE_RESET = 'balance-reset'
+}

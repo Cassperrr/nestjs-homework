@@ -69,3 +69,30 @@ export const ApiTransfer = () =>
 		ApiOkResponse({ type: TransferAmountResponse }),
 		ApiBearerAuth()
 	);
+
+export const ApiReset = () =>
+	applyDecorators(
+		ApiOperation({
+			summary:
+				'Добавляет Job по отчистки балансов юзеров каждое N время, только для админов'
+		}),
+		ApiBearerAuth()
+	);
+
+export const ApiStartCron = () =>
+	applyDecorators(
+		ApiOperation({
+			summary:
+				'Запускает Job по отчистки балансов юзеров, только для админов'
+		}),
+		ApiBearerAuth()
+	);
+
+export const ApiStopCron = () =>
+	applyDecorators(
+		ApiOperation({
+			summary:
+				'Останавливает Job по отчистки балансов юзеров, только для админов'
+		}),
+		ApiBearerAuth()
+	);
