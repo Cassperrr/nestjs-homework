@@ -1,4 +1,5 @@
 import {
+	Body,
 	Controller,
 	Get,
 	HttpCode,
@@ -18,6 +19,11 @@ import {
 	ApiWithdrawn
 } from './api';
 import { BalanceService } from './balance.service';
+import {
+	DepositAmountRequest,
+	TransferAmountRequest,
+	WithdrawalAmountRequest
+} from './dto';
 
 @Controller('balance')
 export class BalanceController {
@@ -50,28 +56,36 @@ export class BalanceController {
 	@ApiDeposit()
 	@Protected()
 	@Post('deposit')
-	@HttpCode(HttpStatus.OK)
+	@HttpCode(HttpStatus.CREATED)
 	public deposit(
-		@IdempotencyKey() idempotencyKey: string,
 		@AccountId() id: string,
-		dto: any
+		@IdempotencyKey() idempotencyKey: string,
+		@Body() dto: DepositAmountRequest
 	) {
-		return { idempotencyKey };
+		return this.balanceService.deposit(id, idempotencyKey, dto);
 	}
 
 	@ApiWithdrawn()
 	@Protected()
 	@Post('withdrawn')
 	@HttpCode(HttpStatus.CREATED)
-	public withdrawn(@AccountId() id: string) {
-		return { balance: 'заглушка' };
+	public withdrawn(
+		@AccountId() id: string,
+		@IdempotencyKey() idempotencyKey: string,
+		@Body() dto: WithdrawalAmountRequest
+	) {
+		return this.balanceService.withdrawal(id, idempotencyKey, dto);
 	}
 
 	@ApiTransfer()
 	@Protected()
 	@Post('transfer')
 	@HttpCode(HttpStatus.CREATED)
-	public transfer(@AccountId() id: string) {
-		return { balance: 'заглушка' };
+	public transfer(
+		@AccountId() id: string,
+		@IdempotencyKey() idempotencyKey: string,
+		@Body() dto: TransferAmountRequest
+	) {
+		return this.balanceService.transfer(id, idempotencyKey, dto);
 	}
 }

@@ -37,8 +37,9 @@ model Balance {
   accountId String  @unique @map("account_id") @db.Char(36)
   account   Account @relation(fields: [accountId], references: [id])
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  blockedAt DateTime? @map("blocked_at")
 
   @@map("balances")
 }
@@ -49,10 +50,12 @@ model Transaction {
   amount BigInt
   type   TransactionType
 
-  idempotencyKey String  @unique @map("idempotency_key")
-  accountId      String  @map("account_id") @db.Char(36)
-  account        Account @relation(fields: [accountId], references: [id])
-  referenceId    String? @map("reference_id") @db.Char(36)
+  idempotencyKey    String  @unique @map("idempotency_key")
+  withdrawalAccount String? @map("withdwal_account")
+  referenceId       String? @map("reference_id") @db.Char(36)
+
+  accountId String  @map("account_id") @db.Char(36)
+  account   Account @relation(fields: [accountId], references: [id])
 
   createdAt DateTime @default(now()) @map("created_at")
 

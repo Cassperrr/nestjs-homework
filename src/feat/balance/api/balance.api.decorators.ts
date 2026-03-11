@@ -6,7 +6,12 @@ import {
 	ApiOperation
 } from '@nestjs/swagger';
 
-import { BalanceResponse } from '../dto';
+import {
+	BalanceResponse,
+	DepositAmountResponse,
+	TransferAmountResponse,
+	WithdrawalAmountResponse
+} from '../dto';
 
 export const ApiGetBalance = () =>
 	applyDecorators(
@@ -47,7 +52,7 @@ export const ApiDeposit = () =>
 			description: 'В swagger генерация автоматическая, V4',
 			required: false
 		}),
-		// ApiOkResponse({ type: BalanceResponse }),
+		ApiOkResponse({ type: DepositAmountResponse }),
 		ApiBearerAuth()
 	);
 
@@ -56,7 +61,12 @@ export const ApiWithdrawn = () =>
 		ApiOperation({
 			summary: 'Вывод USD на другой счет'
 		}),
-		// ApiOkResponse({ type: BalanceResponse }),
+		ApiHeader({
+			name: 'Idempotency-Key',
+			description: 'В swagger генерация автоматическая, V4',
+			required: false
+		}),
+		ApiOkResponse({ type: WithdrawalAmountResponse }),
 		ApiBearerAuth()
 	);
 
@@ -65,6 +75,6 @@ export const ApiTransfer = () =>
 		ApiOperation({
 			summary: 'Перевести средства с одного аккаунта на другой'
 		}),
-		// ApiOkResponse({ type: BalanceResponse }),
+		ApiOkResponse({ type: TransferAmountResponse }),
 		ApiBearerAuth()
 	);
