@@ -1,53 +1,45 @@
-import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
-import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import { QUEUE_EVENTS, QueueService } from 'src/core';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { CronService, JOBS, QUEUES, QueueService } from 'src/core';
+import { IJobService } from 'src/shared';
 
-export const BALANCE_RESET_JOB = 'reset-all';
-
+// === КОГДА ЗАПУСКАТЬ ЗАДАЧУ ===
 @Injectable()
-export class BalanceResetService implements OnApplicationBootstrap {
-	private readonly logger = new Logger(BalanceResetService.name);
-
+export class BalanceResetService
+	implements OnApplicationBootstrap, IJobService
+{
 	public constructor(
 		private readonly queueService: QueueService,
-		private readonly schedulerRegistry: SchedulerRegistry
+		private readonly cronService: CronService
 	) {}
 
+	// останавливает крон при старте приложения
 	public onApplicationBootstrap() {
-		const job = this.schedulerRegistry.getCronJob('balancesReset');
-		job.stop();
-		this.logger.log('Cron остановлен при старте');
+		this.cronService.stop(JOBS.BALANCE_RESET_ALL);
 	}
 
-	public async enqueueReset() {
+	// кладет в очеред через HTTP (вручную)
+	public async enqueue() {
 		return this.queueService.add(
-			QUEUE_EVENTS.BALANCE_RESET,
-			BALANCE_RESET_JOB,
-			{ triggeredAt: new Date().toISOString() }
-		);
-	}
-
-	@Cron(CronExpression.EVERY_5_SECONDS, { name: 'balancesReset' })
-	public async balancesReset() {
-		this.logger.warn('Обнуление баланса пользователей - TRIGGERED');
-		await this.queueService.add(
-			QUEUE_EVENTS.BALANCE_RESET,
-			BALANCE_RESET_JOB,
+			QUEUES.BALANCE_RESET,
+			JOBS.BALANCE_RESET_ALL,
 			{
 				triggeredAt: new Date().toISOString()
 			}
 		);
 	}
 
+	// кладет в очеред автоматически
+	@Cron(CronExpression.EVERY_10_SECONDS, { name: JOBS.BALANCE_RESET_ALL })
+	public async cronEnequeu() {
+		return this.enqueue();
+	}
+
 	public startCron() {
-		const job = this.schedulerRegistry.getCronJob('balancesReset');
-		job.start();
-		this.logger.warn('Обнуление баланса пользователей - STARTED');
+		return this.cronService.start(JOBS.BALANCE_RESET_ALL);
 	}
 
 	public stopCron() {
-		const job = this.schedulerRegistry.getCronJob('balancesReset');
-		job.stop();
-		this.logger.warn('Обнуление баланса пользователей - STOPPED');
+		return this.cronService.stop(JOBS.BALANCE_RESET_ALL);
 	}
 }

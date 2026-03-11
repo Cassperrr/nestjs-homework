@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EnvTypes } from 'src/config';
 
-import { QUEUE_EVENTS } from '../constants';
+import { QUEUES } from '../constants';
 
 import { QueueService } from './queue.service';
 
@@ -20,11 +20,11 @@ import { QueueService } from './queue.service';
 					attempts: 3,
 					backoff: { type: 'exponential', delay: 1000 },
 					removeOnComplete: true,
-					removeOnFail: false
+					removeOnFail: { count: 100 }
 				}
 			})
 		}),
-		BullModule.registerQueue({ name: QUEUE_EVENTS.BALANCE_RESET })
+		BullModule.registerQueue({ name: QUEUES.BALANCE_RESET })
 	],
 	providers: [QueueService],
 	exports: [QueueService, BullModule]

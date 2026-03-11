@@ -7,7 +7,7 @@ export interface IRemoveFilePayload {
 	path: string;
 }
 
-export abstract class IFileService {
+export abstract class AbstractFileService {
 	abstract uploadFile(payload: IUploadFilePayload): Promise<{ path: string }>;
 	abstract removeFile(payload: IRemoveFilePayload): Promise<void>;
 }

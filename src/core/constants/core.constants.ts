@@ -6,11 +6,15 @@ export const SESSION_SERVICE = Symbol('SESSION_SERVICE');
 export const CACHE_SERVICE = Symbol('CACHE_SERVICE');
 
 // == Cache ==
-export const CACHE_EVENTS = {
-	USERS_INVALIDATE: 'cache.users.invalidate'
-} as const;
+export enum CACHE_EVENTS {
+	USERS_INVALIDATE = 'cache.users.invalidate'
+}
 
 // == Queue ==
-export enum QUEUE_EVENTS {
+export enum QUEUES {
 	BALANCE_RESET = 'balance-reset'
+}
+
+export enum JOBS {
+	BALANCE_RESET_ALL = 'reset-all'
 }

@@ -1,23 +1,24 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { QUEUE_EVENTS } from 'src/core';
+import { JOBS, QUEUES } from 'src/core';
 
-import { BALANCE_RESET_JOB } from './balance-reset.service';
-
-@Processor(QUEUE_EVENTS.BALANCE_RESET)
+// === КАК ВЫПОНИТЬ ЗАДАЧУ ===
+@Processor(QUEUES.BALANCE_RESET)
 export class BalanceResetProcessor extends WorkerHost {
 	private readonly logger = new Logger(BalanceResetProcessor.name);
 
+	// слушает редис (pub/sub)
 	public async process(job: Job<{ triggeredAt: string }>) {
-		switch (job.name) {
-			case BALANCE_RESET_JOB:
+		switch (job.name as JOBS) {
+			case JOBS.BALANCE_RESET_ALL:
 				return this.handleResetBalances(job);
 			default:
 				this.logger.warn(`Неизвестный job: ${job.name}`);
 		}
 	}
 
+	// логика
 	private async handleResetBalances(job: Job<{ triggeredAt: string }>) {
 		this.logger.debug(
 			`Job #${job.id}, triggered at: ${job.data.triggeredAt}`

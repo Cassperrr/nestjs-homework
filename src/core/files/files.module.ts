@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { S3Service } from 'src/infra';
-import { IFileService } from 'src/shared';
+import { AbstractFileService } from 'src/shared';
 
 @Module({
 	providers: [
 		{
-			provide: IFileService,
+			provide: AbstractFileService,
 			useExisting: S3Service
 		}
 	],
-	exports: [IFileService]
+	exports: [AbstractFileService]
 })
 export class FilesModule {}

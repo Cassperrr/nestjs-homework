@@ -93,7 +93,7 @@ export class BalanceController {
 	@Post('reset')
 	@HttpCode(HttpStatus.ACCEPTED)
 	public async reset(@AccountId() id: string) {
-		await this.balanceResetService.enqueueReset();
+		await this.balanceResetService.enqueue();
 		return { message: 'Job по обнулению баланса отправлен в очередь' };
 	}
 

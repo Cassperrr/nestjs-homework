@@ -10,14 +10,14 @@ import { extname } from 'path';
 import { RemoveFileException, UploadFileException } from 'src/common';
 import { EnvTypes } from 'src/config';
 import {
-	IFileService,
+	AbstractFileService,
 	type IRemoveFilePayload,
 	type IUploadFilePayload
 } from 'src/shared';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
-export class S3Service extends IFileService implements OnModuleInit {
+export class S3Service extends AbstractFileService implements OnModuleInit {
 	private readonly logger = new Logger(S3Service.name);
 	private readonly S3: S3Client;
 	private readonly bucketName: string;

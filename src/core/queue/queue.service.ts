@@ -2,28 +2,26 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Injectable, Logger } from '@nestjs/common';
 import { JobsOptions, Queue } from 'bullmq';
 
-import { QUEUE_EVENTS } from '../constants';
+import { QUEUES } from '../constants';
 
 type QueueJobMap = {
-	[QUEUE_EVENTS.BALANCE_RESET]: { triggeredAt: string };
+	[QUEUES.BALANCE_RESET]: { triggeredAt: string };
 };
 
 @Injectable()
 export class QueueService {
 	private readonly logger = new Logger(QueueService.name);
-	private readonly queues: Map<QUEUE_EVENTS, Queue>;
+	private readonly queues: Map<QUEUES, Queue>;
 
 	public constructor(
-		@InjectQueue(QUEUE_EVENTS.BALANCE_RESET) balanceResetQueue: Queue
+		@InjectQueue(QUEUES.BALANCE_RESET) balanceResetQueue: Queue
 	) {
-		this.queues = new Map([
-			[QUEUE_EVENTS.BALANCE_RESET, balanceResetQueue]
-		]);
+		this.queues = new Map([[QUEUES.BALANCE_RESET, balanceResetQueue]]);
 
 		this.logger.debug(`${QueueService.name} created`);
 	}
 
-	public async add<Q extends QUEUE_EVENTS>(
+	public async add<Q extends QUEUES>(
 		queue: Q,
 		jobName: string,
 		data: QueueJobMap[Q],
