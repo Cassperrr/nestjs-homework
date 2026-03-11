@@ -38,7 +38,7 @@ export class BalanceRepository {
 
 			// пессимистично блокируем
 			const [balance] = await tx.$queryRaw<{ blocked_at: Date | null }[]>`
-				SELECT * FROM balances WHERE account_id = ${accountId} FOR UPDATE
+				SELECT blocked_at FROM balances WHERE account_id = ${accountId} FOR UPDATE
 			`;
 
 			// еще раз делаем проверку на идиота
@@ -93,7 +93,7 @@ export class BalanceRepository {
 			const [balance] = await tx.$queryRaw<
 				{ amount: bigint; blocked_at: Date | null }[]
 			>`
-				SELECT * FROM balances WHERE account_id = ${accountId} FOR UPDATE
+				SELECT amount, blocked_at FROM balances WHERE account_id = ${accountId} FOR UPDATE
 			`;
 
 			// еще раз делаем проверку на идиота

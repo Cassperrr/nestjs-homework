@@ -5,7 +5,6 @@ import {
 	NotFoundException,
 	UnauthorizedException
 } from '@nestjs/common';
-import { TransactionType } from 'prisma/generated/enums';
 import { TransactionException } from 'src/common';
 import { AccountRepository, BalanceRepository } from 'src/core';
 import 'src/shared/extensions/bigint.extension';
@@ -64,7 +63,7 @@ export class BalanceService {
 			.txDeposit(accountId, idempotencyKey, amountInCents)
 			.catch(error => {
 				this.logger.warn(
-					`[${account.id}] [${account.role}] [${TransactionType.DEPOSIT}] FAIL ${amount}$: ${error}`
+					`[${account.id}] [${account.role}] [${tx.type}] FAIL ${amount}$: ${error}`
 				);
 				throw new TransactionException(
 					error instanceof Error ? error.message : String(error)
@@ -72,7 +71,7 @@ export class BalanceService {
 			});
 
 		this.logger.log(
-			`[${account.id}] [${account.role}] [${TransactionType.DEPOSIT}] SUCCESS ${tx.amount.toDollars()}$`
+			`[${account.id}] [${account.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$`
 		);
 
 		return {
@@ -96,9 +95,6 @@ export class BalanceService {
 
 		const { amountInCents, withdrawalAccount, amount } = dto;
 
-		if (balance.amount < amountInCents)
-			throw new BadRequestException('Недостаточно средств');
-
 		const tx = await this.balanceRepo
 			.txWithdrawal(
 				accountId,
@@ -108,7 +104,7 @@ export class BalanceService {
 			)
 			.catch(error => {
 				this.logger.warn(
-					`[${account.id}] [${account.role}] [${TransactionType.WITHDRAWAL}] FAIL ${amount}$ TO "${withdrawalAccount}": ${error}`
+					`[${account.id}] [${account.role}] [${tx.type}] FAIL ${amount}$ TO "${withdrawalAccount}": ${error}`
 				);
 				throw new TransactionException(
 					error instanceof Error ? error.message : String(error)
@@ -116,7 +112,7 @@ export class BalanceService {
 			});
 
 		this.logger.log(
-			`[${account.id}] [${account.role}] [${TransactionType.WITHDRAWAL}] SUCCESS ${tx.amount.toDollars()}$ TO "${withdrawalAccount}"`
+			`[${account.id}] [${account.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$ TO "${withdrawalAccount}"`
 		);
 
 		return {
@@ -132,6 +128,9 @@ export class BalanceService {
 		dto: TransferAmountRequest
 	): Promise<TransferAmountResponse> {
 		const { amountInCents, toAccountId, amount } = dto;
+
+		if (accountId === toAccountId)
+			throw new BadRequestException('Нельзя переводить самому себе');
 
 		const [fromAccount, toAccount] = await Promise.all([
 			this.accountRepo.findBy({ id: accountId }),
@@ -153,9 +152,6 @@ export class BalanceService {
 		if (!toBalance || toBalance.blockedAt)
 			throw new NotFoundException('Баланс получателя заблокирован');
 
-		if (fromBalance.amount < amountInCents)
-			throw new BadRequestException('Недостаточно средств');
-
 		const tx = await this.balanceRepo
 			.txTransfer(
 				fromAccount.id,
@@ -165,7 +161,7 @@ export class BalanceService {
 			)
 			.catch(error => {
 				this.logger.warn(
-					`[${fromAccount.id}] [${fromAccount.role}] [${TransactionType.TRANSFER_IN}] FAIL ${amount}$ TO accountId="${toAccount.id}": ${error}`
+					`[${fromAccount.id}] [${fromAccount.role}] [${tx.type}] FAIL ${amount}$ TO accountId="${toAccount.id}": ${error}`
 				);
 				throw new TransactionException(
 					error instanceof Error ? error.message : String(error)
@@ -173,7 +169,7 @@ export class BalanceService {
 			});
 
 		this.logger.log(
-			`[${fromAccount.id}] [${fromAccount.role}] [${TransactionType.TRANSFER_IN}] SUCCESS ${tx.amount.toDollars()}$ TO accountId="${toAccount.id}"`
+			`[${fromAccount.id}] [${fromAccount.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$ TO accountId="${toAccount.id}"`
 		);
 
 		return {
