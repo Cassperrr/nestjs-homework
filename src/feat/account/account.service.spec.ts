@@ -164,9 +164,9 @@ describe('AccountService', () => {
 		it('должен выбросить UnauthorizedException если пользователя нет', async () => {
 			mockUserRepo.findAccount.mockResolvedValue(null);
 
-			await expect(
-				service.delete(mockRes as any, 'uuid')
-			).rejects.toThrow(UnauthorizedException);
+			await expect(service.delete('uuid')).rejects.toThrow(
+				UnauthorizedException
+			);
 		});
 
 		it('должен выбросить UnauthorizedException если пользователь удалён', async () => {
@@ -175,9 +175,9 @@ describe('AccountService', () => {
 				deletedAt: new Date()
 			});
 
-			await expect(
-				service.delete(mockRes as any, 'uuid')
-			).rejects.toThrow(UnauthorizedException);
+			await expect(service.delete('uuid')).rejects.toThrow(
+				UnauthorizedException
+			);
 		});
 
 		it('должен успешно удалить пользователя', async () => {
@@ -186,7 +186,7 @@ describe('AccountService', () => {
 			mockUserRepo.updateAccount.mockResolvedValue(undefined);
 			mockRes.clearCookie.mockReturnValue(undefined);
 
-			const result = await service.delete(mockRes as any, 'uuid');
+			const result = await service.delete('uuid');
 
 			expect(mockUserRepo.updateAccount).toHaveBeenCalledWith(
 				'uuid',

@@ -8,10 +8,13 @@ export class LoggerMiddleware implements NestMiddleware {
 	use(req: Request, res: Response, next: NextFunction) {
 		const ip = req.ip;
 		const { method, originalUrl } = req;
+		const start = process.hrtime.bigint();
 
 		res.on('finish', () => {
+			const duration =
+				Number(process.hrtime.bigint() - start) / 1_000_000;
 			this.logger.log(
-				`[${ip}] ${method} ${originalUrl} ${res.statusCode}`
+				`[${ip}] ${method} ${originalUrl} ${res.statusCode} +${duration}ms`
 			);
 		});
 

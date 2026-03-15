@@ -1,100 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Account, Profile } from 'prisma/generated/browser';
 import { PrismaService } from 'src/infra';
-import { uuidv7 } from 'uuidv7';
 
 @Injectable()
 export class UserRepository {
 	public constructor(private readonly prisma: PrismaService) {}
 
-	public async createAccount(account: {
-		email: string;
-		username: string;
-		password: string; // TODO чет надо придумать некрасиво
-	}) {
-		const { id } = await this.prisma.account.create({
-			data: {
-				id: uuidv7(),
-				...account
-			}
-		});
-
-		return id;
-	}
-
-	public async updateAccount(id: string, account: Partial<Account>) {
-		return this.prisma.account.update({
-			where: { id },
-			data: { ...account }
-		});
-	}
-
-	public async findAccountByEmailOrUsername(email: string, username: string) {
-		return this.prisma.account.findFirst({
-			where: {
-				OR: [{ email }, { username }]
-			}
-		});
-	}
-
-	public async findAccount(params: {
-		id?: string;
-		email?: string;
-		username?: string;
-	}) {
-		const { id, email, username } = params;
-
-		return this.prisma.account.findFirst({
-			where: {
-				OR: [
-					id ? { id } : undefined,
-					email ? { email } : undefined,
-					username ? { username } : undefined
-				].filter(Boolean) as any[]
-			}
-		});
-	}
-
-	public async createProfile(
-		accountId: string,
-		profile: {
-			firstName: string;
-			lastName: string;
-			age: number;
-			description?: string; // TODO чет надо придумать некрасиво
-		}
-	) {
-		return this.prisma.profile.create({
-			data: {
-				id: uuidv7(),
-				...profile,
-				account: { connect: { id: accountId } }
-			},
-			select: {
-				id: true,
-				firstName: true,
-				lastName: true,
-				age: true,
-				description: true
-			}
-		});
-	}
-
-	public async updateProfile(accountId: string, profile: Partial<Profile>) {
-		return this.prisma.profile.update({
-			where: { accountId },
-			data: { ...profile },
-			select: {
-				id: true,
-				firstName: true,
-				lastName: true,
-				age: true,
-				description: true
-			}
-		});
-	}
-
-	public async findUser(params: {
+	public async findBy(params: {
 		id?: string;
 		email?: string;
 		username?: string;
@@ -113,6 +24,7 @@ export class UserRepository {
 				id: true,
 				username: true,
 				email: true,
+				role: true,
 				createdAt: true,
 				deletedAt: true,
 				profile: {
@@ -121,14 +33,21 @@ export class UserRepository {
 						firstName: true,
 						lastName: true,
 						age: true,
-						description: true
+						description: true,
+						avatars: {
+							where: { deletedAt: null },
+							select: {
+								id: true,
+								name: true
+							}
+						}
 					}
 				}
 			}
 		});
 	}
 
-	public async findAllUsers(
+	public async findAll(
 		cursor: string | undefined,
 		limit: number = 10,
 		username: string | undefined
@@ -157,7 +76,13 @@ export class UserRepository {
 						firstName: true,
 						lastName: true,
 						age: true,
-						description: true
+						description: true,
+						avatars: {
+							select: {
+								id: true,
+								name: true
+							}
+						}
 					}
 				}
 			}
@@ -171,5 +96,43 @@ export class UserRepository {
 			nextCursor: hasNextPage ? accounts[accounts.length - 1].id : null,
 			hasNextPage
 		};
+	}
+
+	// я хз как это нормально переписать на призму поэтому надежней так :)
+	// ==== условия активных юзеров ====
+	// > 2 АКТИВНЫX аватарок
+	// есть описание
+	// переданный диапазон возраста
+	// === индексы поставил на возраст (на описание не стал потому что предположил что 90% профилей будет заполнено) и partional (deleted_at IS NULL) на аватар
+	// !!!! блок с LEFT JOIN писала нейронка потмоу что у меня в коррелированном подзапросе на получение последней аватарки (через сортировку по убыванию) возникала n+1 и мозгов не хватило написать оконку
+	public async findActive(minAge: number, maxAge: number) {
+		return this.prisma.$queryRaw`
+			SELECT accounts.id AS account_id, 
+				username, 
+				email,
+				accounts.created_at,
+				profiles.id AS profile_id,
+				profiles.first_name,
+				profiles.last_name,
+				profiles.age,
+				profiles.description,
+				last_avatar.name AS last_loaded_avatar
+			FROM accounts
+				JOIN profiles ON profiles.account_id = accounts.id
+				JOIN avatars ON profiles.id = avatars.profile_id
+				LEFT JOIN (
+					SELECT profile_id, name, ROW_NUMBER() OVER (
+						PARTITION BY profile_id 
+						ORDER BY created_at DESC
+					) AS rn
+					FROM avatars
+					WHERE deleted_at IS NULL
+				) AS last_avatar ON last_avatar.profile_id = profiles.id AND last_avatar.rn = 1
+			WHERE profiles.age BETWEEN ${minAge} AND ${maxAge}
+				AND avatars.deleted_at IS NULL
+				AND profiles.description IS NOT NULL
+			GROUP BY accounts.id, profiles.id, last_avatar.name
+			HAVING count(avatars.id) > 2;
+		`;
 	}
 }

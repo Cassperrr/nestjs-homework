@@ -3,21 +3,39 @@ import {
 	HttpException,
 	HttpStatus,
 	Injectable,
+	Logger,
 	UnauthorizedException
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { createHash } from 'node:crypto';
 import { generateCode } from 'patcode';
+import { EnvTypes } from 'src/config';
 import { RedisService } from 'src/infra';
 import { OtpKey } from 'src/shared';
 
 @Injectable()
 export class OtpService {
+	private readonly logger = new Logger(OtpService.name);
+
+	private readonly expireTtl: number;
+	private readonly attemptsCount: number;
+	private readonly cooldownTtl: number;
 	public constructor(
 		private readonly redis: RedisService,
-		private readonly expireTtl: number,
-		private readonly attemptsCount: number,
-		private readonly cooldownTtl: number
-	) {}
+		private readonly configService: ConfigService<EnvTypes, true>
+	) {
+		this.expireTtl = configService.get('OTP_CODE_TTL', {
+			infer: true
+		});
+		this.attemptsCount = configService.get('OTP_ATTEMPTS_COUNT', {
+			infer: true
+		});
+		this.cooldownTtl = configService.get('COOLDOWN_TTL', {
+			infer: true
+		});
+
+		this.logger.debug(`${OtpService.name} created`);
+	}
 
 	private genOtpHash(code: string) {
 		return createHash('sha256').update(code).digest('hex');

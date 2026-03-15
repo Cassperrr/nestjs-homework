@@ -1,84 +1,73 @@
 import {
 	ConflictException,
 	Injectable,
+	Logger,
 	NotFoundException
 } from '@nestjs/common';
-import { UserRepository } from 'src/core';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CACHE_EVENTS, ProfileRepository, UserRepository } from 'src/core';
 
 import {
-	AllUsersResponse,
 	CreateProfileRequest,
-	FindAllUserRequest,
-	FindUserRequest,
 	ProfileResponse,
-	UpdateProfileRequest,
-	UserResponse
+	UpdateProfileRequest
 } from './dto';
 
 @Injectable()
 export class ProfileService {
-	public constructor(private readonly userRepo: UserRepository) {}
+	private readonly logger = new Logger(ProfileService.name);
+
+	public constructor(
+		private readonly profileRepo: ProfileRepository,
+		private readonly userRepo: UserRepository,
+		private readonly eventEmmiter: EventEmitter2
+	) {}
+
+	private async _findAndCheckUser(accountId: string) {
+		const user = await this.userRepo.findBy({ id: accountId });
+
+		if (!user || user.deletedAt)
+			throw new NotFoundException('Пользователя не существует');
+
+		return user;
+	}
 
 	public async create(
 		accountId: string,
 		dto: CreateProfileRequest
 	): Promise<ProfileResponse> {
-		const user = await this.userRepo.findUser({ id: accountId });
+		const user = await this._findAndCheckUser(accountId);
 
-		if (!user || user.profile || user.deletedAt)
-			throw new ConflictException('Нельзя создать профиль');
+		if (user.profile) throw new ConflictException('Профиль уже существует');
 
-		return this.userRepo.createProfile(accountId, dto);
+		const profile = await this.profileRepo.create(accountId, dto);
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
+
+		this.logger.log(
+			`[${user.id}] [${user.role}] Профиль создан - ${profile.id}`
+		);
+
+		return profile;
 	}
 
 	public async update(
 		accountId: string,
 		dto: UpdateProfileRequest
 	): Promise<ProfileResponse> {
-		const user = await this.userRepo.findUser({ id: accountId });
+		const user = await this._findAndCheckUser(accountId);
 
-		if (!user || !user.profile || user.deletedAt)
-			throw new NotFoundException('Нельзя изменить профиль');
+		if (!user.profile)
+			throw new NotFoundException('Сначала создайте профиль');
 
-		return this.userRepo.updateProfile(accountId, dto);
-	}
+		const pathedProfile = await this.profileRepo.update(accountId, dto);
 
-	public async getMe(accountId: string): Promise<UserResponse> {
-		const user = await this.userRepo.findUser({ id: accountId });
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
-		if (!user || user.deletedAt)
-			throw new NotFoundException('Профиль не найден');
+		this.logger.log(
+			`[${user.id}] [${user.role}] Профиль обновлен - ${pathedProfile.id}`
+		);
 
-		return user;
-	}
-
-	public async findAllUsers(
-		accountId: string,
-		query: FindAllUserRequest
-	): Promise<AllUsersResponse> {
-		const existing = await this.userRepo.findUser({ id: accountId });
-
-		if (!existing || existing.deletedAt)
-			throw new NotFoundException('Нет доступа');
-
-		const { cursor, limit = 10, username } = query;
-		return this.userRepo.findAllUsers(cursor, limit, username);
-	}
-
-	public async findUserByUsername(
-		accountId: string,
-		query: FindUserRequest
-	): Promise<UserResponse> {
-		const existing = await this.userRepo.findUser({ id: accountId });
-
-		if (!existing || existing.deletedAt)
-			throw new NotFoundException('Нет доступа');
-
-		const { username } = query;
-
-		const user = await this.userRepo.findUser({ username });
-		if (!user) throw new NotFoundException('Пользователь не найден');
-
-		return user;
+		return pathedProfile;
 	}
 }

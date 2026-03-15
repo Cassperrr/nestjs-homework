@@ -8,6 +8,7 @@ import {
 	MaxLength,
 	MinLength
 } from 'class-validator';
+import type { ITransformValue } from 'src/shared';
 
 export class RegisterRequest {
 	@ApiProperty({
@@ -24,8 +25,8 @@ export class RegisterRequest {
 		message:
 			'Username должен содержать минимум одну заглавную букву и одну цифру'
 	})
-	@Transform(({ value }) => value?.trim())
-	public username: string;
+	@Transform(({ value }: ITransformValue) => value.trim())
+	readonly username: string;
 
 	@ApiProperty({
 		description:
@@ -42,7 +43,7 @@ export class RegisterRequest {
 		message:
 			'Password должен содержать заглавную букву, цифру и спецсимвол (!@#$%^&*) и не содержать пробелов'
 	})
-	public password: string;
+	readonly password: string;
 
 	@ApiProperty({
 		description: 'Почта в любом формате',
@@ -50,6 +51,6 @@ export class RegisterRequest {
 	})
 	@IsNotEmpty({ message: 'Email должен быть заполнен' })
 	@IsEmail({}, { message: 'Некорректный формат Email' })
-	@Transform(({ value }) => value?.trim().toLowerCase())
-	public email: string;
+	@Transform(({ value }: ITransformValue) => value.trim().toLowerCase())
+	readonly email: string;
 }

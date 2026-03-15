@@ -23,7 +23,16 @@ export const swaggerSetup = (app: INestApplication, isDev: boolean) => {
 
 	SwaggerModule.setup(configYaml.path, app, document, {
 		swaggerOptions: {
-			persistAuthorization: isDev // Ток дев
+			persistAuthorization: isDev,
+			requestInterceptor: (req: any) => {
+				return {
+					...req,
+					headers: {
+						...req.headers,
+						'Idempotency-Key': crypto.randomUUID()
+					}
+				};
+			}
 		}
 	});
 };

@@ -3,23 +3,26 @@ import {
 	ConflictException,
 	Inject,
 	Injectable,
+	Logger,
 	UnauthorizedException
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import type { CookieOptions } from 'express';
 import ms from 'ms';
 import { Role } from 'prisma/generated/enums';
 import { EnvTypes } from 'src/config';
 import {
+	AccountRepository,
+	CACHE_EVENTS,
 	HASH_SERVICE,
 	HashService,
-	JWT_PASSPORT_SERVICE,
-	JwtPassportService,
 	OTP_SERVICE,
 	OtpService,
 	SESSION_SERVICE,
 	SessionService,
-	UserRepository
+	TOKEN_SERVICE,
+	TokenService
 } from 'src/core';
 import { OtpKey } from 'src/shared';
 
@@ -33,18 +36,20 @@ import type {
 
 @Injectable()
 export class AuthService {
+	private readonly logger = new Logger(AuthService.name);
 	private readonly COOKIE_DOMAIN: string;
 	private readonly isDev: boolean;
 
 	public constructor(
+		private readonly configService: ConfigService<EnvTypes, true>,
+		private readonly accountRepo: AccountRepository,
+		private readonly eventEmmiter: EventEmitter2,
+
 		@Inject(HASH_SERVICE) private readonly hashService: HashService,
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
-		@Inject(JWT_PASSPORT_SERVICE)
-		private readonly jwtPassport: JwtPassportService,
-		@Inject(SESSION_SERVICE) private readonly session: SessionService,
-
-		private readonly configService: ConfigService<EnvTypes, true>,
-		private readonly userRepo: UserRepository
+		@Inject(TOKEN_SERVICE)
+		private readonly tokenService: TokenService,
+		@Inject(SESSION_SERVICE) private readonly session: SessionService
 	) {
 		this.COOKIE_DOMAIN = configService.get('COOKIE_DOMAIN', {
 			infer: true
@@ -57,10 +62,7 @@ export class AuthService {
 	public async register(dto: RegisterRequest): Promise<OtpCodeResponse> {
 		const { email, username, password } = dto;
 
-		const account = await this.userRepo.findAccountByEmailOrUsername(
-			email,
-			username
-		);
+		const account = await this.accountRepo.findBy({ email, username });
 
 		if (account)
 			throw new ConflictException(
@@ -68,11 +70,16 @@ export class AuthService {
 			);
 
 		const hash = await this.hashService.hash(password);
-		const id = await this.userRepo.createAccount({
+
+		const { id, role } = await this.accountRepo.create({
 			email,
 			username,
 			password: hash
 		});
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
+
+		this.logger.log(`[${id}] [${role}] Аккаунт зарегистрирован`);
 
 		return this.otpService.generate(id, OtpKey.EMAIL);
 	}
@@ -80,30 +87,41 @@ export class AuthService {
 	public async resend(dto: ResendRequest): Promise<OtpCodeResponse> {
 		const { email } = dto;
 
-		const user = await this.userRepo.findAccount({ email });
+		const account = await this.accountRepo.findBy({ email });
 
-		if (!user || user.isVerified || user.deletedAt)
+		if (!account || account.isVerified || account.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
 			);
 
-		return this.otpService.generate(user.id, OtpKey.EMAIL);
+		this.logger.log(
+			`[${account.id}] [${account.role}] Перевыпуск OTP кода`
+		);
+
+		return this.otpService.generate(account.id, OtpKey.EMAIL);
 	}
 
 	public async verify(dto: VerifyRequest) {
 		const { email, code } = dto;
 
-		const user = await this.userRepo.findAccount({ email });
-		if (!user || user.isVerified || user.deletedAt)
+		const account = await this.accountRepo.findBy({ email });
+
+		if (!account || account.isVerified || account.deletedAt)
 			throw new BadRequestException(
 				'Аккаунт с такой почтой либо не существует, либо он верифицирован'
 			);
 
-		await this.otpService.verify(user.id, code, OtpKey.EMAIL);
+		await this.otpService.verify(account.id, code, OtpKey.EMAIL);
 
-		const patched = await this.userRepo.updateAccount(user.id, {
+		const patched = await this.accountRepo.update(account.id, {
 			isVerified: true
 		});
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
+
+		this.logger.log(
+			`[${account.id}] [${account.role}] Аккаунт верифицирован`
+		);
 
 		return this._authenticate(patched.id, patched.role);
 	}
@@ -111,47 +129,58 @@ export class AuthService {
 	public async login(dto: LoginRequest) {
 		const { username, password } = dto;
 
-		const user = await this.userRepo.findAccount({ username });
-		if (!user || !user.isVerified || user.deletedAt)
+		const account = await this.accountRepo.findBy({ username });
+
+		if (!account || !account.isVerified || account.deletedAt)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
 		const isValidPassword = await this.hashService.verify(
-			user.password,
+			account.password,
 			password
 		);
 
 		if (!isValidPassword)
 			throw new UnauthorizedException('Неверный логин или пароль');
 
-		return this._authenticate(user.id, user.role);
+		this.logger.log(`[${account.id}] [${account.role}] Вход в систему`);
+
+		return this._authenticate(account.id, account.role);
 	}
 
 	public async refresh(refreshToken: string) {
-		const { id } = this.jwtPassport.verify(refreshToken);
+		const { id } = this.tokenService.verify(refreshToken);
 
 		const storedToken = await this.session.get(id);
 		if (!storedToken || refreshToken !== storedToken)
 			throw new UnauthorizedException('Время сессии истекло');
 
-		const user = await this.userRepo.findAccount({ id });
-		if (!user || user.deletedAt)
+		const account = await this.accountRepo.findBy({ id });
+
+		if (!account || account.deletedAt)
 			throw new UnauthorizedException('Недействительный токен');
 
-		return this._authenticate(user.id, user.role);
+		this.logger.log(`[${account.id}] [${account.role}] Обновление сессии`);
+
+		return this._authenticate(account.id, account.role);
 	}
 
 	public async logout(refreshToken: string) {
 		try {
-			const { id } = this.jwtPassport.verify(refreshToken);
+			const { id, role } = this.tokenService.verify(refreshToken);
+
 			await this.session.delete(id);
-		} catch {}
+
+			this.logger.log(`[${id}] [${role}] Выход из системы`);
+		} catch {
+			// ignore
+		}
 
 		return { message: 'Выход выполнен' };
 	}
 
 	private async _authenticate(id: string, role: Role) {
 		const { accessToken, refreshToken, refreshTtl } =
-			this.jwtPassport.signTokens({ id, role });
+			this.tokenService.signTokens({ id, role });
 
 		await this.session.set(id, refreshToken);
 

@@ -5,11 +5,11 @@ import {
 	Injectable
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Request } from 'express';
+import type { Request } from 'express';
 import { Role } from 'prisma/generated/enums';
-import type { JwtPayload } from 'src/shared';
+import type { IJwtPayload } from 'src/shared';
 
-import { ROLES_KEY } from '../decorators/set-roles.decorator';
+import { ROLES_KEY } from '../decorators';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -23,8 +23,8 @@ export class RolesGuard implements CanActivate {
 
 		if (!requiredRoles || requiredRoles.length === 0) return true;
 
-		const req = context.switchToHttp().getRequest() as Request;
-		const user = req.user as JwtPayload;
+		const req = context.switchToHttp().getRequest<Request>();
+		const user = req.user as IJwtPayload;
 
 		if (!user) throw new ForbiddenException('Доступ запрещён');
 

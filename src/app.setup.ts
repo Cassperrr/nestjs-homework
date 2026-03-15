@@ -6,7 +6,7 @@ import { swaggerSetup } from './swagger';
 
 export const appSetup = (app: INestApplication, isDev: boolean) => {
 	app.enableCors({
-		origin: isDev ? true : 'оригин для прода',
+		origin: isDev ? true : 'оригин для прода', // TODO
 		credentials: true,
 		methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 	});

@@ -5,23 +5,23 @@ export class AccountResponse {
 		description: 'Id пользователя',
 		example: 'uuid'
 	})
-	public id: string;
+	readonly id: string;
 
 	@ApiProperty({
 		description: 'Имя пользователя',
 		example: 'Cassperrr1'
 	})
-	public username: string;
+	readonly username: string;
 
 	@ApiProperty({
 		description: 'Email пользователя',
 		example: 'email@menti.ru'
 	})
-	public email: string;
+	readonly email: string;
 
 	@ApiProperty({
 		description: 'Дата регистрации',
 		example: '2026-01-01T00:00:00.000Z'
 	})
-	public createdAt: Date;
+	readonly createdAt: Date;
 }
