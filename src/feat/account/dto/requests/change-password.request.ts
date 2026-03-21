@@ -25,5 +25,5 @@ export class ChangePasswordRequest {
 		message:
 			'Пароль должен содержать заглавную букву, цифру и спецсимвол (!@#$%^&*) и не содержать пробелов'
 	})
-	public oldPassword: string;
+	readonly oldPassword: string;
 }

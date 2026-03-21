@@ -1,29 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AvatarResponse } from 'src/feat/avatar/dto';
 
 export class ProfileResponse {
 	@ApiProperty({
 		description: 'Id профиля',
 		example: 'uuid'
 	})
-	public id: string;
+	readonly id: string;
 
 	@ApiProperty({
 		description: 'Имя пользователя',
 		example: 'Джеймс'
 	})
-	public firstName: string;
+	readonly firstName: string;
 
 	@ApiProperty({
 		description: 'Фамилия пользователя',
 		example: 'Бонд'
 	})
-	public lastName: string;
+	readonly lastName: string;
 
 	@ApiProperty({
 		description: 'Возраст пользователя',
 		example: 50
 	})
-	public age: number;
+	readonly age: number;
 
 	@ApiProperty({
 		description: 'Описание пользователя',
@@ -31,5 +32,12 @@ export class ProfileResponse {
 		required: false,
 		nullable: true
 	})
-	public description: string | null;
+	readonly description: string | null;
+
+	@ApiProperty({
+		description: 'Аватары пользователя',
+		type: () => AvatarResponse,
+		isArray: true
+	})
+	readonly avatars?: AvatarResponse[];
 }

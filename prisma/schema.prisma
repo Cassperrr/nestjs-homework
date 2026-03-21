@@ -1,7 +1,8 @@
 generator client {
-  provider     = "prisma-client"
-  output       = "./generated"
-  moduleFormat = "cjs"
+  provider        = "prisma-client"
+  output          = "./generated"
+  moduleFormat    = "cjs"
+  previewFeatures = ["partialIndexes"]
 }
 
 datasource db {
@@ -9,7 +10,7 @@ datasource db {
 }
 
 model Account {
-  id String @id
+  id String @id @db.Char(36)
 
   username   String  @unique
   password   String  @db.VarChar(255)
@@ -17,7 +18,9 @@ model Account {
   isVerified Boolean @default(false) @map("is_verified")
   role       Role    @default(USER)
 
-  profile Profile?
+  profile      Profile?
+  balance      Balance?
+  transactions Transaction[]
 
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -26,24 +29,86 @@ model Account {
   @@map("accounts")
 }
 
+model Balance {
+  id String @id @db.Char(36)
+
+  amount BigInt @default(0)
+
+  accountId String  @unique @map("account_id") @db.Char(36)
+  account   Account @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  blockedAt DateTime? @map("blocked_at")
+
+  @@map("balances")
+}
+
+model Transaction {
+  id String @id @db.Char(36)
+
+  amount BigInt
+  type   TransactionType
+
+  idempotencyKey    String  @unique @map("idempotency_key")
+  withdrawalAccount String? @map("withdwal_account")
+  referenceId       String? @map("reference_id") @db.Char(36)
+
+  accountId String  @map("account_id") @db.Char(36)
+  account   Account @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([accountId])
+  @@map("transactions")
+}
+
 model Profile {
-  id String @id
+  id String @id @db.Char(36)
 
   firstName   String  @map("first_name") @db.VarChar(50)
   lastName    String  @map("last_name") @db.VarChar(50)
   age         Int
   description String? @db.VarChar(1000)
 
-  accountId String  @unique @map("account_id")
+  accountId String  @unique @map("account_id") @db.Char(36)
   account   Account @relation(fields: [accountId], references: [id])
+
+  avatars Avatar[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
+  @@index([age])
   @@map("profiles")
+}
+
+model Avatar {
+  id String @id @db.Char(36)
+
+  name String @unique
+
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String  @map("profile_id") @db.Char(36)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([profileId], where: raw("deleted_at IS NULL"))
+  @@map("avatars")
 }
 
 enum Role {
   USER
   ADMIN
+}
+
+enum TransactionType {
+  DEPOSIT // пополнение
+  // PURCHASE // покупка
+  // REFUND // возрат
+  WITHDRAWAL // вывод
+  TRANSFER_IN
+  TRANSFER_OUT
 }

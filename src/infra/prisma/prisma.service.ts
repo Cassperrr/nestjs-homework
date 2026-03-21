@@ -18,14 +18,16 @@ export class PrismaService
 
 	public constructor(configService: ConfigService<EnvTypes, true>) {
 		const adapter = new PrismaPg({
-			user: configService.get('POSTGRES_USER', { infer: true }),
-			password: configService.get('POSTGRES_PASSWORD', { infer: true }),
-			host: configService.get('POSTGRES_HOST', { infer: true }),
-			port: configService.get('POSTGRES_PORT', { infer: true }),
-			database: configService.get('POSTGRES_DB', { infer: true })
+			user: configService.get('DATABASE_USER', { infer: true }),
+			password: configService.get('DATABASE_PASSWORD', { infer: true }),
+			host: configService.get('DATABASE_HOST', { infer: true }),
+			port: configService.get('DATABASE_PORT', { infer: true }),
+			database: configService.get('DATABASE_NAME', { infer: true })
 		});
 
 		super({ adapter });
+
+		this.logger.debug(`${PrismaService.name} created`);
 	}
 
 	public async onModuleInit() {
@@ -53,7 +55,7 @@ export class PrismaService
 		try {
 			await this.$disconnect();
 
-			this.logger.log('Databse connection close');
+			this.logger.log('Database connection close');
 		} catch (e) {
 			this.logger.error('Failed disconnect from database', e);
 

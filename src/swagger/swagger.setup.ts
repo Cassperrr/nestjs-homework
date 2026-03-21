@@ -17,13 +17,23 @@ export const swaggerSetup = (app: INestApplication, isDev: boolean) => {
 		.setTitle(configYaml.title)
 		.setVersion(configYaml.version)
 		.setDescription(configYaml.description)
-		.addBearerAuth();
+		.addBearerAuth()
+		.build();
 
-	const document = SwaggerModule.createDocument(app, builder.build());
+	const document = SwaggerModule.createDocument(app, builder);
 
 	SwaggerModule.setup(configYaml.path, app, document, {
 		swaggerOptions: {
-			persistAuthorization: isDev // Ток дев
+			persistAuthorization: isDev,
+			requestInterceptor: (req: any) => {
+				return {
+					...req,
+					headers: {
+						...req.headers,
+						'Idempotency-Key': crypto.randomUUID()
+					}
+				};
+			}
 		}
 	});
 };

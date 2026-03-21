@@ -1,37 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { EnvTypes } from 'src/config';
-import { RedisService } from 'src/infra';
+
+import { OTP_SERVICE } from '../constants';
 
 import { OtpService } from './otp.service';
-
-export const OTP_SERVICE = Symbol('OTP_SERVICE');
 
 @Module({
 	providers: [
 		{
 			provide: OTP_SERVICE,
-			useFactory: (
-				configService: ConfigService<EnvTypes, true>,
-				redisService: RedisService
-			) => {
-				const expireTtl = configService.get('OTP_CODE_TTL', {
-					infer: true
-				});
-				const attemptsCount = configService.get('OTP_ATTEMPTS_COUNT', {
-					infer: true
-				});
-				const cooldownTtl = configService.get('COOLDOWN_TTL', {
-					infer: true
-				});
-				return new OtpService(
-					redisService,
-					expireTtl,
-					attemptsCount,
-					cooldownTtl
-				);
-			},
-			inject: [ConfigService, RedisService]
+			useClass: OtpService
 		}
 	],
 	exports: [OTP_SERVICE]

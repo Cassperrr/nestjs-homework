@@ -43,9 +43,10 @@ export class InfrastructureFilter implements ExceptionFilter {
 		}
 
 		if (exception instanceof ReplyError) {
+			const redisError = exception as Error;
 			this.logger.error(
-				`Redis error: [${exception.name}] ${exception.message}`,
-				exception.stack
+				`Redis error: [${redisError.name}] ${redisError.message}`,
+				redisError.stack
 			);
 			return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
 				statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

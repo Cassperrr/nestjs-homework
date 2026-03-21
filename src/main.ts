@@ -7,11 +7,16 @@ import { appSetup } from './app.setup';
 import type { EnvTypes } from './config';
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+	const isDev = process.env.NODE_ENV === 'development';
+
+	const app = await NestFactory.create(AppModule, {
+		logger: isDev
+			? ['log', 'error', 'warn', 'debug', 'verbose']
+			: ['log', 'error', 'warn']
+	});
 
 	const config = app.get(ConfigService<EnvTypes, true>);
 	const port = config.get('APP_PORT', { infer: true });
-	const isDev = config.get('NODE_ENV', { infer: true }) === 'development';
 
 	appSetup(app, isDev);
 
@@ -20,4 +25,4 @@ async function bootstrap() {
 
 	await app.listen(port);
 }
-bootstrap();
+void bootstrap();

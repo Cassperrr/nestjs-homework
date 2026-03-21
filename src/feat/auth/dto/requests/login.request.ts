@@ -7,6 +7,7 @@ import {
 	MaxLength,
 	MinLength
 } from 'class-validator';
+import type { ITransformValue } from 'src/shared';
 
 export class LoginRequest {
 	@ApiProperty({
@@ -23,8 +24,8 @@ export class LoginRequest {
 		message:
 			'Username должен содержать минимум одну заглавную букву и одну цифру'
 	})
-	@Transform(({ value }) => value?.trim())
-	public username: string;
+	@Transform(({ value }: ITransformValue) => value.trim())
+	readonly username: string;
 
 	@ApiProperty({
 		description:
@@ -41,5 +42,5 @@ export class LoginRequest {
 		message:
 			'Password должен содержать заглавную букву, цифру и спецсимвол (!@#$%^&*) и не содержать пробелов'
 	})
-	public password: string;
+	readonly password: string;
 }

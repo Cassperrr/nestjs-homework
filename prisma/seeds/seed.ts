@@ -9,11 +9,11 @@ import { PrismaClient, Role } from '../generated/client';
 dotenv.config({ path: '.env.development.local' });
 
 const adapter = new PrismaPg({
-	user: process.env.POSTGRES_USER,
-	password: process.env.POSTGRES_PASSWORD,
-	host: process.env.POSTGRES_HOST,
-	port: process.env.POSTGRES_PORT,
-	database: process.env.POSTGRES_DB
+	user: process.env.DATABASE_USER,
+	password: process.env.DATABASE_PASSWORD,
+	host: process.env.DATABASE_HOST,
+	port: process.env.DATABASE_PORT,
+	database: process.env.DATABASE_NAME
 });
 const prisma = new PrismaClient({ adapter });
 
@@ -130,6 +130,12 @@ async function main() {
 				password: hashedPassword,
 				isVerified: true,
 				role: Role.USER,
+				balance: {
+					create: {
+						id: uuidv7(),
+						amount: 0n
+					}
+				},
 				...(i < WITH_PROFILE
 					? {
 							profile: {
@@ -140,7 +146,25 @@ async function main() {
 									age: faker.number.int({ min: 18, max: 80 }),
 									description: faker.datatype.boolean()
 										? faker.lorem.sentence()
-										: null
+										: null,
+									avatars: {
+										createMany: {
+											data: [
+												{
+													id: uuidv7(),
+													name: uuidv7() + '.jpeg'
+												},
+												{
+													id: uuidv7(),
+													name: uuidv7() + '.jpeg'
+												},
+												{
+													id: uuidv7(),
+													name: uuidv7() + '.jpeg'
+												}
+											]
+										}
+									}
 								}
 							}
 						}

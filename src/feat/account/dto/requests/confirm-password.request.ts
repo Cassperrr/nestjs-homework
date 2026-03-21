@@ -26,7 +26,7 @@ export class ConfirmPasswordRequest {
 		message:
 			'Пароль должен содержать заглавную букву, цифру и спецсимвол (!@#$%^&*) и не содержать пробелов'
 	})
-	public newPassword: string;
+	readonly newPassword: string;
 
 	@ApiProperty({
 		description: 'OTP код для верификации',
@@ -36,5 +36,5 @@ export class ConfirmPasswordRequest {
 	@IsString({ message: 'Code должен быть строкой' })
 	@Length(6, 6, { message: 'Код должен быть 6 цифр' })
 	@Matches(/^\d{6}$/, { message: 'Код должен содержать только цифры' })
-	public code: string;
+	readonly code: string;
 }

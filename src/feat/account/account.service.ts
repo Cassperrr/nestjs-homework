@@ -1,11 +1,17 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import type { Response } from 'express';
 import {
+	Inject,
+	Injectable,
+	Logger,
+	UnauthorizedException
+} from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import {
+	AccountRepository,
+	CACHE_EVENTS,
 	HASH_SERVICE,
 	HashService,
 	OTP_SERVICE,
-	OtpService,
-	UserRepository
+	OtpService
 } from 'src/core';
 import { OtpKey } from 'src/shared';
 
@@ -15,58 +21,73 @@ import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
 
 @Injectable()
 export class AccountService {
-	public constructor(
-		@Inject(HASH_SERVICE) private readonly hashService: HashService,
-		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
+	private readonly logger = new Logger(AccountService.name);
 
-		private readonly userRepo: UserRepository
+	public constructor(
+		private readonly accountRepo: AccountRepository,
+		private readonly eventEmmiter: EventEmitter2,
+
+		@Inject(HASH_SERVICE) private readonly hashService: HashService,
+		@Inject(OTP_SERVICE) private readonly otpService: OtpService
 	) {}
+
+	private async _findAndCheckAccount(id: string) {
+		const account = await this.accountRepo.findBy({ id });
+
+		if (!account || account.deletedAt)
+			throw new UnauthorizedException('Аккаунт не существует');
+
+		return account;
+	}
 
 	public async changePassword(
 		id: string,
 		dto: ChangePasswordRequest
 	): Promise<OtpCodeResponse> {
+		const account = await this._findAndCheckAccount(id);
+
 		const { oldPassword } = dto;
 
-		const user = await this.userRepo.findAccount({ id });
-
-		if (!user || user.deletedAt)
-			throw new UnauthorizedException('Аккаунт не существует');
-
 		const isVerified = await this.hashService.verify(
-			user.password,
+			account.password,
 			oldPassword
 		);
 
 		if (!isVerified) throw new UnauthorizedException('Неверный пароль');
 
+		this.logger.log(
+			`[${account.id}] [${account.role}] Иницализация смены пароля`
+		);
+
 		return this.otpService.generate(id, OtpKey.PASSWORD);
 	}
 
 	public async confirmPassword(id: string, dto: ConfirmPasswordRequest) {
+		const account = await this._findAndCheckAccount(id);
+
 		const { code, newPassword } = dto;
 
-		const user = await this.userRepo.findAccount({ id });
-
-		if (!user || user.deletedAt)
-			throw new UnauthorizedException('Аккаунт не существует');
-
-		await this.otpService.verify(user.id, code, OtpKey.PASSWORD);
+		await this.otpService.verify(account.id, code, OtpKey.PASSWORD);
 
 		const hash = await this.hashService.hash(newPassword);
 
-		await this.userRepo.updateAccount(user.id, { password: hash });
+		await this.accountRepo.update(account.id, { password: hash });
+
+		this.logger.log(
+			`[${account.id}] [${account.role}] Подтверждение смены пароля, пароль изменен`
+		);
 
 		return { message: 'Пароль изменен' };
 	}
 
 	public async delete(id: string) {
-		const user = await this.userRepo.findAccount({ id });
+		const account = await this._findAndCheckAccount(id);
 
-		if (!user || user.deletedAt)
-			throw new UnauthorizedException('Аккаунт не существует');
+		await this.accountRepo.update(id, { deletedAt: new Date() });
 
-		await this.userRepo.updateAccount(id, { deletedAt: new Date() });
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
+
+		this.logger.log(`[${account.id}] [${account.role}] Аккаунт удален`);
 
 		return { message: 'Аккаунт удален' };
 	}

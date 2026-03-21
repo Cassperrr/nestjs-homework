@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import type { EnvTypes } from 'src/config';
-import { JwtPayload } from 'src/shared';
+import { IJwtPayload } from 'src/shared';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -18,7 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		});
 	}
 
-	public async validate(payload: JwtPayload) {
+	public validate(payload: IJwtPayload) {
 		return payload;
 	}
 }

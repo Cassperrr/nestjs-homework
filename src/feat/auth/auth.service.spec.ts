@@ -7,9 +7,9 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	HASH_SERVICE,
-	JWT_PASSPORT_SERVICE,
 	OTP_SERVICE,
 	SESSION_SERVICE,
+	TOKEN_SERVICE,
 	UserRepository
 } from 'src/core';
 import { OtpKey } from 'src/shared';
@@ -65,7 +65,7 @@ describe('AuthService', () => {
 				AuthService,
 				{ provide: HASH_SERVICE, useValue: mockHashService },
 				{ provide: OTP_SERVICE, useValue: mockOtpService },
-				{ provide: JWT_PASSPORT_SERVICE, useValue: mockJwtService },
+				{ provide: TOKEN_SERVICE, useValue: mockJwtService },
 				{ provide: SESSION_SERVICE, useValue: mockSessionService },
 				{ provide: ConfigService, useValue: mockConfigService },
 				{ provide: UserRepository, useValue: mockUserRepo }
@@ -133,7 +133,9 @@ describe('AuthService', () => {
 
 			try {
 				await service.register(dto);
-			} catch {}
+			} catch {
+				// ignore
+			}
 
 			expect(mockUserRepo.createAccount).not.toHaveBeenCalled();
 		});
