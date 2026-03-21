@@ -115,7 +115,7 @@ yarn run docker:up
 ### 3. Заполнить БД
 
 ```bash
-yarn run prisma db push
+yarn run prisma:migrate:deploy
 yarn run prisma:seed
 ```
 
