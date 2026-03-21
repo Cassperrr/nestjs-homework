@@ -104,7 +104,6 @@ export class UserRepository {
 	// есть описание
 	// переданный диапазон возраста
 	// === индексы поставил на возраст (на описание не стал потому что предположил что 90% профилей будет заполнено) и partional (deleted_at IS NULL) на аватар
-	// !!!! блок с LEFT JOIN писала нейронка потмоу что у меня в коррелированном подзапросе на получение последней аватарки (через сортировку по убыванию) возникала n+1 и мозгов не хватило написать оконку
 	public async findActive(minAge: number, maxAge: number) {
 		return this.prisma.$queryRaw`
 			SELECT accounts.id AS account_id, 

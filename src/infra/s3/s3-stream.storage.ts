@@ -78,19 +78,6 @@ export class S3StreamStorage implements StorageEngine {
 			.done()
 			.then(() => callback(null, { path } as any))
 			.catch(err => callback(err));
-
-		// this.s3
-		// 	.send(
-		// 		new PutObjectCommand({
-		// 			Bucket: this.bucketName,
-		// 			Key: path,
-		// 			Body: file.stream,
-		// 			ACL: 'public-read',
-		// 			ContentType: file.mimetype
-		// 		})
-		// 	)
-		// 	.then(() => callback(null, { path } as any))
-		// 	.catch(err => callback(err));
 	}
 
 	public _removeFile(
