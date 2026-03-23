@@ -6,33 +6,38 @@
 	"private": true,
 	"license": "UNLICENSED",
 	"scripts": {
+		"start:gateway": "cross-env NODE_ENV=development nest start gateway --watch",
+		"start:user-service": "cross-env NODE_ENV=development nest start user-service --watch",
+		"protogen": "npx protoc -I ./contracts/proto/ ./contracts/proto/*.proto --ts_proto_out=./contracts/gen --ts_proto_opt=nestJs=true,package=omit",
 		"docker:up": "docker compose -f docker/docker-compose.yml up -d --build",
 		"docker:down": "docker compose -f docker/docker-compose.yml down -v",
-		"prisma:seed": "tsx prisma/seeds/seed.ts",
-		"prisma:push": "yarn prisma db push",
-		"prisma:gen": "yarn prisma generate",
-		"prisma:migrate:create": "prisma migrate dev --name",
-		"prisma:migrate:gen": "prisma migrate dev --create-only --name",
-		"prisma:migrate:deploy": "prisma migrate deploy",
+		"prisma:seed:users": "tsx apps/user-service/prisma/seeds/seed.ts",
+		"prisma:push:users": "prisma db push --config=apps/user-service/prisma.config.ts",
+		"prisma:gen:users": "prisma generate --config=apps/user-service/prisma.config.ts",
+		"prisma:migrate:create:users": "prisma migrate dev --config=apps/user-service/prisma.config.ts --name",
+		"prisma:migrate:gen:users": "prisma migrate dev --create-only --config=apps/user-service/prisma.config.ts --name",
+		"prisma:migrate:deploy:users": "prisma migrate deploy --config=apps/user-service/prisma.config.ts",
 		"build": "nest build",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-		"format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+		"format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
 		"husky": "husky install",
 		"pre-commit": "lint-staged",
 		"start": "nest start",
 		"start:dev": "cross-env NODE_ENV=development nest start --watch",
 		"start:debug": "nest start --debug --watch",
-		"start:prod": "cross-env NODE_ENV=production node dist/main",
+		"start:prod": "node dist/apps/nestjs-homework/main",
 		"test": "jest",
 		"test:watch": "jest --watch",
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"test:e2e": "jest --config ./test/jest-e2e.json"
+		"test:e2e": "jest --config ./apps/nestjs-homework/test/jest-e2e.json"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.1002.0",
 		"@aws-sdk/lib-storage": "^3.1004.0",
 		"@faker-js/faker": "^10.3.0",
+		"@grpc/grpc-js": "^1.14.3",
+		"@grpc/proto-loader": "^0.8.0",
 		"@nestjs/bullmq": "^11.0.4",
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/config": "^4.0.3",
@@ -40,6 +45,7 @@
 		"@nestjs/event-emitter": "^3.0.1",
 		"@nestjs/jwt": "^11.0.2",
 		"@nestjs/mapped-types": "*",
+		"@nestjs/microservices": "^11.1.17",
 		"@nestjs/passport": "^11.0.5",
 		"@nestjs/platform-express": "^11.1.16",
 		"@nestjs/schedule": "^6.1.1",
@@ -94,6 +100,7 @@
 		"ts-jest": "^29.2.5",
 		"ts-loader": "^9.5.2",
 		"ts-node": "^10.9.2",
+		"ts-proto": "^2.11.5",
 		"tsconfig-paths": "^4.2.0",
 		"typescript": "^5.7.3",
 		"typescript-eslint": "^8.20.0"
@@ -117,7 +124,10 @@
 			"**/*.(t|j)s"
 		],
 		"coverageDirectory": "../coverage",
-		"testEnvironment": "node"
+		"testEnvironment": "node",
+		"roots": [
+			"<rootDir>/apps/"
+		]
 	},
 	"lint-staged": {
 		"*.{js, jsx,ts,tsx}": [
