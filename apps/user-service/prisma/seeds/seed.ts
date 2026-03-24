@@ -3,9 +3,10 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import argon2 from 'argon2';
 import dotenv from 'dotenv';
 import { resolve } from 'path';
+import { Role } from 'shared';
 import { uuidv7 } from 'uuidv7';
 
-import { PrismaClient, Role } from '../generated/client';
+import { PrismaClient } from '../generated/client';
 
 dotenv.config({ path: resolve(__dirname, '../../.env.development.local') });
 

@@ -7,6 +7,8 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
+import { OtpCodeResponse, StringMessage } from './shared';
+
 export const protobufPackage = 'auth';
 
 export interface RegisterRequest {
@@ -15,36 +17,82 @@ export interface RegisterRequest {
 	email: string;
 }
 
-export interface RegisterResponse {
+export interface ResendRequest {
+	email: string;
+}
+
+export interface VerifyRequest {
+	email: string;
 	code: string;
+}
+
+export interface TokensResponse {
+	accessToken: string;
+	refreshToken: string;
+	refreshTtl: string;
+}
+
+export interface LoginRequest {
+	username: string;
+	password: string;
+}
+
+export interface RefreshRequest {
+	refreshToken: string;
 }
 
 export const AUTH_PACKAGE_NAME = 'auth';
 
-/**  */
-
 export interface AuthServiceClient {
-	/**  */
+	register(request: RegisterRequest): Observable<OtpCodeResponse>;
 
-	register(request: RegisterRequest): Observable<RegisterResponse>;
+	resend(request: ResendRequest): Observable<OtpCodeResponse>;
+
+	verify(request: VerifyRequest): Observable<TokensResponse>;
+
+	login(request: LoginRequest): Observable<TokensResponse>;
+
+	refresh(request: RefreshRequest): Observable<TokensResponse>;
+
+	logout(request: RefreshRequest): Observable<StringMessage>;
 }
 
-/**  */
-
 export interface AuthServiceController {
-	/**  */
-
 	register(
 		request: RegisterRequest
-	):
-		| Promise<RegisterResponse>
-		| Observable<RegisterResponse>
-		| RegisterResponse;
+	): Promise<OtpCodeResponse> | Observable<OtpCodeResponse> | OtpCodeResponse;
+
+	resend(
+		request: ResendRequest
+	): Promise<OtpCodeResponse> | Observable<OtpCodeResponse> | OtpCodeResponse;
+
+	verify(
+		request: VerifyRequest
+	): Promise<TokensResponse> | Observable<TokensResponse> | TokensResponse;
+
+	login(
+		request: LoginRequest
+	): Promise<TokensResponse> | Observable<TokensResponse> | TokensResponse;
+
+	refresh(
+		request: RefreshRequest
+	): Promise<TokensResponse> | Observable<TokensResponse> | TokensResponse;
+
+	logout(
+		request: RefreshRequest
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 }
 
 export function AuthServiceControllerMethods() {
 	return function (constructor: Function) {
-		const grpcMethods: string[] = ['register'];
+		const grpcMethods: string[] = [
+			'register',
+			'resend',
+			'verify',
+			'login',
+			'refresh',
+			'logout'
+		];
 		for (const method of grpcMethods) {
 			const descriptor: any = Reflect.getOwnPropertyDescriptor(
 				constructor.prototype,

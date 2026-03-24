@@ -16,7 +16,7 @@ model Account {
   password   String  @db.VarChar(255)
   email      String  @unique
   isVerified Boolean @default(false) @map("is_verified")
-  role       Role    @default(USER)
+  role       String  @default("USER")
 
   profile      Profile?
   balance      Balance?
@@ -97,11 +97,6 @@ model Avatar {
 
   @@index([profileId], where: raw("deleted_at IS NULL"))
   @@map("avatars")
-}
-
-enum Role {
-  USER
-  ADMIN
 }
 
 enum TransactionType {

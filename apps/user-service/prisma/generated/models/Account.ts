@@ -31,7 +31,7 @@ export type AccountMinAggregateOutputType = {
 	password: string | null;
 	email: string | null;
 	isVerified: boolean | null;
-	role: $Enums.Role | null;
+	role: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
 	deletedAt: Date | null;
@@ -43,7 +43,7 @@ export type AccountMaxAggregateOutputType = {
 	password: string | null;
 	email: string | null;
 	isVerified: boolean | null;
-	role: $Enums.Role | null;
+	role: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
 	deletedAt: Date | null;
@@ -184,7 +184,7 @@ export type AccountGroupByOutputType = {
 	password: string;
 	email: string;
 	isVerified: boolean;
-	role: $Enums.Role;
+	role: string;
 	createdAt: Date;
 	updatedAt: Date;
 	deletedAt: Date | null;
@@ -219,7 +219,7 @@ export type AccountWhereInput = {
 	password?: Prisma.StringFilter<'Account'> | string;
 	email?: Prisma.StringFilter<'Account'> | string;
 	isVerified?: Prisma.BoolFilter<'Account'> | boolean;
-	role?: Prisma.EnumRoleFilter<'Account'> | $Enums.Role;
+	role?: Prisma.StringFilter<'Account'> | string;
 	createdAt?: Prisma.DateTimeFilter<'Account'> | Date | string;
 	updatedAt?: Prisma.DateTimeFilter<'Account'> | Date | string;
 	deletedAt?: Prisma.DateTimeNullableFilter<'Account'> | Date | string | null;
@@ -259,7 +259,7 @@ export type AccountWhereUniqueInput = Prisma.AtLeast<
 		NOT?: Prisma.AccountWhereInput | Prisma.AccountWhereInput[];
 		password?: Prisma.StringFilter<'Account'> | string;
 		isVerified?: Prisma.BoolFilter<'Account'> | boolean;
-		role?: Prisma.EnumRoleFilter<'Account'> | $Enums.Role;
+		role?: Prisma.StringFilter<'Account'> | string;
 		createdAt?: Prisma.DateTimeFilter<'Account'> | Date | string;
 		updatedAt?: Prisma.DateTimeFilter<'Account'> | Date | string;
 		deletedAt?:
@@ -308,7 +308,7 @@ export type AccountScalarWhereWithAggregatesInput = {
 	password?: Prisma.StringWithAggregatesFilter<'Account'> | string;
 	email?: Prisma.StringWithAggregatesFilter<'Account'> | string;
 	isVerified?: Prisma.BoolWithAggregatesFilter<'Account'> | boolean;
-	role?: Prisma.EnumRoleWithAggregatesFilter<'Account'> | $Enums.Role;
+	role?: Prisma.StringWithAggregatesFilter<'Account'> | string;
 	createdAt?: Prisma.DateTimeWithAggregatesFilter<'Account'> | Date | string;
 	updatedAt?: Prisma.DateTimeWithAggregatesFilter<'Account'> | Date | string;
 	deletedAt?:
@@ -324,7 +324,7 @@ export type AccountCreateInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -339,7 +339,7 @@ export type AccountUncheckedCreateInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -354,7 +354,7 @@ export type AccountUpdateInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -373,7 +373,7 @@ export type AccountUncheckedUpdateInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -392,7 +392,7 @@ export type AccountCreateManyInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -404,7 +404,7 @@ export type AccountUpdateManyMutationInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -420,7 +420,7 @@ export type AccountUncheckedUpdateManyInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -477,10 +477,6 @@ export type StringFieldUpdateOperationsInput = {
 
 export type BoolFieldUpdateOperationsInput = {
 	set?: boolean;
-};
-
-export type EnumRoleFieldUpdateOperationsInput = {
-	set?: $Enums.Role;
 };
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -575,7 +571,7 @@ export type AccountCreateWithoutBalanceInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -589,7 +585,7 @@ export type AccountUncheckedCreateWithoutBalanceInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -631,7 +627,7 @@ export type AccountUpdateWithoutBalanceInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -649,7 +645,7 @@ export type AccountUncheckedUpdateWithoutBalanceInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -667,7 +663,7 @@ export type AccountCreateWithoutTransactionsInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -681,7 +677,7 @@ export type AccountUncheckedCreateWithoutTransactionsInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -723,7 +719,7 @@ export type AccountUpdateWithoutTransactionsInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -741,7 +737,7 @@ export type AccountUncheckedUpdateWithoutTransactionsInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -759,7 +755,7 @@ export type AccountCreateWithoutProfileInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -773,7 +769,7 @@ export type AccountUncheckedCreateWithoutProfileInput = {
 	password: string;
 	email: string;
 	isVerified?: boolean;
-	role?: $Enums.Role;
+	role?: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
@@ -815,7 +811,7 @@ export type AccountUpdateWithoutProfileInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -833,7 +829,7 @@ export type AccountUncheckedUpdateWithoutProfileInput = {
 	password?: Prisma.StringFieldUpdateOperationsInput | string;
 	email?: Prisma.StringFieldUpdateOperationsInput | string;
 	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.EnumRoleFieldUpdateOperationsInput | $Enums.Role;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	deletedAt?:
@@ -1003,7 +999,7 @@ export type $AccountPayload<
 			password: string;
 			email: string;
 			isVerified: boolean;
-			role: $Enums.Role;
+			role: string;
 			createdAt: Date;
 			updatedAt: Date;
 			deletedAt: Date | null;
@@ -1644,7 +1640,7 @@ export interface AccountFieldRefs {
 	readonly password: Prisma.FieldRef<'Account', 'String'>;
 	readonly email: Prisma.FieldRef<'Account', 'String'>;
 	readonly isVerified: Prisma.FieldRef<'Account', 'Boolean'>;
-	readonly role: Prisma.FieldRef<'Account', 'Role'>;
+	readonly role: Prisma.FieldRef<'Account', 'String'>;
 	readonly createdAt: Prisma.FieldRef<'Account', 'DateTime'>;
 	readonly updatedAt: Prisma.FieldRef<'Account', 'DateTime'>;
 	readonly deletedAt: Prisma.FieldRef<'Account', 'DateTime'>;

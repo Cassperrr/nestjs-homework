@@ -7,7 +7,7 @@ import {
 	Length,
 	Matches
 } from 'class-validator';
-import type { ITransformValue } from 'src/shared';
+import type { TransformValue } from 'src/shared';
 
 export class VerifyRequest {
 	@ApiProperty({
@@ -16,7 +16,7 @@ export class VerifyRequest {
 	})
 	@IsNotEmpty({ message: 'Email должен быть заполнен' })
 	@IsEmail({}, { message: 'Некорректный формат Email' })
-	@Transform(({ value }: ITransformValue) => value.trim().toLowerCase())
+	@Transform(({ value }: TransformValue) => value.trim().toLowerCase())
 	readonly email: string;
 
 	@ApiProperty({

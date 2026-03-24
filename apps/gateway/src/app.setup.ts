@@ -1,6 +1,8 @@
+import { GrpcExeptionFilter } from '@libs/grpc';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 
+import { ThrottlerExceptionFilter } from './common';
 import { swaggerSetup } from './swagger';
 
 export function appSetup(app: INestApplication, isDev: boolean) {
@@ -17,6 +19,11 @@ export function appSetup(app: INestApplication, isDev: boolean) {
 			transform: true,
 			whitelist: true
 		})
+	);
+
+	app.useGlobalFilters(
+		new GrpcExeptionFilter(),
+		new ThrottlerExceptionFilter()
 	);
 
 	// app.useGlobalFilters(new InfrastructureFilter());

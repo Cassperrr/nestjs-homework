@@ -8,10 +8,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import type { CookieOptions } from 'express';
-import ms from 'ms';
-import { Role } from 'prisma/generated/enums';
-import { EnvTypes } from 'src/config';
 import {
 	AccountRepository,
 	CACHE_EVENTS,
@@ -23,7 +19,11 @@ import {
 	SessionService,
 	TOKEN_SERVICE,
 	TokenService
-} from 'src/core';
+} from 'apps/monolit/src/core';
+import type { CookieOptions } from 'express';
+import ms from 'ms';
+import { Role } from 'prisma/generated/enums';
+import { EnvTypes } from 'src/config';
 import { OtpKey } from 'src/shared';
 
 import type {

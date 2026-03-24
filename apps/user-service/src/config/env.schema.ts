@@ -3,8 +3,6 @@ import ms, { type StringValue } from 'ms';
 import { z } from 'zod';
 
 export const userServiceEnvSchema = generalSchema.extend({
-	COOKIE_DOMAIN: z.string().default('localhost'),
-
 	DATABASE_USER: z.string().nonempty(),
 	DATABASE_PASSWORD: z.string().nonempty(),
 	DATABASE_PORT: z.coerce.number().min(1).max(65535),

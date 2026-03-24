@@ -26,7 +26,7 @@
 			"sourceRoot": "apps/user-service/src",
 			"compilerOptions": {
 				"webpack": true,
-				"webpackConfigPath": "apps/user-service/webpack.config.js",
+				"webpackConfigPath": "apps/user-service/webpack.config.cjs",
 				"tsConfigPath": "apps/user-service/tsconfig.app.json"
 			}
 		}

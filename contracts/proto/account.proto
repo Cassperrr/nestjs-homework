@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package account;
+
+import "shared.proto";
+
+service AccountService {
+  rpc ChangePassword (ChangePasswordRequest) returns (shared.OtpCodeResponse);
+  rpc ConfirmPassword (ConfirmPasswordRequest) returns (shared.StringMessage);
+  rpc Delete (shared.AccountId) returns (shared.StringMessage);
+}
+
+message ChangePasswordRequest {
+  string account_id = 1;
+  string old_password = 2;
+}
+
+message ConfirmPasswordRequest {
+  string account_id = 1;
+  string new_password = 2;
+  string code = 3;
+}
+

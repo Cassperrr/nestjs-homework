@@ -1,12 +1,10 @@
 import { Module } from '@nestjs/common';
-import { GrpcModule } from 'libs/grpc';
 
-import { UserController } from './auth.controller';
+import { AuthController } from './auth.controller';
 import { AuthClientGrpc } from './auth.grpc';
 
 @Module({
-	imports: [GrpcModule.register(['AUTH_PACKAGE'])],
-	controllers: [UserController],
+	controllers: [AuthController],
 	providers: [AuthClientGrpc],
 	exports: [AuthClientGrpc]
 })

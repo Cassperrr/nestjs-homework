@@ -23,9 +23,11 @@
 		"noFallthroughCasesInSwitch": false,
 		"paths": {
 			"@libs/config": ["libs/config/index.ts"],
-			"@libs/utils": ["libs/utils/index.ts"],
+			"@libs/utils": ["shared/utils/index.ts"],
 			"@libs/grpc": ["libs/grpc/index.ts"],
-			"@contracts": ["contracts/index.ts"]
+			"@contracts": ["contracts/index.ts"],
+			"@user-service/*": ["apps/user-service/*"],
+			"@gateway/*": ["apps/gateway/*"]
 		}
 	}
 }

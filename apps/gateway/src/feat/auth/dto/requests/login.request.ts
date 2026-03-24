@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ITransformValue } from 'apps/gateway/src/shared';
 import { Transform } from 'class-transformer';
 import {
 	IsNotEmpty,
@@ -8,6 +7,7 @@ import {
 	MaxLength,
 	MinLength
 } from 'class-validator';
+import { TransformValue } from 'shared';
 
 export class LoginRequest {
 	@ApiProperty({
@@ -24,7 +24,7 @@ export class LoginRequest {
 		message:
 			'Username должен содержать минимум одну заглавную букву и одну цифру'
 	})
-	@Transform(({ value }: ITransformValue) => value.trim())
+	@Transform(({ value }: TransformValue) => value.trim())
 	readonly username: string;
 
 	@ApiProperty({

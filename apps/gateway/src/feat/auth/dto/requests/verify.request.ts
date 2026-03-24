@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ITransformValue } from 'apps/gateway/src/shared';
 import { Transform } from 'class-transformer';
 import {
 	IsEmail,
@@ -8,6 +7,7 @@ import {
 	Length,
 	Matches
 } from 'class-validator';
+import { TransformValue } from 'shared';
 
 export class VerifyRequest {
 	@ApiProperty({
@@ -16,7 +16,7 @@ export class VerifyRequest {
 	})
 	@IsNotEmpty({ message: 'Email должен быть заполнен' })
 	@IsEmail({}, { message: 'Некорректный формат Email' })
-	@Transform(({ value }: ITransformValue) => value.trim().toLowerCase())
+	@Transform(({ value }: TransformValue) => value.trim().toLowerCase())
 	readonly email: string;
 
 	@ApiProperty({
