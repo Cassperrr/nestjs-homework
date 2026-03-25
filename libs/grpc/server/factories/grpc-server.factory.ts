@@ -22,6 +22,6 @@ export function createGrpcServer(
 			}
 		}
 	});
-	const logger = new Logger(createGrpcServer.name);
+	const logger = new Logger('Builder gRPC server');
 	logger.warn(`Сервер gRPC с пакетами "${packages.toString()}" запущен`);
 }

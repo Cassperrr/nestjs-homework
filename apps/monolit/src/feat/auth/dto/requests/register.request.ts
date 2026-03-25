@@ -25,7 +25,7 @@ export class RegisterRequest {
 		message:
 			'Username должен содержать минимум одну заглавную букву и одну цифру'
 	})
-	@Transform(({ value }: TransformValue) => value.trim())
+	@Transform(({ value }: TransformValue) => value?.trim())
 	readonly username: string;
 
 	@ApiProperty({
@@ -51,6 +51,6 @@ export class RegisterRequest {
 	})
 	@IsNotEmpty({ message: 'Email должен быть заполнен' })
 	@IsEmail({}, { message: 'Некорректный формат Email' })
-	@Transform(({ value }: TransformValue) => value.trim().toLowerCase())
+	@Transform(({ value }: TransformValue) => value?.trim().toLowerCase())
 	readonly email: string;
 }

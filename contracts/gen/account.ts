@@ -7,7 +7,7 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
-import { AccountId, OtpCodeResponse, StringMessage } from './shared';
+import { OtpCodeResponse, StringMessage } from './shared';
 
 export const protobufPackage = 'account';
 
@@ -22,6 +22,10 @@ export interface ConfirmPasswordRequest {
 	code: string;
 }
 
+export interface DeleteRequest {
+	accountId: string;
+}
+
 export const ACCOUNT_PACKAGE_NAME = 'account';
 
 export interface AccountServiceClient {
@@ -29,7 +33,7 @@ export interface AccountServiceClient {
 
 	confirmPassword(request: ConfirmPasswordRequest): Observable<StringMessage>;
 
-	delete(request: AccountId): Observable<StringMessage>;
+	delete(request: DeleteRequest): Observable<StringMessage>;
 }
 
 export interface AccountServiceController {
@@ -42,7 +46,7 @@ export interface AccountServiceController {
 	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
 	delete(
-		request: AccountId
+		request: DeleteRequest
 	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 }
 

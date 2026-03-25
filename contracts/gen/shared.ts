@@ -16,8 +16,4 @@ export interface StringMessage {
 	message: string;
 }
 
-export interface AccountId {
-	accountId: string;
-}
-
 export const SHARED_PACKAGE_NAME = 'shared';

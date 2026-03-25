@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { ThrottlerExceptionFilter } from './common';
 import { swaggerSetup } from './swagger';
 
-export function appSetup(app: INestApplication, isDev: boolean) {
+export const appSetup = (app: INestApplication, isDev: boolean) => {
 	app.enableCors({
 		origin: isDev ? true : 'оригин для прода', // TODO
 		credentials: true,
@@ -29,4 +29,4 @@ export function appSetup(app: INestApplication, isDev: boolean) {
 	// app.useGlobalFilters(new InfrastructureFilter());
 
 	swaggerSetup(app, isDev);
-}
+};

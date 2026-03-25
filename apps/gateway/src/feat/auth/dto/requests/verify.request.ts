@@ -16,7 +16,7 @@ export class VerifyRequest {
 	})
 	@IsNotEmpty({ message: 'Email должен быть заполнен' })
 	@IsEmail({}, { message: 'Некорректный формат Email' })
-	@Transform(({ value }: TransformValue) => value.trim().toLowerCase())
+	@Transform(({ value }: TransformValue) => value?.trim().toLowerCase())
 	readonly email: string;
 
 	@ApiProperty({

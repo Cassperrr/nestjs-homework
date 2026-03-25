@@ -11,7 +11,7 @@ export class FindAllUserRequest {
 	})
 	@IsOptional()
 	@IsString({ message: 'Username должен быть строкой' })
-	@Transform(({ value }: TransformValue) => value.trim())
+	@Transform(({ value }: TransformValue) => value?.trim())
 	readonly username?: string;
 
 	@ApiProperty({

@@ -3,13 +3,10 @@ import { GrpcMethod } from '@nestjs/microservices';
 import {
 	ACCOUNT_SERVICE_NAME,
 	type ChangePasswordRequest,
-	type ConfirmPasswordRequest
+	type ConfirmPasswordRequest,
+	type DeleteRequest
 } from 'contracts/gen/account';
-import type {
-	AccountId,
-	OtpCodeResponse,
-	StringMessage
-} from 'contracts/gen/shared';
+import type { OtpCodeResponse, StringMessage } from 'contracts/gen/shared';
 
 import { AccountService } from './account.service';
 
@@ -32,7 +29,7 @@ export class AccountController {
 	}
 
 	@GrpcMethod(ACCOUNT_SERVICE_NAME)
-	public async delete(data: AccountId): Promise<StringMessage> {
+	public async delete(data: DeleteRequest): Promise<StringMessage> {
 		return this.accountService.delete(data);
 	}
 }

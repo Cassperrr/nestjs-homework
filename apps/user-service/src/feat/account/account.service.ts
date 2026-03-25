@@ -10,15 +10,12 @@ import {
 	OTP_SERVICE,
 	OtpService
 } from '@user-service/src/core';
-import {
+import type {
 	ChangePasswordRequest,
-	ConfirmPasswordRequest
+	ConfirmPasswordRequest,
+	DeleteRequest
 } from 'contracts/gen/account';
-import {
-	AccountId,
-	OtpCodeResponse,
-	StringMessage
-} from 'contracts/gen/shared';
+import { OtpCodeResponse, StringMessage } from 'contracts/gen/shared';
 import { OtpKey } from 'shared';
 
 @Injectable()
@@ -90,7 +87,7 @@ export class AccountService {
 		return { message: 'Пароль изменен' };
 	}
 
-	public async delete(data: AccountId): Promise<StringMessage> {
+	public async delete(data: DeleteRequest): Promise<StringMessage> {
 		const { accountId } = data;
 
 		const account = await this._findAndCheckAccount(accountId);

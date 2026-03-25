@@ -7,7 +7,7 @@ import "shared.proto";
 service AccountService {
   rpc ChangePassword (ChangePasswordRequest) returns (shared.OtpCodeResponse);
   rpc ConfirmPassword (ConfirmPasswordRequest) returns (shared.StringMessage);
-  rpc Delete (shared.AccountId) returns (shared.StringMessage);
+  rpc Delete (DeleteRequest) returns (shared.StringMessage);
 }
 
 message ChangePasswordRequest {
@@ -21,3 +21,6 @@ message ConfirmPasswordRequest {
   string code = 3;
 }
 
+message DeleteRequest {
+  string account_id = 1;
+}

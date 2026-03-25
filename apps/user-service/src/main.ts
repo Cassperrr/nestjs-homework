@@ -1,12 +1,9 @@
-import { PROTO_PATHS } from '@contracts';
-import { createGrpcServer } from '@libs/grpc';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { ACCOUNT_PACKAGE_NAME } from 'contracts/gen/account';
-import { AUTH_PACKAGE_NAME } from 'contracts/gen/auth';
 import { getLoggerOptions } from 'shared/utils';
 
 import { UserServiceEnv } from './config';
+import { grpcSetup } from './grpc.setup';
 import { UserServiceModule } from './user-service.module';
 
 async function bootstrap() {
@@ -19,12 +16,7 @@ async function bootstrap() {
 	const config = app.get(ConfigService<UserServiceEnv, true>);
 	const grpcUrl = config.get('USER_GRPC_URL', { infer: true });
 
-	createGrpcServer(
-		app,
-		grpcUrl,
-		[AUTH_PACKAGE_NAME, ACCOUNT_PACKAGE_NAME],
-		[PROTO_PATHS.AUTH, PROTO_PATHS.ACCOUNT]
-	);
+	grpcSetup(app, grpcUrl);
 
 	await app.startAllMicroservices();
 	await app.init();

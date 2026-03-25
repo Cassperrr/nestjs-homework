@@ -18,7 +18,7 @@ export class UpdateProfileRequest {
 	@IsOptional()
 	@IsString({ message: 'Имя должно быть строкой' })
 	@MaxLength(50, { message: 'Имя должно быть до 50 символов' })
-	@Transform(({ value }: TransformValue) => value.trim())
+	@Transform(({ value }: TransformValue) => value?.trim())
 	readonly firstName?: string;
 
 	@ApiProperty({
@@ -28,7 +28,7 @@ export class UpdateProfileRequest {
 	@IsOptional()
 	@IsString({ message: 'Фамилия должна быть строкой' })
 	@MaxLength(50, { message: 'Фамилия должна быть до 50 символов' })
-	@Transform(({ value }: TransformValue) => value.trim())
+	@Transform(({ value }: TransformValue) => value?.trim())
 	readonly lastName?: string;
 
 	@ApiProperty({
@@ -52,6 +52,6 @@ export class UpdateProfileRequest {
 	@IsOptional()
 	@IsString({ message: 'Описание должно быть строкой' })
 	@MaxLength(500, { message: 'Описание должно быть до 500 символов' })
-	@Transform(({ value }: TransformValue) => value.trim())
+	@Transform(({ value }: TransformValue) => value?.trim())
 	readonly description?: string;
 }
