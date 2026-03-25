@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Account } from 'prisma/generated/client';
 import { EnvTypes } from 'src/config';
-import { AvatarRepository, CACHE_EVENTS, UserRepository } from 'src/core';
+import { AvatarRepository, CACHE_EVENTS, UsersRepository } from 'src/core';
 import { AbstractFileService } from 'src/shared';
 
 import { DeleteAvatarRequest, UploadAvatarResponse } from './dto';
@@ -20,7 +20,7 @@ export class AvatarService {
 	private readonly maxAvatars: number;
 
 	public constructor(
-		private readonly userRepo: UserRepository,
+		private readonly userRepo: UsersRepository,
 		private readonly avatarRepo: AvatarRepository,
 		private readonly fileService: AbstractFileService,
 		private readonly configService: ConfigService<EnvTypes, true>,

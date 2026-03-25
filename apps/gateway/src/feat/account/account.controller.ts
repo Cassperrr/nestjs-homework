@@ -23,7 +23,7 @@ export class AccountController {
 	constructor(private readonly client: AccountClientGrpc) {}
 
 	@ApiPasswordChange()
-	@Protected(Role.ADMIN)
+	@Protected()
 	@Post('password/change')
 	@HttpCode(HttpStatus.OK)
 	public async changePassword(

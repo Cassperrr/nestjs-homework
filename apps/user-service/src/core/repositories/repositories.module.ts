@@ -4,21 +4,21 @@ import { AccountRepository } from './account.repository';
 import { AvatarRepository } from './avatar.repository';
 import { BalanceRepository } from './balance.repository';
 import { ProfileRepository } from './profile.repository';
-import { UserRepository } from './user.repository';
+import { UsersRepository } from './users.repository';
 
 @Module({
 	providers: [
 		AccountRepository,
 		ProfileRepository,
 		AvatarRepository,
-		UserRepository,
+		UsersRepository,
 		BalanceRepository
 	],
 	exports: [
 		AccountRepository,
 		ProfileRepository,
 		AvatarRepository,
-		UserRepository,
+		UsersRepository,
 		BalanceRepository
 	]
 })

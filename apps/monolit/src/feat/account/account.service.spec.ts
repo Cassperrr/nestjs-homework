@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HASH_SERVICE, OTP_SERVICE, UserRepository } from 'src/core';
+import { HASH_SERVICE, OTP_SERVICE, UsersRepository } from 'src/core';
 import { OtpKey } from 'src/shared';
 import 'test/__mocks__/prisma.mock';
 
@@ -30,7 +30,7 @@ describe('AccountService', () => {
 				AccountService,
 				{ provide: HASH_SERVICE, useValue: mockHashService },
 				{ provide: OTP_SERVICE, useValue: mockOtpService },
-				{ provide: UserRepository, useValue: mockUserRepo }
+				{ provide: UsersRepository, useValue: mockUserRepo }
 			]
 		}).compile();
 		service = module.get<AccountService>(AccountService);

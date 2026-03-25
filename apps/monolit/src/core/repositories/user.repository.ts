@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/infra';
 
 @Injectable()
-export class UserRepository {
+export class UsersRepository {
 	public constructor(private readonly prisma: PrismaService) {}
 
 	public async findBy(params: {

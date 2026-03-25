@@ -10,7 +10,7 @@ import {
 	OTP_SERVICE,
 	SESSION_SERVICE,
 	TOKEN_SERVICE,
-	UserRepository
+	UsersRepository
 } from 'src/core';
 import { OtpKey } from 'src/shared';
 import 'test/__mocks__/prisma.mock';
@@ -68,7 +68,7 @@ describe('AuthService', () => {
 				{ provide: TOKEN_SERVICE, useValue: mockJwtService },
 				{ provide: SESSION_SERVICE, useValue: mockSessionService },
 				{ provide: ConfigService, useValue: mockConfigService },
-				{ provide: UserRepository, useValue: mockUserRepo }
+				{ provide: UsersRepository, useValue: mockUserRepo }
 			]
 		}).compile();
 		service = module.get<AuthService>(AuthService);

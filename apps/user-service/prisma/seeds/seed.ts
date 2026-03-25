@@ -73,7 +73,9 @@ function generatePassword(): string {
 async function main() {
 	console.log('Seeding database...');
 
+	await prisma.avatar.deleteMany();
 	await prisma.profile.deleteMany();
+	await prisma.balance.deleteMany();
 	await prisma.account.deleteMany();
 
 	// --- ADMIN ---
@@ -148,7 +150,7 @@ async function main() {
 									age: faker.number.int({ min: 18, max: 80 }),
 									description: faker.datatype.boolean()
 										? faker.lorem.sentence()
-										: null,
+										: undefined,
 									avatars: {
 										createMany: {
 											data: [

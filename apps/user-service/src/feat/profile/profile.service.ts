@@ -5,7 +5,7 @@ import { RpcException } from '@nestjs/microservices';
 import {
 	CACHE_EVENTS,
 	ProfileRepository,
-	UserRepository
+	UsersRepository
 } from '@user-service/src/core';
 import type {
 	CreateProfileRequest,
@@ -19,7 +19,7 @@ export class ProfileService {
 
 	public constructor(
 		private readonly profileRepo: ProfileRepository,
-		private readonly userRepo: UserRepository,
+		private readonly userRepo: UsersRepository,
 		private readonly eventEmmiter: EventEmitter2
 	) {}
 
@@ -59,14 +59,7 @@ export class ProfileService {
 			`[${user.id}] [${user.role}] Профиль создан - ${profile.id}`
 		);
 
-		return {
-			profileId: profile.id,
-			age: profile.age,
-			firstName: profile.firstName,
-			lastName: profile.lastName,
-			description: profile.description ?? undefined,
-			avatars: []
-		};
+		return { avatars: [], ...profile };
 	}
 
 	public async update(data: UpdateProfileRequest): Promise<ProfileResponse> {
@@ -93,13 +86,6 @@ export class ProfileService {
 			`[${user.id}] [${user.role}] Профиль обновлен - ${profile.id}`
 		);
 
-		return {
-			profileId: profile.id,
-			age: profile.age,
-			firstName: profile.firstName,
-			lastName: profile.lastName,
-			description: profile.description ?? undefined,
-			avatars: []
-		};
+		return { avatars: [], ...profile };
 	}
 }

@@ -20,7 +20,7 @@ export interface CreateProfileRequest {
 }
 
 export interface ProfileResponse {
-	profileId: string;
+	id: string;
 	firstName: string;
 	lastName: string;
 	age: number;

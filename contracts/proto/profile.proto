@@ -19,7 +19,7 @@ message CreateProfileRequest {
 }
 
 message ProfileResponse {
-  string profile_id = 1;
+  string id = 1;
   string first_name = 2;
   string last_name = 3;
   uint32 age = 4;

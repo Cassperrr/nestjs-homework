@@ -5,7 +5,7 @@ export class AccountResponse {
 		description: 'Id пользователя',
 		example: 'uuid'
 	})
-	readonly id: string;
+	readonly accountId: string;
 
 	@ApiProperty({
 		description: 'Имя пользователя',
@@ -23,5 +23,5 @@ export class AccountResponse {
 		description: 'Дата регистрации',
 		example: '2026-01-01T00:00:00.000Z'
 	})
-	readonly createdAt: Date;
+	readonly createdAt: string;
 }

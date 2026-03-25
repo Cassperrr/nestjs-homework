@@ -5,7 +5,7 @@ import {
 	NotFoundException
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CACHE_EVENTS, ProfileRepository, UserRepository } from 'src/core';
+import { CACHE_EVENTS, ProfileRepository, UsersRepository } from 'src/core';
 
 import {
 	CreateProfileRequest,
@@ -19,7 +19,7 @@ export class ProfileService {
 
 	public constructor(
 		private readonly profileRepo: ProfileRepository,
-		private readonly userRepo: UserRepository,
+		private readonly userRepo: UsersRepository,
 		private readonly eventEmmiter: EventEmitter2
 	) {}
 

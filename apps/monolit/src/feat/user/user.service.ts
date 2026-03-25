@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { CACHE_SERVICE, CacheService, UserRepository } from 'src/core';
+import { CACHE_SERVICE, CacheService, UsersRepository } from 'src/core';
 
 import {
 	ActiveUserResponse,
@@ -15,7 +15,7 @@ export class UserService {
 	private readonly logger = new Logger(UserService.name);
 
 	public constructor(
-		private readonly userRepo: UserRepository,
+		private readonly userRepo: UsersRepository,
 
 		@Inject(CACHE_SERVICE) private readonly cacheService: CacheService
 	) {}
