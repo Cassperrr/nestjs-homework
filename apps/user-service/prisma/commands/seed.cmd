@@ -1,0 +1,1 @@
+tsx apps/user-service/prisma/seeds/seed.ts
