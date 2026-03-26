@@ -16,7 +16,7 @@ model Account {
   password   String  @db.VarChar(255)
   email      String  @unique
   isVerified Boolean @default(false) @map("is_verified")
-  role       String  @default("USER")
+  role       String  @default("USER") @db.VarChar(25)
 
   profile      Profile?
   balance      Balance?
@@ -48,7 +48,7 @@ model Transaction {
   id String @id @db.Char(36)
 
   amount BigInt
-  type   TransactionType
+  type   String @db.VarChar(25)
 
   idempotencyKey    String  @unique @map("idempotency_key")
   withdrawalAccount String? @map("withdwal_account")
@@ -97,13 +97,4 @@ model Avatar {
 
   @@index([profileId], where: raw("deleted_at IS NULL"))
   @@map("avatars")
-}
-
-enum TransactionType {
-  DEPOSIT // пополнение
-  // PURCHASE // покупка
-  // REFUND // возрат
-  WITHDRAWAL // вывод
-  TRANSFER_IN
-  TRANSFER_OUT
 }

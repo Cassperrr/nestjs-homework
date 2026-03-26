@@ -35,7 +35,9 @@ export class ProfileService {
 		return user;
 	}
 
-	public async create(data: CreateProfileRequest): Promise<ProfileResponse> {
+	public async createProfile(
+		data: CreateProfileRequest
+	): Promise<ProfileResponse> {
 		const { accountId, age, firstName, lastName, description } = data;
 
 		const user = await this._findAndCheckUser(accountId);
@@ -62,7 +64,9 @@ export class ProfileService {
 		return { avatars: [], ...profile };
 	}
 
-	public async update(data: UpdateProfileRequest): Promise<ProfileResponse> {
+	public async updateProfile(
+		data: UpdateProfileRequest
+	): Promise<ProfileResponse> {
 		const { accountId, age, firstName, lastName, description } = data;
 
 		const user = await this._findAndCheckUser(accountId);

@@ -38,7 +38,7 @@ export type TransactionSumAggregateOutputType = {
 export type TransactionMinAggregateOutputType = {
 	id: string | null;
 	amount: bigint | null;
-	type: $Enums.TransactionType | null;
+	type: string | null;
 	idempotencyKey: string | null;
 	withdrawalAccount: string | null;
 	referenceId: string | null;
@@ -49,7 +49,7 @@ export type TransactionMinAggregateOutputType = {
 export type TransactionMaxAggregateOutputType = {
 	id: string | null;
 	amount: bigint | null;
-	type: $Enums.TransactionType | null;
+	type: string | null;
 	idempotencyKey: string | null;
 	withdrawalAccount: string | null;
 	referenceId: string | null;
@@ -207,7 +207,7 @@ export type TransactionGroupByArgs<
 export type TransactionGroupByOutputType = {
 	id: string;
 	amount: bigint;
-	type: $Enums.TransactionType;
+	type: string;
 	idempotencyKey: string;
 	withdrawalAccount: string | null;
 	referenceId: string | null;
@@ -246,9 +246,7 @@ export type TransactionWhereInput = {
 	NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[];
 	id?: Prisma.StringFilter<'Transaction'> | string;
 	amount?: Prisma.BigIntFilter<'Transaction'> | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFilter<'Transaction'>
-		| $Enums.TransactionType;
+	type?: Prisma.StringFilter<'Transaction'> | string;
 	idempotencyKey?: Prisma.StringFilter<'Transaction'> | string;
 	withdrawalAccount?:
 		| Prisma.StringNullableFilter<'Transaction'>
@@ -283,9 +281,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<
 		OR?: Prisma.TransactionWhereInput[];
 		NOT?: Prisma.TransactionWhereInput | Prisma.TransactionWhereInput[];
 		amount?: Prisma.BigIntFilter<'Transaction'> | bigint | number;
-		type?:
-			| Prisma.EnumTransactionTypeFilter<'Transaction'>
-			| $Enums.TransactionType;
+		type?: Prisma.StringFilter<'Transaction'> | string;
 		withdrawalAccount?:
 			| Prisma.StringNullableFilter<'Transaction'>
 			| string
@@ -330,9 +326,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
 		| Prisma.TransactionScalarWhereWithAggregatesInput[];
 	id?: Prisma.StringWithAggregatesFilter<'Transaction'> | string;
 	amount?: Prisma.BigIntWithAggregatesFilter<'Transaction'> | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeWithAggregatesFilter<'Transaction'>
-		| $Enums.TransactionType;
+	type?: Prisma.StringWithAggregatesFilter<'Transaction'> | string;
 	idempotencyKey?: Prisma.StringWithAggregatesFilter<'Transaction'> | string;
 	withdrawalAccount?:
 		| Prisma.StringNullableWithAggregatesFilter<'Transaction'>
@@ -352,7 +346,7 @@ export type TransactionScalarWhereWithAggregatesInput = {
 export type TransactionCreateInput = {
 	id: string;
 	amount: bigint | number;
-	type: $Enums.TransactionType;
+	type: string;
 	idempotencyKey: string;
 	withdrawalAccount?: string | null;
 	referenceId?: string | null;
@@ -363,7 +357,7 @@ export type TransactionCreateInput = {
 export type TransactionUncheckedCreateInput = {
 	id: string;
 	amount: bigint | number;
-	type: $Enums.TransactionType;
+	type: string;
 	idempotencyKey: string;
 	withdrawalAccount?: string | null;
 	referenceId?: string | null;
@@ -374,9 +368,7 @@ export type TransactionUncheckedCreateInput = {
 export type TransactionUpdateInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFieldUpdateOperationsInput
-		| $Enums.TransactionType;
+	type?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	withdrawalAccount?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
@@ -393,9 +385,7 @@ export type TransactionUpdateInput = {
 export type TransactionUncheckedUpdateInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFieldUpdateOperationsInput
-		| $Enums.TransactionType;
+	type?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	withdrawalAccount?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
@@ -412,7 +402,7 @@ export type TransactionUncheckedUpdateInput = {
 export type TransactionCreateManyInput = {
 	id: string;
 	amount: bigint | number;
-	type: $Enums.TransactionType;
+	type: string;
 	idempotencyKey: string;
 	withdrawalAccount?: string | null;
 	referenceId?: string | null;
@@ -423,9 +413,7 @@ export type TransactionCreateManyInput = {
 export type TransactionUpdateManyMutationInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFieldUpdateOperationsInput
-		| $Enums.TransactionType;
+	type?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	withdrawalAccount?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
@@ -441,9 +429,7 @@ export type TransactionUpdateManyMutationInput = {
 export type TransactionUncheckedUpdateManyInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFieldUpdateOperationsInput
-		| $Enums.TransactionType;
+	type?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	withdrawalAccount?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
@@ -618,10 +604,6 @@ export type TransactionUncheckedUpdateManyWithoutAccountNestedInput = {
 		| Prisma.TransactionScalarWhereInput[];
 };
 
-export type EnumTransactionTypeFieldUpdateOperationsInput = {
-	set?: $Enums.TransactionType;
-};
-
 export type NullableStringFieldUpdateOperationsInput = {
 	set?: string | null;
 };
@@ -629,7 +611,7 @@ export type NullableStringFieldUpdateOperationsInput = {
 export type TransactionCreateWithoutAccountInput = {
 	id: string;
 	amount: bigint | number;
-	type: $Enums.TransactionType;
+	type: string;
 	idempotencyKey: string;
 	withdrawalAccount?: string | null;
 	referenceId?: string | null;
@@ -639,7 +621,7 @@ export type TransactionCreateWithoutAccountInput = {
 export type TransactionUncheckedCreateWithoutAccountInput = {
 	id: string;
 	amount: bigint | number;
-	type: $Enums.TransactionType;
+	type: string;
 	idempotencyKey: string;
 	withdrawalAccount?: string | null;
 	referenceId?: string | null;
@@ -699,9 +681,7 @@ export type TransactionScalarWhereInput = {
 		| Prisma.TransactionScalarWhereInput[];
 	id?: Prisma.StringFilter<'Transaction'> | string;
 	amount?: Prisma.BigIntFilter<'Transaction'> | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFilter<'Transaction'>
-		| $Enums.TransactionType;
+	type?: Prisma.StringFilter<'Transaction'> | string;
 	idempotencyKey?: Prisma.StringFilter<'Transaction'> | string;
 	withdrawalAccount?:
 		| Prisma.StringNullableFilter<'Transaction'>
@@ -715,7 +695,7 @@ export type TransactionScalarWhereInput = {
 export type TransactionCreateManyAccountInput = {
 	id: string;
 	amount: bigint | number;
-	type: $Enums.TransactionType;
+	type: string;
 	idempotencyKey: string;
 	withdrawalAccount?: string | null;
 	referenceId?: string | null;
@@ -725,9 +705,7 @@ export type TransactionCreateManyAccountInput = {
 export type TransactionUpdateWithoutAccountInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFieldUpdateOperationsInput
-		| $Enums.TransactionType;
+	type?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	withdrawalAccount?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
@@ -743,9 +721,7 @@ export type TransactionUpdateWithoutAccountInput = {
 export type TransactionUncheckedUpdateWithoutAccountInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFieldUpdateOperationsInput
-		| $Enums.TransactionType;
+	type?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	withdrawalAccount?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
@@ -761,9 +737,7 @@ export type TransactionUncheckedUpdateWithoutAccountInput = {
 export type TransactionUncheckedUpdateManyWithoutAccountInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
-	type?:
-		| Prisma.EnumTransactionTypeFieldUpdateOperationsInput
-		| $Enums.TransactionType;
+	type?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	withdrawalAccount?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
@@ -886,7 +860,7 @@ export type $TransactionPayload<
 		{
 			id: string;
 			amount: bigint;
-			type: $Enums.TransactionType;
+			type: string;
 			idempotencyKey: string;
 			withdrawalAccount: string | null;
 			referenceId: string | null;
@@ -1512,7 +1486,7 @@ export interface Prisma__TransactionClient<
 export interface TransactionFieldRefs {
 	readonly id: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly amount: Prisma.FieldRef<'Transaction', 'BigInt'>;
-	readonly type: Prisma.FieldRef<'Transaction', 'TransactionType'>;
+	readonly type: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly idempotencyKey: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly withdrawalAccount: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly referenceId: Prisma.FieldRef<'Transaction', 'String'>;

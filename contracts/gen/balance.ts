@@ -5,18 +5,175 @@
 // source: balance.proto
 /* eslint-disable */
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
+
+import { StringMessage } from './shared';
 
 export const protobufPackage = 'balance';
 
+export interface GetMyBalanceRequest {
+	accountId: string;
+}
+
+export interface GetMyBalanceResponse {
+	balance: string;
+}
+
+export interface AuditBalanceRequest {
+	accountId: string;
+	accountIdForAudit: string;
+}
+
+export interface AuditBalanceResponse {
+	balance: string;
+	aggregate: string;
+	isConsistent: boolean;
+}
+
+export interface DepositAmountRequest {
+	accountId: string;
+	idempotencyKey: string;
+	amount: bigint;
+}
+
+export interface DepositAmountResponse {
+	id: string;
+	amount: string;
+	type: string;
+	createdAt: string;
+}
+
+export interface WithdrawalAmountRequest {
+	accountId: string;
+	idempotencyKey: string;
+	amount: bigint;
+	withdrawalAccount: string;
+}
+
+export interface WithdrawalAmountResponse {
+	id: string;
+	amount: string;
+	type: string;
+	withdrawalAccount: string;
+	createdAt: string;
+}
+
+export interface TransferAmountRequest {
+	accountId: string;
+	idempotencyKey: string;
+	amount: bigint;
+	toAccountId: string;
+}
+
+export interface TransferAmountResponse {
+	id: string;
+	amount: string;
+	type: string;
+	toAccountId: string;
+	createdAt: string;
+}
+
+export interface BalanceResetJobRequest {
+	accountId: string;
+}
+
 export const BALANCE_PACKAGE_NAME = 'balance';
 
-export interface BalanceServiceClient {}
+export interface BalanceServiceClient {
+	getMyBalance(
+		request: GetMyBalanceRequest
+	): Observable<GetMyBalanceResponse>;
 
-export interface BalanceServiceController {}
+	auditBalance(
+		request: AuditBalanceRequest
+	): Observable<AuditBalanceResponse>;
+
+	depositAmount(
+		request: DepositAmountRequest
+	): Observable<DepositAmountResponse>;
+
+	withdrawalAmount(
+		request: WithdrawalAmountRequest
+	): Observable<WithdrawalAmountResponse>;
+
+	transferAmount(
+		request: TransferAmountRequest
+	): Observable<TransferAmountResponse>;
+
+	putResetBalanceJob(
+		request: BalanceResetJobRequest
+	): Observable<StringMessage>;
+
+	startResetBalanceJob(
+		request: BalanceResetJobRequest
+	): Observable<StringMessage>;
+
+	stopResetBalanceJob(
+		request: BalanceResetJobRequest
+	): Observable<StringMessage>;
+}
+
+export interface BalanceServiceController {
+	getMyBalance(
+		request: GetMyBalanceRequest
+	):
+		| Promise<GetMyBalanceResponse>
+		| Observable<GetMyBalanceResponse>
+		| GetMyBalanceResponse;
+
+	auditBalance(
+		request: AuditBalanceRequest
+	):
+		| Promise<AuditBalanceResponse>
+		| Observable<AuditBalanceResponse>
+		| AuditBalanceResponse;
+
+	depositAmount(
+		request: DepositAmountRequest
+	):
+		| Promise<DepositAmountResponse>
+		| Observable<DepositAmountResponse>
+		| DepositAmountResponse;
+
+	withdrawalAmount(
+		request: WithdrawalAmountRequest
+	):
+		| Promise<WithdrawalAmountResponse>
+		| Observable<WithdrawalAmountResponse>
+		| WithdrawalAmountResponse;
+
+	transferAmount(
+		request: TransferAmountRequest
+	):
+		| Promise<TransferAmountResponse>
+		| Observable<TransferAmountResponse>
+		| TransferAmountResponse;
+
+	putResetBalanceJob(
+		request: BalanceResetJobRequest
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+
+	startResetBalanceJob(
+		request: BalanceResetJobRequest
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+
+	stopResetBalanceJob(
+		request: BalanceResetJobRequest
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+}
 
 export function BalanceServiceControllerMethods() {
 	return function (constructor: Function) {
-		const grpcMethods: string[] = [];
+		const grpcMethods: string[] = [
+			'getMyBalance',
+			'auditBalance',
+			'depositAmount',
+			'withdrawalAmount',
+			'transferAmount',
+			'putResetBalanceJob',
+			'startResetBalanceJob',
+			'stopResetBalanceJob'
+		];
 		for (const method of grpcMethods) {
 			const descriptor: any = Reflect.getOwnPropertyDescriptor(
 				constructor.prototype,

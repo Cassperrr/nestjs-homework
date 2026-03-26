@@ -2,6 +2,7 @@ import { PROTO_PATHS } from '@contracts';
 import { ACCOUNT_PACKAGE_NAME } from 'contracts/gen/account';
 import { AUTH_PACKAGE_NAME } from 'contracts/gen/auth';
 import { AVATAR_PACKAGE_NAME } from 'contracts/gen/avatar';
+import { BALANCE_PACKAGE_NAME } from 'contracts/gen/balance';
 import { PROFILE_PACKAGE_NAME } from 'contracts/gen/profile';
 import { USERS_PACKAGE_NAME } from 'contracts/gen/users';
 
@@ -49,6 +50,16 @@ export const GRPC_CLIENTS = {
 	[USERS_PACKAGE_NAME]: {
 		package: USERS_PACKAGE_NAME,
 		protoPath: PROTO_PATHS.USERS,
+		env: {
+			timeMs: 'USER_GRPC_PING_TIME_MS',
+			timeoutMs: 'USER_GRPC_AWAIT_PONG_MS',
+			deadlineSec: 'USER_GRPC_DEADLINE_SECONDS',
+			url: 'USER_GRPC_URL'
+		}
+	},
+	[BALANCE_PACKAGE_NAME]: {
+		package: BALANCE_PACKAGE_NAME,
+		protoPath: PROTO_PATHS.BALANCE,
 		env: {
 			timeMs: 'USER_GRPC_PING_TIME_MS',
 			timeoutMs: 'USER_GRPC_AWAIT_PONG_MS',

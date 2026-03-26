@@ -8,7 +8,7 @@
 	"scripts": {
 		"start:gateway": "cross-env NODE_ENV=development nest start gateway --watch",
 		"start:user-service": "cross-env NODE_ENV=development nest start user-service --watch",
-		"protogen": "npx protoc -I ./contracts/proto/ ./contracts/proto/*.proto --ts_proto_out=./contracts/gen --ts_proto_opt=nestJs=true,package=omit",
+		"protogen": "./contracts/protogen.cmd",
 		"docker:up": "docker compose -f docker/docker-compose.yml up -d --build",
 		"docker:down": "docker compose -f docker/docker-compose.yml down -v",
 		"prisma:seed:users": "tsx apps/user-service/prisma/seeds/seed.ts",

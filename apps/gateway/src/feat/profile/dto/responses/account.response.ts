@@ -5,7 +5,7 @@ export class AccountResponse {
 		description: 'Id пользователя',
 		example: 'uuid'
 	})
-	readonly accountId: string;
+	readonly id: string;
 
 	@ApiProperty({
 		description: 'Имя пользователя',

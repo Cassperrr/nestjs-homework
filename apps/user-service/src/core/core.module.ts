@@ -1,6 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
-import { CacheModule, CacheService } from './cache';
+import { CacheModule } from './cache';
 import { EventModule } from './event';
 import { HashModule } from './hash';
 import { OtpModule } from './otp';

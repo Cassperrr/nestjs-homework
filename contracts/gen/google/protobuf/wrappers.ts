@@ -44,7 +44,7 @@ export interface FloatValue {
  */
 export interface Int64Value {
 	/** The int64 value. */
-	value: number;
+	value: bigint;
 }
 
 /**
@@ -57,7 +57,7 @@ export interface Int64Value {
  */
 export interface UInt64Value {
 	/** The uint64 value. */
-	value: number;
+	value: bigint;
 }
 
 /**

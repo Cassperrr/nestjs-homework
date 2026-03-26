@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@user-service/prisma/generated/client';
 import { PrismaService } from '@user-service/src/infra';
+import { TransactionType } from 'shared';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
@@ -28,7 +29,7 @@ export class BalanceRepository {
 	public async txDeposit(
 		accountId: string,
 		idempotencyKey: string,
-		ammountInCents: bigint
+		amount: bigint
 	) {
 		return this.prisma.$transaction(async tx => {
 			// проверяем уникальность транзы
@@ -56,8 +57,8 @@ export class BalanceRepository {
 				data: {
 					id: uuidv7(),
 					accountId,
-					amount: ammountInCents,
-					type: 'DEPOSIT',
+					amount,
+					type: TransactionType.DEPOSIT,
 					idempotencyKey
 				},
 				select: {
@@ -70,7 +71,7 @@ export class BalanceRepository {
 
 			await tx.balance.update({
 				where: { accountId },
-				data: { amount: { increment: ammountInCents } }
+				data: { amount: { increment: amount } }
 			});
 
 			return createdTx;
@@ -80,7 +81,7 @@ export class BalanceRepository {
 	public async txWithdrawal(
 		accountId: string,
 		idempotencyKey: string,
-		ammountInCents: bigint,
+		amount: bigint,
 		withdrawalAccount: string
 	) {
 		return this.prisma.$transaction(async tx => {
@@ -106,15 +107,15 @@ export class BalanceRepository {
 
 			// еще раз делаем проверку на идиота
 			if (balance.blocked_at) throw new Error('Баланс заблокирован');
-			if (balance.amount < ammountInCents)
+			if (balance.amount < amount)
 				throw new Error('Недостаточно средств');
 
 			const createdTx = await tx.transaction.create({
 				data: {
 					id: uuidv7(),
 					accountId,
-					amount: -ammountInCents,
-					type: 'WITHDRAWAL',
+					amount: -amount,
+					type: TransactionType.WITHDRAWAL,
 					withdrawalAccount,
 					idempotencyKey
 				},
@@ -129,7 +130,7 @@ export class BalanceRepository {
 
 			await tx.balance.update({
 				where: { accountId },
-				data: { amount: { decrement: ammountInCents } }
+				data: { amount: { decrement: amount } }
 			});
 
 			return createdTx;
@@ -140,7 +141,7 @@ export class BalanceRepository {
 		fromAccountId: string,
 		toAccountId: string,
 		idempotencyKey: string,
-		ammountInCents: bigint
+		amount: bigint
 	) {
 		return this.prisma.$transaction(async tx => {
 			// соблюдаем идемпотентность
@@ -186,7 +187,7 @@ export class BalanceRepository {
 				throw new Error('Один из балансов заблокирован');
 			}
 
-			if (senderBalance.amount < ammountInCents)
+			if (senderBalance.amount < amount)
 				throw new Error('Недостаточно средств');
 
 			const outId = uuidv7();
@@ -196,8 +197,8 @@ export class BalanceRepository {
 				data: {
 					id: outId,
 					accountId: fromAccountId,
-					amount: -ammountInCents,
-					type: 'TRANSFER_OUT',
+					amount: -amount,
+					type: TransactionType.TRANSFER_OUT,
 					idempotencyKey,
 					referenceId: inId
 				},
@@ -213,8 +214,8 @@ export class BalanceRepository {
 				data: {
 					id: inId,
 					accountId: toAccountId,
-					amount: ammountInCents,
-					type: 'TRANSFER_IN',
+					amount,
+					type: TransactionType.TRANSFER_IN,
 					idempotencyKey: `${idempotencyKey}_in`,
 					referenceId: outId
 				}
@@ -222,12 +223,12 @@ export class BalanceRepository {
 
 			await tx.balance.update({
 				where: { accountId: fromAccountId },
-				data: { amount: { decrement: ammountInCents } }
+				data: { amount: { decrement: amount } }
 			});
 
 			await tx.balance.update({
 				where: { accountId: toAccountId },
-				data: { amount: { increment: ammountInCents } }
+				data: { amount: { increment: amount } }
 			});
 
 			return txOut;

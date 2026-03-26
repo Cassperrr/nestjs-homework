@@ -6,7 +6,7 @@ export class ProfileResponse {
 		description: 'Id профиля',
 		example: 'uuid'
 	})
-	readonly profileId: string;
+	readonly id: string;
 
 	@ApiProperty({
 		description: 'Имя пользователя',

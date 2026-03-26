@@ -1,7 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
-import { ActiveUserResponse, FindAllUsersResponse, UserResponse } from '../dto';
+import {
+	FindActiveUsersResponse,
+	FindAllUsersResponse,
+	UserResponse
+} from '../dto';
 
 export const ApiGetMe = () =>
 	applyDecorators(
@@ -28,6 +32,6 @@ export const ApiGetActive = () =>
 			summary:
 				'Получить всех активных пользователей, только для администратора'
 		}),
-		ApiOkResponse({ type: ActiveUserResponse, isArray: true }),
+		ApiOkResponse({ type: FindActiveUsersResponse }),
 		ApiBearerAuth()
 	);
