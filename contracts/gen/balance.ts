@@ -4,200 +4,169 @@
 //   protoc               v7.34.0
 // source: balance.proto
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
+import { StringMessage } from "./shared";
 
-import { StringMessage } from './shared';
-
-export const protobufPackage = 'balance';
+export const protobufPackage = "balance";
 
 export interface GetMyBalanceRequest {
-	accountId: string;
+  accountId: string;
 }
 
 export interface GetMyBalanceResponse {
-	balance: string;
+  balance: string;
 }
 
 export interface AuditBalanceRequest {
-	accountId: string;
-	accountIdForAudit: string;
+  accountId: string;
+  accountIdForAudit: string;
 }
 
 export interface AuditBalanceResponse {
-	balance: string;
-	aggregate: string;
-	isConsistent: boolean;
+  balance: string;
+  aggregate: string;
+  isConsistent: boolean;
 }
 
 export interface DepositAmountRequest {
-	accountId: string;
-	idempotencyKey: string;
-	amount: bigint;
+  accountId: string;
+  idempotencyKey: string;
+  amount: bigint;
 }
 
 export interface DepositAmountResponse {
-	id: string;
-	amount: string;
-	type: string;
-	createdAt: string;
+  id: string;
+  amount: string;
+  type: string;
+  createdAt: string;
 }
 
 export interface WithdrawalAmountRequest {
-	accountId: string;
-	idempotencyKey: string;
-	amount: bigint;
-	withdrawalAccount: string;
+  accountId: string;
+  idempotencyKey: string;
+  amount: bigint;
+  withdrawalAccount: string;
 }
 
 export interface WithdrawalAmountResponse {
-	id: string;
-	amount: string;
-	type: string;
-	withdrawalAccount: string;
-	createdAt: string;
+  id: string;
+  amount: string;
+  type: string;
+  withdrawalAccount: string;
+  createdAt: string;
 }
 
 export interface TransferAmountRequest {
-	accountId: string;
-	idempotencyKey: string;
-	amount: bigint;
-	toAccountId: string;
+  accountId: string;
+  idempotencyKey: string;
+  amount: bigint;
+  toAccountId: string;
 }
 
 export interface TransferAmountResponse {
-	id: string;
-	amount: string;
-	type: string;
-	toAccountId: string;
-	createdAt: string;
+  id: string;
+  amount: string;
+  type: string;
+  toAccountId: string;
+  createdAt: string;
 }
 
 export interface BalanceResetJobRequest {
-	accountId: string;
+  accountId: string;
 }
 
-export const BALANCE_PACKAGE_NAME = 'balance';
+export interface ResetAllBalancesRequest {
+  apiToken: string;
+}
+
+export interface ResetAllBalancesResponse {
+  resetCounts: number;
+}
+
+export const BALANCE_PACKAGE_NAME = "balance";
 
 export interface BalanceServiceClient {
-	getMyBalance(
-		request: GetMyBalanceRequest
-	): Observable<GetMyBalanceResponse>;
+  getMyBalance(request: GetMyBalanceRequest): Observable<GetMyBalanceResponse>;
 
-	auditBalance(
-		request: AuditBalanceRequest
-	): Observable<AuditBalanceResponse>;
+  auditBalance(request: AuditBalanceRequest): Observable<AuditBalanceResponse>;
 
-	depositAmount(
-		request: DepositAmountRequest
-	): Observable<DepositAmountResponse>;
+  depositAmount(request: DepositAmountRequest): Observable<DepositAmountResponse>;
 
-	withdrawalAmount(
-		request: WithdrawalAmountRequest
-	): Observable<WithdrawalAmountResponse>;
+  withdrawalAmount(request: WithdrawalAmountRequest): Observable<WithdrawalAmountResponse>;
 
-	transferAmount(
-		request: TransferAmountRequest
-	): Observable<TransferAmountResponse>;
+  transferAmount(request: TransferAmountRequest): Observable<TransferAmountResponse>;
 
-	putResetBalanceJob(
-		request: BalanceResetJobRequest
-	): Observable<StringMessage>;
+  putResetBalanceJob(request: BalanceResetJobRequest): Observable<StringMessage>;
 
-	startResetBalanceJob(
-		request: BalanceResetJobRequest
-	): Observable<StringMessage>;
+  startResetBalanceJob(request: BalanceResetJobRequest): Observable<StringMessage>;
 
-	stopResetBalanceJob(
-		request: BalanceResetJobRequest
-	): Observable<StringMessage>;
+  stopResetBalanceJob(request: BalanceResetJobRequest): Observable<StringMessage>;
+
+  resetAllBalances(request: ResetAllBalancesRequest): Observable<ResetAllBalancesResponse>;
 }
 
 export interface BalanceServiceController {
-	getMyBalance(
-		request: GetMyBalanceRequest
-	):
-		| Promise<GetMyBalanceResponse>
-		| Observable<GetMyBalanceResponse>
-		| GetMyBalanceResponse;
+  getMyBalance(
+    request: GetMyBalanceRequest,
+  ): Promise<GetMyBalanceResponse> | Observable<GetMyBalanceResponse> | GetMyBalanceResponse;
 
-	auditBalance(
-		request: AuditBalanceRequest
-	):
-		| Promise<AuditBalanceResponse>
-		| Observable<AuditBalanceResponse>
-		| AuditBalanceResponse;
+  auditBalance(
+    request: AuditBalanceRequest,
+  ): Promise<AuditBalanceResponse> | Observable<AuditBalanceResponse> | AuditBalanceResponse;
 
-	depositAmount(
-		request: DepositAmountRequest
-	):
-		| Promise<DepositAmountResponse>
-		| Observable<DepositAmountResponse>
-		| DepositAmountResponse;
+  depositAmount(
+    request: DepositAmountRequest,
+  ): Promise<DepositAmountResponse> | Observable<DepositAmountResponse> | DepositAmountResponse;
 
-	withdrawalAmount(
-		request: WithdrawalAmountRequest
-	):
-		| Promise<WithdrawalAmountResponse>
-		| Observable<WithdrawalAmountResponse>
-		| WithdrawalAmountResponse;
+  withdrawalAmount(
+    request: WithdrawalAmountRequest,
+  ): Promise<WithdrawalAmountResponse> | Observable<WithdrawalAmountResponse> | WithdrawalAmountResponse;
 
-	transferAmount(
-		request: TransferAmountRequest
-	):
-		| Promise<TransferAmountResponse>
-		| Observable<TransferAmountResponse>
-		| TransferAmountResponse;
+  transferAmount(
+    request: TransferAmountRequest,
+  ): Promise<TransferAmountResponse> | Observable<TransferAmountResponse> | TransferAmountResponse;
 
-	putResetBalanceJob(
-		request: BalanceResetJobRequest
-	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+  putResetBalanceJob(
+    request: BalanceResetJobRequest,
+  ): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
-	startResetBalanceJob(
-		request: BalanceResetJobRequest
-	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+  startResetBalanceJob(
+    request: BalanceResetJobRequest,
+  ): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
-	stopResetBalanceJob(
-		request: BalanceResetJobRequest
-	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+  stopResetBalanceJob(
+    request: BalanceResetJobRequest,
+  ): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+
+  resetAllBalances(
+    request: ResetAllBalancesRequest,
+  ): Promise<ResetAllBalancesResponse> | Observable<ResetAllBalancesResponse> | ResetAllBalancesResponse;
 }
 
 export function BalanceServiceControllerMethods() {
-	return function (constructor: Function) {
-		const grpcMethods: string[] = [
-			'getMyBalance',
-			'auditBalance',
-			'depositAmount',
-			'withdrawalAmount',
-			'transferAmount',
-			'putResetBalanceJob',
-			'startResetBalanceJob',
-			'stopResetBalanceJob'
-		];
-		for (const method of grpcMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcMethod('BalanceService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-		const grpcStreamMethods: string[] = [];
-		for (const method of grpcStreamMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcStreamMethod('BalanceService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-	};
+  return function (constructor: Function) {
+    const grpcMethods: string[] = [
+      "getMyBalance",
+      "auditBalance",
+      "depositAmount",
+      "withdrawalAmount",
+      "transferAmount",
+      "putResetBalanceJob",
+      "startResetBalanceJob",
+      "stopResetBalanceJob",
+      "resetAllBalances",
+    ];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("BalanceService", method)(constructor.prototype[method], method, descriptor);
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("BalanceService", method)(constructor.prototype[method], method, descriptor);
+    }
+  };
 }
 
-export const BALANCE_SERVICE_NAME = 'BalanceService';
+export const BALANCE_SERVICE_NAME = "BalanceService";

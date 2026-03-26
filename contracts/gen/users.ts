@@ -4,120 +4,95 @@
 //   protoc               v7.34.0
 // source: users.proto
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
+import { ProfileResponse } from "./profile";
 
-import { ProfileResponse } from './profile';
-
-export const protobufPackage = 'users';
+export const protobufPackage = "users";
 
 export interface FindMeRequest {
-	accountId: string;
+  accountId: string;
 }
 
 export interface UserResponse {
-	id: string;
-	username: string;
-	email: string;
-	createdAt: string;
-	profile?: ProfileResponse | undefined;
+  id: string;
+  username: string;
+  email: string;
+  createdAt: string;
+  profile?: ProfileResponse | undefined;
 }
 
 export interface FindAllUsersRequest {
-	accountId: string;
-	username?: string | undefined;
-	cursor?: string | undefined;
-	limit?: number | undefined;
+  accountId: string;
+  username?: string | undefined;
+  cursor?: string | undefined;
+  limit?: number | undefined;
 }
 
 export interface FindAllUsersResponse {
-	data: UserResponse[];
-	nextCursor?: string | undefined;
-	hasNextPage: boolean;
+  data: UserResponse[];
+  nextCursor?: string | undefined;
+  hasNextPage: boolean;
 }
 
 export interface FindActiveUsersRequest {
-	accountId: string;
-	minAge: number;
-	maxAge: number;
+  accountId: string;
+  minAge: number;
+  maxAge: number;
 }
 
 export interface ActiveUserResponse {
-	accountId: string;
-	username: string;
-	email: string;
-	createdAt: string;
-	profileId: string;
-	firstName: string;
-	lastName: string;
-	age: number;
-	description?: string | undefined;
-	lastLoadedAvatar: string;
+  accountId: string;
+  username: string;
+  email: string;
+  createdAt: string;
+  profileId: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  description?: string | undefined;
+  lastLoadedAvatar: string;
 }
 
 export interface FindActiveUsersResponse {
-	users: ActiveUserResponse[];
+  users: ActiveUserResponse[];
 }
 
-export const USERS_PACKAGE_NAME = 'users';
+export const USERS_PACKAGE_NAME = "users";
 
 export interface UsersServiceClient {
-	findMe(request: FindMeRequest): Observable<UserResponse>;
+  findMe(request: FindMeRequest): Observable<UserResponse>;
 
-	findAll(request: FindAllUsersRequest): Observable<FindAllUsersResponse>;
+  findAll(request: FindAllUsersRequest): Observable<FindAllUsersResponse>;
 
-	findActive(
-		request: FindActiveUsersRequest
-	): Observable<FindActiveUsersResponse>;
+  findActive(request: FindActiveUsersRequest): Observable<FindActiveUsersResponse>;
 }
 
 export interface UsersServiceController {
-	findMe(
-		request: FindMeRequest
-	): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
+  findMe(request: FindMeRequest): Promise<UserResponse> | Observable<UserResponse> | UserResponse;
 
-	findAll(
-		request: FindAllUsersRequest
-	):
-		| Promise<FindAllUsersResponse>
-		| Observable<FindAllUsersResponse>
-		| FindAllUsersResponse;
+  findAll(
+    request: FindAllUsersRequest,
+  ): Promise<FindAllUsersResponse> | Observable<FindAllUsersResponse> | FindAllUsersResponse;
 
-	findActive(
-		request: FindActiveUsersRequest
-	):
-		| Promise<FindActiveUsersResponse>
-		| Observable<FindActiveUsersResponse>
-		| FindActiveUsersResponse;
+  findActive(
+    request: FindActiveUsersRequest,
+  ): Promise<FindActiveUsersResponse> | Observable<FindActiveUsersResponse> | FindActiveUsersResponse;
 }
 
 export function UsersServiceControllerMethods() {
-	return function (constructor: Function) {
-		const grpcMethods: string[] = ['findMe', 'findAll', 'findActive'];
-		for (const method of grpcMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcMethod('UsersService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-		const grpcStreamMethods: string[] = [];
-		for (const method of grpcStreamMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcStreamMethod('UsersService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-	};
+  return function (constructor: Function) {
+    const grpcMethods: string[] = ["findMe", "findAll", "findActive"];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("UsersService", method)(constructor.prototype[method], method, descriptor);
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("UsersService", method)(constructor.prototype[method], method, descriptor);
+    }
+  };
 }
 
-export const USERS_SERVICE_NAME = 'UsersService';
+export const USERS_SERVICE_NAME = "UsersService";

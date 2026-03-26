@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package job;
+
+import "google/protobuf/empty.proto";
+import "shared.proto";
+
+service JobService {
+  rpc PutResetBalanceJob (google.protobuf.Empty) returns (shared.StringMessage); 
+  rpc StartResetBalanceJob (google.protobuf.Empty) returns (shared.StringMessage); 
+  rpc StopResetBalanceJob (google.protobuf.Empty) returns (shared.StringMessage); 
+}

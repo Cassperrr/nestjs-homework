@@ -3,6 +3,8 @@ import ms, { type StringValue } from 'ms';
 import { z } from 'zod';
 
 export const userServiceEnvSchema = generalSchema.extend({
+	USER_JOB_API_TOKEN: z.string().nonempty(),
+
 	DATABASE_USER: z.string().nonempty(),
 	DATABASE_PASSWORD: z.string().nonempty(),
 	DATABASE_PORT: z.coerce.number().min(1).max(65535),
@@ -13,6 +15,7 @@ export const userServiceEnvSchema = generalSchema.extend({
 	REDIS_PASSWORD: z.string().nonempty(),
 	REDIS_HOST: z.string().nonempty(),
 	REDIS_PORT: z.coerce.number().min(1).max(65535),
+	REDIS_INDEX: z.coerce.number().min(0),
 
 	MINIO_ENDPOINT: z.string().nonempty(),
 	MINIO_ACCESS_KEY: z.string().nonempty(),

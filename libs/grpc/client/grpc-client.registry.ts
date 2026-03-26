@@ -3,6 +3,7 @@ import { ACCOUNT_PACKAGE_NAME } from 'contracts/gen/account';
 import { AUTH_PACKAGE_NAME } from 'contracts/gen/auth';
 import { AVATAR_PACKAGE_NAME } from 'contracts/gen/avatar';
 import { BALANCE_PACKAGE_NAME } from 'contracts/gen/balance';
+import { JOB_PACKAGE_NAME } from 'contracts/gen/job';
 import { PROFILE_PACKAGE_NAME } from 'contracts/gen/profile';
 import { USERS_PACKAGE_NAME } from 'contracts/gen/users';
 
@@ -65,6 +66,16 @@ export const GRPC_CLIENTS = {
 			timeoutMs: 'USER_GRPC_AWAIT_PONG_MS',
 			deadlineSec: 'USER_GRPC_DEADLINE_SECONDS',
 			url: 'USER_GRPC_URL'
+		}
+	},
+	[JOB_PACKAGE_NAME]: {
+		package: JOB_PACKAGE_NAME,
+		protoPath: PROTO_PATHS.JOB,
+		env: {
+			timeMs: 'JOB_GRPC_PING_TIME_MS',
+			timeoutMs: 'JOB_GRPC_AWAIT_PONG_MS',
+			deadlineSec: 'JOB_GRPC_DEADLINE_SECONDS',
+			url: 'JOB_GRPC_URL'
 		}
 	}
 } as const;

@@ -1,30 +1,44 @@
 import { GrpcStatus } from '@libs/grpc';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { RpcException } from '@nestjs/microservices';
+import { UserServiceEnv } from '@user-service/src/config';
 import { AccountRepository, BalanceRepository } from '@user-service/src/core';
+import { JobClientGrpc } from '@user-service/src/infra/grpc/job-client';
 import type {
 	AuditBalanceRequest,
 	AuditBalanceResponse,
+	BalanceResetJobRequest,
 	DepositAmountRequest,
 	DepositAmountResponse,
 	GetMyBalanceRequest,
 	GetMyBalanceResponse,
+	ResetAllBalancesRequest,
+	ResetAllBalancesResponse,
 	TransferAmountRequest,
 	TransferAmountResponse,
 	WithdrawalAmountRequest,
 	WithdrawalAmountResponse
 } from 'contracts/gen/balance';
+import { StringMessage } from 'contracts/gen/shared';
 import { TransactionType } from 'shared';
 import 'shared/extensions/bigint.extension';
 
 @Injectable()
 export class BalanceService {
 	private readonly logger = new Logger(BalanceService.name);
+	private readonly USER_JOB_API_TOKEN: string;
 
 	public constructor(
 		private readonly balanceRepo: BalanceRepository,
-		private readonly accountRepo: AccountRepository
-	) {}
+		private readonly accountRepo: AccountRepository,
+		private readonly jobClient: JobClientGrpc,
+		private readonly config: ConfigService<UserServiceEnv, true>
+	) {
+		this.USER_JOB_API_TOKEN = config.get('USER_JOB_API_TOKEN', {
+			infer: true
+		});
+	}
 
 	public async getMyBalance(
 		data: GetMyBalanceRequest
@@ -249,5 +263,91 @@ export class BalanceService {
 			amount: tx.amount.toDollars(),
 			createdAt: tx.createdAt.toISOString()
 		};
+	}
+
+	public async putResetBalanceJob(
+		data: BalanceResetJobRequest
+	): Promise<StringMessage> {
+		const { accountId } = data;
+
+		const account = await this.accountRepo.findBy({ id: accountId });
+
+		if (!account || account.deletedAt)
+			throw new RpcException({
+				code: GrpcStatus.NOT_FOUND,
+				details: 'Ваш аккаунт не существует или удален'
+			});
+
+		await this.jobClient.call('putResetBalanceJob', {});
+
+		this.logger.log(
+			`[${account.id}] [${account.role}] Положил в очередь Cron job "balane-reset-all"`
+		);
+
+		return { message: 'Job "balane-reset-all" отправлен в очередь' };
+	}
+
+	public async startResetBalanceJob(
+		data: BalanceResetJobRequest
+	): Promise<StringMessage> {
+		const { accountId } = data;
+
+		const account = await this.accountRepo.findBy({ id: accountId });
+
+		if (!account || account.deletedAt)
+			throw new RpcException({
+				code: GrpcStatus.NOT_FOUND,
+				details: 'Ваш аккаунт не существует или удален'
+			});
+
+		await this.jobClient.call('startResetBalanceJob', {});
+
+		this.logger.log(
+			`[${account.id}] [${account.role}] Запустил Cron job "balane-reset-all"`
+		);
+
+		return { message: 'Job "balane-reset-all" запущен' };
+	}
+
+	public async stopResetBalanceJob(
+		data: BalanceResetJobRequest
+	): Promise<StringMessage> {
+		const { accountId } = data;
+
+		const account = await this.accountRepo.findBy({ id: accountId });
+
+		if (!account || account.deletedAt)
+			throw new RpcException({
+				code: GrpcStatus.NOT_FOUND,
+				details: 'Ваш аккаунт не существует или удален'
+			});
+
+		await this.jobClient.call('stopResetBalanceJob', {});
+
+		this.logger.log(
+			`[${account.id}] [${account.role}] Остановил Cron job "balane-reset-all"`
+		);
+
+		return { message: 'Job "balane-reset-all" остановлен' };
+	}
+
+	// TODO здесь можно реализовать проверку API token по которому будет првоеряться что этот метод вызвал именно job-service а не другой сервис
+	public async resetAllBalances(
+		data: ResetAllBalancesRequest
+	): Promise<ResetAllBalancesResponse> {
+		const { apiToken } = data;
+
+		if (apiToken !== this.USER_JOB_API_TOKEN) {
+			this.logger.error(
+				`Несанкционированный запрос чужеродного сервиса. Отказ в исполнении. Проверьте API ключи`
+			);
+			return { resetCounts: 0 };
+		}
+
+		const resetCounts = await this.balanceRepo.resetAllBalances();
+
+		this.logger.warn(`Произошло обнуление всех балансов пользователей`);
+
+		return { resetCounts };
 	}
 }

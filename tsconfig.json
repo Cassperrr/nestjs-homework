@@ -22,12 +22,13 @@
 		"strictBindCallApply": false,
 		"noFallthroughCasesInSwitch": false,
 		"paths": {
-			"@libs/config": ["libs/config/index.ts"],
-			"@libs/utils": ["shared/utils/index.ts"],
-			"@libs/grpc": ["libs/grpc/index.ts"],
 			"@contracts": ["contracts/index.ts"],
+			"@gateway/*": ["apps/gateway/*"],
+			"@libs/config": ["libs/config/index.ts"],
+			"@libs/grpc": ["libs/grpc/index.ts"],
+			"@libs/utils": ["shared/utils/index.ts"],
 			"@user-service/*": ["apps/user-service/*"],
-			"@gateway/*": ["apps/gateway/*"]
+			"@job-service/*": ["apps/job-service/*"]
 		}
 	}
 }

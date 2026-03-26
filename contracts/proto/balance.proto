@@ -13,6 +13,7 @@ service BalanceService {
   rpc PutResetBalanceJob (BalanceResetJobRequest) returns (shared.StringMessage); 
   rpc StartResetBalanceJob (BalanceResetJobRequest) returns (shared.StringMessage); 
   rpc StopResetBalanceJob (BalanceResetJobRequest) returns (shared.StringMessage); 
+  rpc ResetAllBalances (ResetAllBalancesRequest) returns (ResetAllBalancesResponse); 
 }
 
 message GetMyBalanceRequest {
@@ -79,4 +80,12 @@ message TransferAmountResponse {
 
 message BalanceResetJobRequest {
   string account_id = 1;
+}
+
+message ResetAllBalancesRequest {
+  string api_token = 1;
+}
+
+message ResetAllBalancesResponse {
+  uint32 reset_counts = 1;
 }

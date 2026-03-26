@@ -9,12 +9,3 @@ export const CACHE_SERVICE = Symbol('CACHE_SERVICE');
 export enum CACHE_EVENTS {
 	USERS_INVALIDATE = 'cache.users.invalidate'
 }
-
-// == Queue ==
-export enum QUEUES {
-	BALANCE_RESET = 'balance-reset'
-}
-
-export enum JOBS {
-	BALANCE_RESET_ALL = 'reset-all'
-}

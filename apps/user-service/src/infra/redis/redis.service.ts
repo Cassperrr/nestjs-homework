@@ -14,6 +14,7 @@ export class RedisService extends AbstractRedisService {
 			password: configService.get('REDIS_PASSWORD', { infer: true }),
 			host: configService.get('REDIS_HOST', { infer: true }),
 			port: configService.get('REDIS_PORT', { infer: true }),
+			db: configService.get('REDIS_INDEX', { infer: true }),
 			lazyConnect: true,
 			maxRetriesPerRequest: 5,
 			enableOfflineQueue: true

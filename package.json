@@ -8,6 +8,7 @@
 	"scripts": {
 		"start:gateway": "cross-env NODE_ENV=development nest start gateway --watch",
 		"start:user-service": "cross-env NODE_ENV=development nest start user-service --watch",
+		"start:job-service": "cross-env NODE_ENV=development nest start job-service --watch",
 		"protogen": "./contracts/commands/protogen.cmd",
 		"docker:up": "./docker/commands/docker-up.cmd",
 		"docker:down": "./docker/commands/docker-down.cmd",

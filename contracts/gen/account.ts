@@ -4,83 +4,60 @@
 //   protoc               v7.34.0
 // source: account.proto
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
+import { OtpCodeResponse, StringMessage } from "./shared";
 
-import { OtpCodeResponse, StringMessage } from './shared';
-
-export const protobufPackage = 'account';
+export const protobufPackage = "account";
 
 export interface ChangePasswordRequest {
-	accountId: string;
-	oldPassword: string;
+  accountId: string;
+  oldPassword: string;
 }
 
 export interface ConfirmPasswordRequest {
-	accountId: string;
-	newPassword: string;
-	code: string;
+  accountId: string;
+  newPassword: string;
+  code: string;
 }
 
 export interface DeleteRequest {
-	accountId: string;
+  accountId: string;
 }
 
-export const ACCOUNT_PACKAGE_NAME = 'account';
+export const ACCOUNT_PACKAGE_NAME = "account";
 
 export interface AccountServiceClient {
-	changePassword(request: ChangePasswordRequest): Observable<OtpCodeResponse>;
+  changePassword(request: ChangePasswordRequest): Observable<OtpCodeResponse>;
 
-	confirmPassword(request: ConfirmPasswordRequest): Observable<StringMessage>;
+  confirmPassword(request: ConfirmPasswordRequest): Observable<StringMessage>;
 
-	delete(request: DeleteRequest): Observable<StringMessage>;
+  delete(request: DeleteRequest): Observable<StringMessage>;
 }
 
 export interface AccountServiceController {
-	changePassword(
-		request: ChangePasswordRequest
-	): Promise<OtpCodeResponse> | Observable<OtpCodeResponse> | OtpCodeResponse;
+  changePassword(
+    request: ChangePasswordRequest,
+  ): Promise<OtpCodeResponse> | Observable<OtpCodeResponse> | OtpCodeResponse;
 
-	confirmPassword(
-		request: ConfirmPasswordRequest
-	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+  confirmPassword(request: ConfirmPasswordRequest): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
-	delete(
-		request: DeleteRequest
-	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+  delete(request: DeleteRequest): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 }
 
 export function AccountServiceControllerMethods() {
-	return function (constructor: Function) {
-		const grpcMethods: string[] = [
-			'changePassword',
-			'confirmPassword',
-			'delete'
-		];
-		for (const method of grpcMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcMethod('AccountService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-		const grpcStreamMethods: string[] = [];
-		for (const method of grpcStreamMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcStreamMethod('AccountService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-	};
+  return function (constructor: Function) {
+    const grpcMethods: string[] = ["changePassword", "confirmPassword", "delete"];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("AccountService", method)(constructor.prototype[method], method, descriptor);
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("AccountService", method)(constructor.prototype[method], method, descriptor);
+    }
+  };
 }
 
-export const ACCOUNT_SERVICE_NAME = 'AccountService';
+export const ACCOUNT_SERVICE_NAME = "AccountService";

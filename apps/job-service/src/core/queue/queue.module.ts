@@ -14,7 +14,8 @@ import { QueueService } from './queue.service';
 			useFactory: (config: ConfigService<UserServiceEnv, true>) => ({
 				connection: {
 					host: config.get('REDIS_HOST', { infer: true }),
-					port: config.get('REDIS_PORT', { infer: true })
+					port: config.get('REDIS_PORT', { infer: true }),
+					db: config.get('REDIS_INDEX', { infer: true })
 				},
 				defaultJobOptions: {
 					attempts: 3,
@@ -27,6 +28,6 @@ import { QueueService } from './queue.service';
 		BullModule.registerQueue({ name: QUEUES.BALANCE_RESET })
 	],
 	providers: [QueueService],
-	exports: [QueueService, BullModule]
+	exports: [QueueService]
 })
 export class QueueModule {}

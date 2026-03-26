@@ -6,5 +6,6 @@ export const PROTO_PATHS = {
 	PROFILE: join(process.cwd(), 'contracts/proto/profile.proto'),
 	AVATAR: join(process.cwd(), 'contracts/proto/avatar.proto'),
 	USERS: join(process.cwd(), 'contracts/proto/users.proto'),
-	BALANCE: join(process.cwd(), 'contracts/proto/bALANCE.proto')
+	BALANCE: join(process.cwd(), 'contracts/proto/balance.proto'),
+	JOB: join(process.cwd(), 'contracts/proto/job.proto')
 } as const;

@@ -4,83 +4,68 @@
 //   protoc               v7.34.0
 // source: profile.proto
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
-import { Observable } from 'rxjs';
+import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
+import { Observable } from "rxjs";
+import { AvatarResponse } from "./avatar";
 
-import { AvatarResponse } from './avatar';
-
-export const protobufPackage = 'profile';
+export const protobufPackage = "profile";
 
 export interface CreateProfileRequest {
-	accountId: string;
-	firstName: string;
-	lastName: string;
-	age: number;
-	description: string;
+  accountId: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  description: string;
 }
 
 export interface ProfileResponse {
-	id: string;
-	firstName: string;
-	lastName: string;
-	age: number;
-	description?: string | undefined;
-	avatars: AvatarResponse[];
+  id: string;
+  firstName: string;
+  lastName: string;
+  age: number;
+  description?: string | undefined;
+  avatars: AvatarResponse[];
 }
 
 export interface UpdateProfileRequest {
-	accountId: string;
-	firstName?: string | undefined;
-	lastName?: string | undefined;
-	age?: number | undefined;
-	description?: string | undefined;
+  accountId: string;
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  age?: number | undefined;
+  description?: string | undefined;
 }
 
-export const PROFILE_PACKAGE_NAME = 'profile';
+export const PROFILE_PACKAGE_NAME = "profile";
 
 export interface ProfileServiceClient {
-	createProfile(request: CreateProfileRequest): Observable<ProfileResponse>;
+  createProfile(request: CreateProfileRequest): Observable<ProfileResponse>;
 
-	updateProfile(request: UpdateProfileRequest): Observable<ProfileResponse>;
+  updateProfile(request: UpdateProfileRequest): Observable<ProfileResponse>;
 }
 
 export interface ProfileServiceController {
-	createProfile(
-		request: CreateProfileRequest
-	): Promise<ProfileResponse> | Observable<ProfileResponse> | ProfileResponse;
+  createProfile(
+    request: CreateProfileRequest,
+  ): Promise<ProfileResponse> | Observable<ProfileResponse> | ProfileResponse;
 
-	updateProfile(
-		request: UpdateProfileRequest
-	): Promise<ProfileResponse> | Observable<ProfileResponse> | ProfileResponse;
+  updateProfile(
+    request: UpdateProfileRequest,
+  ): Promise<ProfileResponse> | Observable<ProfileResponse> | ProfileResponse;
 }
 
 export function ProfileServiceControllerMethods() {
-	return function (constructor: Function) {
-		const grpcMethods: string[] = ['createProfile', 'updateProfile'];
-		for (const method of grpcMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcMethod('ProfileService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-		const grpcStreamMethods: string[] = [];
-		for (const method of grpcStreamMethods) {
-			const descriptor: any = Reflect.getOwnPropertyDescriptor(
-				constructor.prototype,
-				method
-			);
-			GrpcStreamMethod('ProfileService', method)(
-				constructor.prototype[method],
-				method,
-				descriptor
-			);
-		}
-	};
+  return function (constructor: Function) {
+    const grpcMethods: string[] = ["createProfile", "updateProfile"];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("ProfileService", method)(constructor.prototype[method], method, descriptor);
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("ProfileService", method)(constructor.prototype[method], method, descriptor);
+    }
+  };
 }
 
-export const PROFILE_SERVICE_NAME = 'ProfileService';
+export const PROFILE_SERVICE_NAME = "ProfileService";
