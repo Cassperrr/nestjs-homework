@@ -20,7 +20,7 @@ import {
 	ApiResend,
 	ApiVerify
 } from './api';
-import { AuthClientGrpc } from './auth.grpc';
+import { AuthClientGrpc } from './auth-client.grpc';
 import {
 	AccessTokenResponse,
 	LoginRequest,

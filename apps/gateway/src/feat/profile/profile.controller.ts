@@ -14,7 +14,7 @@ import {
 	ProfileResponse,
 	UpdateProfileRequest
 } from './dto';
-import { ProfileClientGrpc } from './profile.grpc';
+import { ProfileClientGrpc } from './profile-client.grpc';
 
 @Controller('profile')
 export class ProfileController {

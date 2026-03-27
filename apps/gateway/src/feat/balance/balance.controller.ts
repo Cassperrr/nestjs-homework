@@ -20,7 +20,7 @@ import {
 	ApiTransfer,
 	ApiWithdrawn
 } from './api';
-import { BalanceClientGrpc } from './balance.grpc';
+import { BalanceClientGrpc } from './balance-client.grpc';
 import {
 	AuditBalanceRequest,
 	AuditBalanceResponse,

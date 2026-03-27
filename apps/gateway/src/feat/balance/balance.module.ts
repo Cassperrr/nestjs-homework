@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { BalanceClientGrpc } from './balance-client.grpc';
 import { BalanceController } from './balance.controller';
-import { BalanceClientGrpc } from './balance.grpc';
 
 @Module({
 	controllers: [BalanceController],

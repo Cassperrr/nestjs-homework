@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { AuthClientGrpc } from './auth-client.grpc';
 import { AuthController } from './auth.controller';
-import { AuthClientGrpc } from './auth.grpc';
 
 @Module({
 	controllers: [AuthController],

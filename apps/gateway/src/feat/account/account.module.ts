@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { AccountClientGrpc } from './account-client.grpc';
 import { AccountController } from './account.controller';
-import { AccountClientGrpc } from './account.grpc';
 
 @Module({
 	controllers: [AccountController],

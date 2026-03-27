@@ -10,7 +10,7 @@ import {
 	FindAllUsersResponse,
 	UserResponse
 } from './dto';
-import { UsersClientGrpc } from './users.grpc';
+import { UsersClientGrpc } from './users-client.grpc';
 
 @Controller('users')
 export class UsersController {

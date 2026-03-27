@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 
+import { ProfileClientGrpc } from './profile-client.grpc';
 import { ProfileController } from './profile.controller';
-import { ProfileClientGrpc } from './profile.grpc';
 
 @Module({
 	controllers: [ProfileController],

@@ -14,7 +14,7 @@ import { Role } from 'shared';
 
 import { OtpCodeResponse } from '../auth/dto';
 
-import { AccountClientGrpc } from './account.grpc';
+import { AccountClientGrpc } from './account-client.grpc';
 import { ApiDeleteAccount, ApiPasswordChange, ApiPasswordConfirm } from './api';
 import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
 
