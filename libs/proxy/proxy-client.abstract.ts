@@ -7,10 +7,11 @@ import {
 } from '@nestjs/common';
 import type { RequestHandler } from 'express';
 import type { Request, Response } from 'express';
+import { ClientRequest } from 'http';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-import type { JwtPayload } from 'shared';
 
 type CircuitState = 'closed' | 'open' | 'half-open';
+type ProxyReqHandler = (proxyReq: ClientRequest, req: Request) => void;
 
 export abstract class AbstractProxyClient implements OnModuleInit {
 	private readonly logger: Logger;
@@ -28,7 +29,8 @@ export abstract class AbstractProxyClient implements OnModuleInit {
 		private readonly url: string,
 		private readonly FAILURE_THRESHOLD: number,
 		private readonly RESET_AFTER_MS: number,
-		private readonly PROXY_TIMEOUT_MS: number
+		private readonly PROXY_TIMEOUT_MS: number,
+		private readonly onProxyReq: ProxyReqHandler
 	) {
 		this.logger = new Logger(serviceName);
 	}
@@ -41,10 +43,10 @@ export abstract class AbstractProxyClient implements OnModuleInit {
 			timeout: this.PROXY_TIMEOUT_MS + 2_000,
 			selfHandleResponse: false,
 			on: {
-				// передаем accountId в headers
 				proxyReq: (proxyReq, req: Request) => {
-					const user = req.user as JwtPayload;
-					proxyReq.setHeader('x-account-id', user.id);
+					this.onProxyReq(proxyReq, req);
+					// const user = req.user as JwtPayload;
+					// proxyReq.setHeader('x-account-id', user.id);
 				},
 				proxyRes: proxyRes => {
 					//

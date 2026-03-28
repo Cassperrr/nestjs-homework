@@ -2,6 +2,7 @@ import { GatewayEnv } from '@gateway/src/config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AbstractProxyClient } from 'libs/proxy';
+import { JwtPayload, X_ACCOUNT_ID } from 'shared';
 
 @Injectable()
 export class FileServiceProxyClient extends AbstractProxyClient {
@@ -21,7 +22,11 @@ export class FileServiceProxyClient extends AbstractProxyClient {
 			url,
 			failureThreshold,
 			resetAfterMs,
-			proxyTimeoutMs
+			proxyTimeoutMs,
+			(proxyReq, req) => {
+				const user = req.user as JwtPayload;
+				proxyReq.setHeader(X_ACCOUNT_ID, user.id);
+			}
 		);
 	}
 }

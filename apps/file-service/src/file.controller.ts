@@ -5,6 +5,8 @@ import {
 	HttpStatus,
 	Post
 } from '@nestjs/common';
+import type { AvatarResponse } from 'contracts/gen/avatar';
+import { X_ACCOUNT_ID } from 'shared';
 
 import { FileUploadInterceptor } from './common';
 import { UploadedAvatar } from './common/decorators/param';
@@ -19,9 +21,9 @@ export class FileController {
 	@FileUploadInterceptor('avatar', new S3StreamStorage('avatars'))
 	@HttpCode(HttpStatus.CREATED)
 	public uploadAvatarStream(
-		@Headers('x-account-id') accountId: string,
+		@Headers(X_ACCOUNT_ID) accountId: string,
 		@UploadedAvatar({ pipe: false }) avatar: Express.Multer.File
-	) {
+	): Promise<AvatarResponse> {
 		return this.fileService.saveAvatarPath(accountId, avatar);
 	}
 }

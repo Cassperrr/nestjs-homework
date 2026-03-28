@@ -1,6 +1,6 @@
+import { getLoggerOptions } from '@libs/utils';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { getLoggerOptions } from 'shared';
 
 import { appSetup } from './app.setup';
 import { FileServiceEnv } from './config';

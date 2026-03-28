@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { RpcException } from '@nestjs/microservices';
 import { UserServiceEnv } from '@user-service/src/config';
 import { AccountRepository, BalanceRepository } from '@user-service/src/core';
-import { JobClientGrpc } from '@user-service/src/infra/grpc/job-client';
+import { JobClientGrpc } from '@user-service/src/infra';
 import type {
 	AuditBalanceRequest,
 	AuditBalanceResponse,
