@@ -37,11 +37,39 @@ services:
       - 9001:9001
     volumes:
       - minio_storage:/data
+    networks:
+      - nestjs-homework
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    ports:
+      - 9092:9092     # для сервисов (внутри docker сети)
+      - 9094:9094      # для подключения с хоста (локально)
+    env_file:
+      - .env
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    networks:
+      - nestjs-homework
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    depends_on:
+      - kafka
+    networks:
+      - nestjs-homework
 
 volumes:
   postgres_data:
   redis_data:
   minio_storage:
+  kafka_data:
 
 networks:
   nestjs-homework:
