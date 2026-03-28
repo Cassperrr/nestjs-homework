@@ -339,7 +339,7 @@ export class BalanceService {
 
 		if (apiToken !== this.USER_JOB_API_TOKEN) {
 			this.logger.error(
-				`Несанкционированный запрос чужеродного сервиса. Отказ в исполнении. Проверьте API ключи`
+				`[resetAllBalances] Несанкционированный запрос чужеродного сервиса. Отказ в исполнении. Проверьте API ключи`
 			);
 			return { resetCounts: 0 };
 		}

@@ -4,44 +4,69 @@
 //   protoc               v7.34.0
 // source: job.proto
 /* eslint-disable */
-import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
-import { Observable } from "rxjs";
-import { Empty } from "./google/protobuf/empty";
-import { StringMessage } from "./shared";
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
 
-export const protobufPackage = "job";
+import { Empty } from './google/protobuf/empty';
+import { StringMessage } from './shared';
 
-export const JOB_PACKAGE_NAME = "job";
+export const protobufPackage = 'job';
+
+export const JOB_PACKAGE_NAME = 'job';
 
 export interface JobServiceClient {
-  putResetBalanceJob(request: Empty): Observable<StringMessage>;
+	putResetBalanceJob(request: Empty): Observable<StringMessage>;
 
-  startResetBalanceJob(request: Empty): Observable<StringMessage>;
+	startResetBalanceJob(request: Empty): Observable<StringMessage>;
 
-  stopResetBalanceJob(request: Empty): Observable<StringMessage>;
+	stopResetBalanceJob(request: Empty): Observable<StringMessage>;
 }
 
 export interface JobServiceController {
-  putResetBalanceJob(request: Empty): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+	putResetBalanceJob(
+		request: Empty
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
-  startResetBalanceJob(request: Empty): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+	startResetBalanceJob(
+		request: Empty
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
-  stopResetBalanceJob(request: Empty): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
+	stopResetBalanceJob(
+		request: Empty
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 }
 
 export function JobServiceControllerMethods() {
-  return function (constructor: Function) {
-    const grpcMethods: string[] = ["putResetBalanceJob", "startResetBalanceJob", "stopResetBalanceJob"];
-    for (const method of grpcMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcMethod("JobService", method)(constructor.prototype[method], method, descriptor);
-    }
-    const grpcStreamMethods: string[] = [];
-    for (const method of grpcStreamMethods) {
-      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
-      GrpcStreamMethod("JobService", method)(constructor.prototype[method], method, descriptor);
-    }
-  };
+	return function (constructor: Function) {
+		const grpcMethods: string[] = [
+			'putResetBalanceJob',
+			'startResetBalanceJob',
+			'stopResetBalanceJob'
+		];
+		for (const method of grpcMethods) {
+			const descriptor: any = Reflect.getOwnPropertyDescriptor(
+				constructor.prototype,
+				method
+			);
+			GrpcMethod('JobService', method)(
+				constructor.prototype[method],
+				method,
+				descriptor
+			);
+		}
+		const grpcStreamMethods: string[] = [];
+		for (const method of grpcStreamMethods) {
+			const descriptor: any = Reflect.getOwnPropertyDescriptor(
+				constructor.prototype,
+				method
+			);
+			GrpcStreamMethod('JobService', method)(
+				constructor.prototype[method],
+				method,
+				descriptor
+			);
+		}
+	};
 }
 
-export const JOB_SERVICE_NAME = "JobService";
+export const JOB_SERVICE_NAME = 'JobService';

@@ -3,10 +3,17 @@
 //   protoc-gen-ts_proto  v2.11.5
 //   protoc               v7.34.0
 // source: avatar.proto
-
 /* eslint-disable */
+import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
+import { Observable } from 'rxjs';
 
 export const protobufPackage = 'avatar';
+
+export interface CreateAvatarRequest {
+	accountId: string;
+	apiToken: string;
+	path: string;
+}
 
 export interface AvatarResponse {
 	id: string;
@@ -14,3 +21,44 @@ export interface AvatarResponse {
 }
 
 export const AVATAR_PACKAGE_NAME = 'avatar';
+
+export interface AvatarServiceClient {
+	createAvatar(request: CreateAvatarRequest): Observable<AvatarResponse>;
+}
+
+export interface AvatarServiceController {
+	createAvatar(
+		request: CreateAvatarRequest
+	): Promise<AvatarResponse> | Observable<AvatarResponse> | AvatarResponse;
+}
+
+export function AvatarServiceControllerMethods() {
+	return function (constructor: Function) {
+		const grpcMethods: string[] = ['createAvatar'];
+		for (const method of grpcMethods) {
+			const descriptor: any = Reflect.getOwnPropertyDescriptor(
+				constructor.prototype,
+				method
+			);
+			GrpcMethod('AvatarService', method)(
+				constructor.prototype[method],
+				method,
+				descriptor
+			);
+		}
+		const grpcStreamMethods: string[] = [];
+		for (const method of grpcStreamMethods) {
+			const descriptor: any = Reflect.getOwnPropertyDescriptor(
+				constructor.prototype,
+				method
+			);
+			GrpcStreamMethod('AvatarService', method)(
+				constructor.prototype[method],
+				method,
+				descriptor
+			);
+		}
+	};
+}
+
+export const AVATAR_SERVICE_NAME = 'AvatarService';

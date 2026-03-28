@@ -1,0 +1,206 @@
+import {
+	GatewayTimeoutException,
+	type HttpException,
+	Logger,
+	type OnModuleInit,
+	ServiceUnavailableException
+} from '@nestjs/common';
+import type { RequestHandler } from 'express';
+import type { Request, Response } from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import type { JwtPayload } from 'shared';
+
+type CircuitState = 'closed' | 'open' | 'half-open';
+
+export abstract class AbstractProxyClient implements OnModuleInit {
+	private readonly logger: Logger;
+	private proxy: RequestHandler;
+	private probeTimeout?: NodeJS.Timeout;
+
+	// circuit breaker
+	private state: CircuitState = 'closed';
+	private failures = 0;
+	private circuitOpenedAt: number | null = null;
+	private probeInFlight = false;
+
+	public constructor(
+		private readonly serviceName: string,
+		private readonly url: string,
+		private readonly FAILURE_THRESHOLD: number,
+		private readonly RESET_AFTER_MS: number,
+		private readonly PROXY_TIMEOUT_MS: number
+	) {
+		this.logger = new Logger(serviceName);
+	}
+
+	public onModuleInit(): void {
+		this.proxy = createProxyMiddleware({
+			target: this.url,
+			changeOrigin: true,
+			proxyTimeout: this.PROXY_TIMEOUT_MS,
+			timeout: this.PROXY_TIMEOUT_MS + 2_000,
+			selfHandleResponse: false,
+			on: {
+				// передаем accountId в headers
+				proxyReq: (proxyReq, req: Request) => {
+					const user = req.user as JwtPayload;
+					proxyReq.setHeader('x-account-id', user.id);
+				},
+				proxyRes: proxyRes => {
+					//
+					if (proxyRes.statusCode && proxyRes.statusCode < 500) {
+						this.success();
+					} else {
+						this.failure(new Error(`HTTP ${proxyRes.statusCode}`));
+					}
+				},
+				error: (err: any, _req: Request, res: Response) => {
+					const error =
+						err instanceof Error ? err : new Error(String(err));
+
+					this.failure(error);
+
+					if (!res.headersSent) {
+						const mapped = this.mapError(error);
+
+						res.status(mapped.getStatus()).json({
+							statusCode: mapped.getStatus(),
+							message: mapped.message
+						});
+					}
+				}
+			}
+		});
+	}
+
+	public proxyToService(req: Request, res: Response): Promise<void> {
+		// если circuit открыт - не дрочим сервис
+		if (this.isCircuitOpen()) {
+			this.logger.warn(`Circuit ${this.state}: запрос отклонён`);
+			throw new ServiceUnavailableException(
+				`Сервис временно недоступен, попробуйте позже`
+			);
+		}
+
+		return new Promise<void>(resolve => {
+			/* eslint-disable */
+			this.proxy(req, res, err => {
+				if (!err) return resolve();
+
+				const error =
+					err instanceof Error ? err : new Error(String(err));
+
+				// this.failure(error);
+
+				if (!res.headersSent) {
+					const mapped = this.mapError(error);
+
+					res.status(mapped.getStatus()).json({
+						error: mapped.message
+					});
+				}
+
+				resolve();
+			});
+		});
+	}
+
+	// ─── Circuit Breaker ───────────────────────────────────────────────
+
+	private isCircuitOpen(): boolean {
+		switch (this.state) {
+			case 'closed':
+				return false;
+
+			case 'open':
+				if (Date.now() - this.circuitOpenedAt! > this.RESET_AFTER_MS) {
+					this.state = 'half-open';
+					this.logger.log('Circuit → half-open, пробный запрос');
+					// fall through в half-open
+				} else {
+					return true;
+				}
+			// eslint-disable-next-line no-fallthrough
+			case 'half-open':
+				// пробный запрос уже летит - все остальные отклоняем
+				if (this.probeInFlight) return true;
+
+				// пропускаем ровно один пробный запрос
+				this.probeInFlight = true;
+				this.startProbeTimeout();
+				return false;
+		}
+	}
+
+	private startProbeTimeout(): void {
+		if (this.probeTimeout) {
+			clearTimeout(this.probeTimeout);
+		}
+
+		this.probeTimeout = setTimeout(() => {
+			if (this.probeInFlight) {
+				this.logger.warn('Probe завис → failure');
+
+				this.failure(new Error('Probe timeout'));
+			}
+		}, this.PROXY_TIMEOUT_MS + 1000);
+	}
+
+	private success(): void {
+		if (this.state !== 'closed') {
+			this.logger.log(`Circuit закрыт: сервис восстановлен`);
+		}
+
+		this.state = 'closed';
+		this.failures = 0;
+		this.probeInFlight = false;
+		this.circuitOpenedAt = null;
+
+		if (this.probeTimeout) {
+			clearTimeout(this.probeTimeout);
+			this.probeTimeout = undefined;
+		}
+	}
+
+	private failure(err: Error): void {
+		if (!this.probeInFlight && this.state === 'half-open') {
+			this.logger.warn(
+				`Duplicate failure ignored in half-open: ${err.message}`
+			);
+			return;
+		}
+
+		this.probeInFlight = false;
+		this.failures++;
+		this.logger.warn(
+			`Ошибка [${this.failures}/${this.FAILURE_THRESHOLD}]: ${err.message}`
+		);
+
+		if (this.failures >= this.FAILURE_THRESHOLD) {
+			this.state = 'open';
+			this.circuitOpenedAt = Date.now();
+			this.failures = 0;
+			this.logger.error(
+				`Circuit открыт: сервис недоступен, повтор через ${this.RESET_AFTER_MS / 1000}s`
+			);
+		}
+
+		if (this.probeTimeout) {
+			clearTimeout(this.probeTimeout);
+			this.probeTimeout = undefined;
+		}
+	}
+
+	// ─── Helpers ───────────────────────────────────────────────────────
+
+	private mapError(err: Error): HttpException {
+		if (err.message.includes('ECONNREFUSED'))
+			return new ServiceUnavailableException(`Сервис недоступен`);
+		if (
+			err.message.includes('ETIMEDOUT') ||
+			err.message.includes('timeout')
+		)
+			return new GatewayTimeoutException(`Сервис не ответил`);
+		return new ServiceUnavailableException(`Ошибка сервиса`);
+	}
+}

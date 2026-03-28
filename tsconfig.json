@@ -24,11 +24,12 @@
 		"paths": {
 			"@contracts": ["contracts/index.ts"],
 			"@gateway/*": ["apps/gateway/*"],
+			"@job-service/*": ["apps/job-service/*"],
 			"@libs/config": ["libs/config/index.ts"],
 			"@libs/grpc": ["libs/grpc/index.ts"],
 			"@libs/utils": ["shared/utils/index.ts"],
 			"@user-service/*": ["apps/user-service/*"],
-			"@job-service/*": ["apps/job-service/*"]
+			"@file-service/*": ["apps/file-service/*"]
 		}
 	}
 }

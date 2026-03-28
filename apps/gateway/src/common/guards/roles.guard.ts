@@ -1,5 +1,5 @@
 import {
-	CanActivate,
+	type CanActivate,
 	ExecutionContext,
 	ForbiddenException,
 	Injectable
@@ -15,15 +15,15 @@ import { ROLES_KEY } from '../decorators';
 export class RolesGuard implements CanActivate {
 	public constructor(private readonly reflector: Reflector) {}
 
-	canActivate(context: ExecutionContext): boolean {
+	canActivate(ctx: ExecutionContext): boolean {
 		const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
 			ROLES_KEY,
-			[context.getHandler(), context.getClass()]
+			[ctx.getHandler(), ctx.getClass()]
 		);
 
 		if (!requiredRoles || requiredRoles.length === 0) return true;
 
-		const req = context.switchToHttp().getRequest<Request>();
+		const req = ctx.switchToHttp().getRequest<Request>();
 		const user = req.user as JwtPayload;
 
 		if (!user) throw new ForbiddenException('Доступ запрещён');

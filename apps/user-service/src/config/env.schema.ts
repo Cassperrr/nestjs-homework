@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 export const userServiceEnvSchema = generalSchema.extend({
 	USER_JOB_API_TOKEN: z.string().nonempty(),
+	USER_FILE_API_TOKEN: z.string().nonempty(),
 
 	DATABASE_USER: z.string().nonempty(),
 	DATABASE_PASSWORD: z.string().nonempty(),
@@ -32,8 +33,6 @@ export const userServiceEnvSchema = generalSchema.extend({
 	TIME_COST: z.coerce.number().positive().default(3),
 	PARALLELISM: z.coerce.number().positive().default(4),
 
-	AVATAR_MAX_SIZE_MB: z.coerce.number().positive().min(1),
-	AVATAR_ALLOWED_TYPES: z.string().nonempty().default('jpeg|png'),
 	MAX_AVATARS_FOR_PROFILE: z.coerce.number().positive().min(1),
 
 	JWT_SECRET: z.string().nonempty(),

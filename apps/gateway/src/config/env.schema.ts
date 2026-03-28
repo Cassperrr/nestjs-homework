@@ -8,7 +8,11 @@ export const gatewayEnvSchema = generalSchema.extend({
 	THROTTLER_TTL: z.coerce.number().min(1000),
 	THROTTLER_LIMIT: z.coerce.number().min(1),
 
-	JWT_SECRET: z.string().nonempty()
+	JWT_SECRET: z.string().nonempty(),
+
+	FAILURE_THRESHOLD: z.coerce.number().min(1),
+	RESET_AFTER_MS: z.coerce.number().min(1000),
+	PROXY_TIMEOUT_MS: z.coerce.number().min(1000)
 });
 
 export type GatewayEnv = z.infer<typeof gatewayEnvSchema>;

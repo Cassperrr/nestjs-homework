@@ -1,5 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+	ApiBearerAuth,
+	ApiBody,
+	ApiConsumes,
+	ApiOkResponse,
+	ApiOperation
+} from '@nestjs/swagger';
 
 import { UploadAvatarResponse } from '../dto';
 
@@ -16,6 +22,15 @@ export const ApiUploadFileStream = () =>
 	applyDecorators(
 		ApiOperation({
 			summary: 'Загрузить аватар пользователя (stream)'
+		}),
+		ApiConsumes('multipart/form-data'),
+		ApiBody({
+			schema: {
+				type: 'object',
+				properties: {
+					avatar: { type: 'string', format: 'binary' }
+				}
+			}
 		}),
 		ApiOkResponse({ type: UploadAvatarResponse }),
 		ApiBearerAuth()
