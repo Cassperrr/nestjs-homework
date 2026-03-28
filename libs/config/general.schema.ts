@@ -20,5 +20,7 @@ export const generalSchema = z.object({
 	FILE_SERVICE_HOST: z.string().nonempty(),
 	FILE_SERVICE_PORT: z.coerce.number().min(1).max(65535),
 
+	KAFKA_BROKER: z.string().nonempty(),
+
 	AVATAR_MAX_SIZE_MB: z.coerce.number().positive().min(1)
 });

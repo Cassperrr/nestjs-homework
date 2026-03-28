@@ -1,9 +1,11 @@
 syntax = "proto3";
 
 package avatar;
+import "shared.proto";
 
 service AvatarService {
   rpc CreateAvatar (CreateAvatarRequest) returns (AvatarResponse);
+  rpc DeleteAvatar (DeleteAvatarRequest) returns (shared.StringMessage);
 }
 
 message CreateAvatarRequest {
@@ -12,8 +14,13 @@ message CreateAvatarRequest {
   string path = 3;
 }
 
-
 message AvatarResponse {
   string id = 1;
   string name = 2;
+}
+
+message DeleteAvatarRequest {
+  string account_id = 1;
+  string api_token = 2;
+  string file_name = 3;
 }

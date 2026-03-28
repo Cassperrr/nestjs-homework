@@ -9,7 +9,7 @@ export abstract class AbstractRedisService
 	extends Redis
 	implements OnModuleInit, OnModuleDestroy
 {
-	private readonly logger = new Logger('RedisService');
+	private readonly logger = new Logger(this.constructor.name);
 
 	public constructor(options: RedisOptions) {
 		super(options);

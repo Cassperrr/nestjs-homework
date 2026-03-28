@@ -25,7 +25,7 @@ export function AbstractPrismaService<TClient extends PrismaClientClass>(
 		extends Client
 		implements OnModuleInit, OnModuleDestroy
 	{
-		public readonly logger = new Logger('PrismaService');
+		public readonly logger = new Logger(this.constructor.name);
 
 		public constructor(adapter: PrismaPg) {
 			super({ adapter });

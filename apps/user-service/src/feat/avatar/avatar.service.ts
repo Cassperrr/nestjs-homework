@@ -9,7 +9,12 @@ import {
 	CACHE_EVENTS,
 	UsersRepository
 } from '@user-service/src/core';
-import type { AvatarResponse, CreateAvatarRequest } from 'contracts/gen/avatar';
+import type {
+	AvatarResponse,
+	CreateAvatarRequest,
+	DeleteAvatarRequest
+} from 'contracts/gen/avatar';
+import type { StringMessage } from 'contracts/gen/shared';
 
 @Injectable()
 export class AvatarService {
@@ -60,17 +65,59 @@ export class AvatarService {
 				details: `Максимальное количество аватарок - ${this.maxAvatars} шт.`
 			});
 
-		const loaded = await this.avatarRepo.create(
-			user.profile.id,
-			path.split('/')[1]
-		);
+		const fileName = path.split('/')[1];
+
+		const loaded = await this.avatarRepo.create(user.profile.id, fileName);
 
 		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
 
 		this.logger.log(
-			`[${user.id}] [${user.role}] Сохранен путь аватара. Path: ${path}`
+			`[${user.id}] [${user.role}] Сохранено имя аватара: ${fileName}`
 		);
 
 		return loaded;
+	}
+
+	public async deleteAvatar(
+		data: DeleteAvatarRequest
+	): Promise<StringMessage> {
+		const { accountId, apiToken, fileName } = data;
+
+		if (apiToken !== this.USER_FILE_API_TOKEN) {
+			this.logger.error(
+				`[resetAllBalances] Несанкционированный запрос чужеродного сервиса. Отказ в исполнении. Проверьте API ключи`
+			);
+			throw new RpcException({
+				code: GrpcStatus.UNAUTHENTICATED,
+				details: 'Внутренняя ошибка сервисов'
+			});
+		}
+
+		const user = await this.usersRepo.findBy({ id: accountId });
+
+		if (!user || user.deletedAt || !user.profile)
+			throw new RpcException({
+				code: GrpcStatus.NOT_FOUND,
+				details: 'Аккаунт либо удален, либо профиль не существует'
+			});
+
+		const avatar = await this.avatarRepo
+			.update(accountId, fileName, {
+				deletedAt: new Date()
+			})
+			.catch(() => {
+				throw new RpcException({
+					code: GrpcStatus.UNAUTHENTICATED,
+					details: 'Нет прав'
+				});
+			});
+
+		this.eventEmmiter.emit(CACHE_EVENTS.USERS_INVALIDATE);
+
+		this.logger.log(
+			`[${user.id}] [${user.role}] Soft-delete имя аватара: ${avatar.name}`
+		);
+
+		return { message: `Аватар ${fileName} успешно удален` };
 	}
 }

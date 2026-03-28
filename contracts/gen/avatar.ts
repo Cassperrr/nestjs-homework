@@ -7,6 +7,8 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
+import { StringMessage } from './shared';
+
 export const protobufPackage = 'avatar';
 
 export interface CreateAvatarRequest {
@@ -20,21 +22,33 @@ export interface AvatarResponse {
 	name: string;
 }
 
+export interface DeleteAvatarRequest {
+	accountId: string;
+	apiToken: string;
+	fileName: string;
+}
+
 export const AVATAR_PACKAGE_NAME = 'avatar';
 
 export interface AvatarServiceClient {
 	createAvatar(request: CreateAvatarRequest): Observable<AvatarResponse>;
+
+	deleteAvatar(request: DeleteAvatarRequest): Observable<StringMessage>;
 }
 
 export interface AvatarServiceController {
 	createAvatar(
 		request: CreateAvatarRequest
 	): Promise<AvatarResponse> | Observable<AvatarResponse> | AvatarResponse;
+
+	deleteAvatar(
+		request: DeleteAvatarRequest
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 }
 
 export function AvatarServiceControllerMethods() {
 	return function (constructor: Function) {
-		const grpcMethods: string[] = ['createAvatar'];
+		const grpcMethods: string[] = ['createAvatar', 'deleteAvatar'];
 		for (const method of grpcMethods) {
 			const descriptor: any = Reflect.getOwnPropertyDescriptor(
 				constructor.prototype,

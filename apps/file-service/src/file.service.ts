@@ -34,7 +34,7 @@ export class FileService {
 		const { path } = avatar;
 
 		this.logger.log(
-			`[${path}] Аватар загружен (stream). Попытка сохранения пути`
+			`[${path}] Аватар загружен (stream). Попытка сохранения имени...`
 		);
 
 		try {
@@ -44,7 +44,7 @@ export class FileService {
 				path
 			});
 
-			this.logger.log(`[${path}] Путь аватара успешно сохранен`);
+			this.logger.log(`[${path}] Аватар успешно сохранен`);
 
 			return created;
 		} catch (e) {
@@ -54,6 +54,30 @@ export class FileService {
 
 			await this.storageService.removeFile({ path });
 
+			throw e;
+		}
+	}
+
+	public async deleteAvatarPath(accountId: string, fileName: string) {
+		if (!fileName)
+			throw new UnprocessableEntityException('Имя файла не передано');
+
+		const path = `avatars/${fileName}`;
+
+		this.logger.log(`[${path}] Попытка удаление файла...`);
+
+		try {
+			const deleted = await this.avatarClient.call('deleteAvatar', {
+				accountId,
+				apiToken: this.USER_FILE_API_TOKEN,
+				fileName
+			});
+
+			this.logger.log(`[${path}] Аватар успешно удален`);
+
+			return deleted;
+		} catch (e) {
+			this.logger.warn(`[${path}] Ошибка удаления аватара: \n${e}`);
 			throw e;
 		}
 	}

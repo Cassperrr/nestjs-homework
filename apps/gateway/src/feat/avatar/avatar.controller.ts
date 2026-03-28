@@ -3,20 +3,23 @@ import { FILE_SIZE_MB } from '@gateway/src/core/constants';
 import { FileServiceProxyClient } from '@gateway/src/infra';
 import {
 	Controller,
+	Delete,
 	HttpCode,
 	HttpStatus,
 	Post,
+	Query,
 	Req,
 	Res
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 
-import { ApiUploadFileStream } from './api';
+import { ApiDeleteFile, ApiUploadFileStream } from './api';
+import { DeleteAvatarRequest } from './dto';
 
 @Controller('avatar')
 export class AvatarController {
 	public constructor(
-		private readonly fileServiceClient: FileServiceProxyClient
+		private readonly fileServiceProxy: FileServiceProxyClient
 	) {}
 
 	@ApiUploadFileStream()
@@ -27,19 +30,21 @@ export class AvatarController {
 	public uploadAvatarStream(
 		@Req() req: Request,
 		@Res() res: Response,
-		@AccountId() accountId: string
+		@AccountId() _accountId: string
 	) {
-		return this.fileServiceClient.proxyToService(req, res);
+		return this.fileServiceProxy.proxyToService(req, res);
 	}
 
-	// @ApiDeleteFile()
-	// @Protected()
-	// @Delete(':fileName')
-	// @HttpCode(HttpStatus.OK)
-	// public deleteAvatar(
-	// 	@AccountId() id: string,
-	// 	@Query() dto: DeleteAvatarRequest
-	// ): any {
-	// 	return this.avatarService.deleteAvatar(id, dto);
-	// }
+	@ApiDeleteFile()
+	@Protected()
+	@Delete(':fileName')
+	@HttpCode(HttpStatus.OK)
+	public deleteAvatar(
+		@Req() req: Request,
+		@Res() res: Response,
+		@AccountId() _accountId: string,
+		@Query() _dto: DeleteAvatarRequest
+	): any {
+		return this.fileServiceProxy.proxyToService(req, res);
+	}
 }
