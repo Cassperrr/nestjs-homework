@@ -3,26 +3,14 @@ import { PROFILE_SERVICE_NAME } from 'contracts/gen/profile';
 
 import { ProfileService } from './profile.service';
 
+const GATEWAY_ACCESS_TOKEN = process.env.GATEWAY_ACCESS_TOKEN as string;
+
 export const ProfileController = createGrpcController(
 	PROFILE_SERVICE_NAME,
-	ProfileService
+	ProfileService,
+	[],
+	{
+		createProfile: [GATEWAY_ACCESS_TOKEN],
+		updateProfile: [GATEWAY_ACCESS_TOKEN]
+	}
 );
-
-// @Controller()
-// export class ProfileController {
-// 	constructor(private readonly profileService: ProfileService) {}
-
-// 	@GrpcMethod(PROFILE_SERVICE_NAME)
-// 	public async createProfile(
-// 		data: CreateProfileRequest
-// 	): Promise<ProfileResponse> {
-// 		return this.profileService.create(data);
-// 	}
-
-// 	@GrpcMethod(PROFILE_SERVICE_NAME)
-// 	public async updateProfile(
-// 		data: UpdateProfileRequest
-// 	): Promise<ProfileResponse> {
-// 		return this.profileService.update(data);
-// 	}
-// }

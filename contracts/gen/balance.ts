@@ -7,6 +7,7 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
+import { Empty } from './google/protobuf/empty';
 import { StringMessage } from './shared';
 
 export const protobufPackage = 'balance';
@@ -77,10 +78,6 @@ export interface BalanceResetJobRequest {
 	accountId: string;
 }
 
-export interface ResetAllBalancesRequest {
-	apiToken: string;
-}
-
 export interface ResetAllBalancesResponse {
 	resetCounts: number;
 }
@@ -120,9 +117,7 @@ export interface BalanceServiceClient {
 		request: BalanceResetJobRequest
 	): Observable<StringMessage>;
 
-	resetAllBalances(
-		request: ResetAllBalancesRequest
-	): Observable<ResetAllBalancesResponse>;
+	resetAllBalances(request: Empty): Observable<ResetAllBalancesResponse>;
 }
 
 export interface BalanceServiceController {
@@ -174,7 +169,7 @@ export interface BalanceServiceController {
 	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
 	resetAllBalances(
-		request: ResetAllBalancesRequest
+		request: Empty
 	):
 		| Promise<ResetAllBalancesResponse>
 		| Observable<ResetAllBalancesResponse>

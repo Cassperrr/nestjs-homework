@@ -3,8 +3,10 @@ import ms, { type StringValue } from 'ms';
 import { z } from 'zod';
 
 export const userServiceEnvSchema = generalSchema.extend({
-	USER_JOB_API_TOKEN: z.string().nonempty(),
-	USER_FILE_API_TOKEN: z.string().nonempty(),
+	GATEWAY_ACCESS_TOKEN: z.string().nonempty(),
+	JOB_ACCESS_TOKEN: z.string().nonempty(),
+	USER_ACCESS_TOKEN: z.string().nonempty(),
+	FILE_ACCESS_TOKEN: z.string().nonempty(),
 
 	DATABASE_USER: z.string().nonempty(),
 	DATABASE_PASSWORD: z.string().nonempty(),

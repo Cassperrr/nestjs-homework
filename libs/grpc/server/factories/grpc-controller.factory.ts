@@ -1,10 +1,23 @@
-import { Controller, Inject, Logger, Type } from '@nestjs/common';
+import {
+	Controller,
+	Inject,
+	Logger,
+	SetMetadata,
+	Type,
+	UseGuards
+} from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
+
+import { ALLOWED_SERVICES_KEY } from '../constants';
+import { GrpcAuthGuard } from '../guard';
+
+export type ServiceAcl<T> = Partial<Record<keyof T, string[]>>;
 
 export function createGrpcController<T>(
 	serviceName: string,
 	ServiceClass: new (...args: any[]) => T,
-	proxingMethods: Array<keyof T> = [] // для явного прокисрования методов чтобы избежать мусора если он там появится
+	proxingMethods: Array<keyof T> = [], // для явного прокисрования методов чтобы избежать мусора если он там появится
+	acl: ServiceAcl<T> = {} // для указания каким сервисам разрешено обращаться в этот метод через их апи токен
 ): Type<any> {
 	const controllerName = `${ServiceClass.name.replace('Service', '')}Controller`;
 	const logger = new Logger(`GrpcControllerFactory (${controllerName})`);
@@ -21,6 +34,9 @@ export function createGrpcController<T>(
 		[ServiceClass],
 		DynamicGrpcController
 	);
+
+	// вешаем гвард на авторизицированные запросы между микросервисами
+	UseGuards(GrpcAuthGuard)(DynamicGrpcController);
 
 	// собираем методы сервиса в список
 	const proto = ServiceClass.prototype;
@@ -58,6 +74,9 @@ export function createGrpcController<T>(
 			}
 		};
 
+		// eslint-disable-next-line @typescript-eslint/unbound-method
+		Object.defineProperty(descriptor.value, 'name', { value: method });
+
 		// добавляем метод в класс
 		Object.defineProperty(
 			DynamicGrpcController.prototype,
@@ -71,6 +90,15 @@ export function createGrpcController<T>(
 			method,
 			descriptor
 		);
+
+		const allowedServices = acl[method as keyof T];
+		if (allowedServices) {
+			SetMetadata(ALLOWED_SERVICES_KEY, allowedServices)(
+				DynamicGrpcController.prototype,
+				method,
+				descriptor
+			);
+		}
 	});
 
 	Object.defineProperty(DynamicGrpcController, 'name', {

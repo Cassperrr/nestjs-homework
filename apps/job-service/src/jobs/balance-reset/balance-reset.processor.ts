@@ -10,16 +10,12 @@ import { Job } from 'bullmq';
 @Processor(QUEUES.BALANCE_RESET)
 export class BalanceResetProcessor extends WorkerHost {
 	private readonly logger = new Logger(BalanceResetProcessor.name);
-	private readonly USER_JOB_API_TOKEN: string;
 
 	public constructor(
 		private readonly balanceClient: BalanceClientGrpc,
 		private readonly config: ConfigService<JobServiceEnv, true>
 	) {
 		super();
-		this.USER_JOB_API_TOKEN = config.get('USER_JOB_API_TOKEN', {
-			infer: true
-		});
 	}
 
 	// слушает редис (pub/sub)
@@ -38,9 +34,7 @@ export class BalanceResetProcessor extends WorkerHost {
 			`Job #${job.id}, triggered at: ${job.data.triggeredAt}`
 		);
 
-		const data = await this.balanceClient.call('resetAllBalances', {
-			apiToken: this.USER_JOB_API_TOKEN
-		});
+		const data = await this.balanceClient.call('resetAllBalances', {});
 
 		this.logger.log(
 			`Job #${job.id} выполнен. Балансов сброшено ${data.resetCounts}`

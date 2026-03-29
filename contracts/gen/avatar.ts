@@ -13,7 +13,6 @@ export const protobufPackage = 'avatar';
 
 export interface CreateAvatarRequest {
 	accountId: string;
-	apiToken: string;
 	path: string;
 }
 
@@ -24,7 +23,6 @@ export interface AvatarResponse {
 
 export interface DeleteAvatarRequest {
 	accountId: string;
-	apiToken: string;
 	fileName: string;
 }
 

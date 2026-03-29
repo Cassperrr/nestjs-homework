@@ -3,6 +3,7 @@ syntax = "proto3";
 package balance;
 
 import "shared.proto";
+import "google/protobuf/empty.proto";
 
 service BalanceService {
   rpc GetMyBalance (GetMyBalanceRequest) returns (GetMyBalanceResponse); 
@@ -13,7 +14,7 @@ service BalanceService {
   rpc PutResetBalanceJob (BalanceResetJobRequest) returns (shared.StringMessage); 
   rpc StartResetBalanceJob (BalanceResetJobRequest) returns (shared.StringMessage); 
   rpc StopResetBalanceJob (BalanceResetJobRequest) returns (shared.StringMessage); 
-  rpc ResetAllBalances (ResetAllBalancesRequest) returns (ResetAllBalancesResponse); 
+  rpc ResetAllBalances (google.protobuf.Empty) returns (ResetAllBalancesResponse); 
 }
 
 message GetMyBalanceRequest {
@@ -80,10 +81,6 @@ message TransferAmountResponse {
 
 message BalanceResetJobRequest {
   string account_id = 1;
-}
-
-message ResetAllBalancesRequest {
-  string api_token = 1;
 }
 
 message ResetAllBalancesResponse {

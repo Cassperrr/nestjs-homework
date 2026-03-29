@@ -3,68 +3,22 @@ import { BALANCE_SERVICE_NAME } from 'contracts/gen/balance';
 
 import { BalanceService } from './balance.service';
 
+const GATEWAY_ACCESS_TOKEN = process.env.GATEWAY_ACCESS_TOKEN as string;
+const JOB_ACCESS_TOKEN = process.env.JOB_ACCESS_TOKEN as string;
+
 export const BalanceController = createGrpcController(
 	BALANCE_SERVICE_NAME,
-	BalanceService
+	BalanceService,
+	[],
+	{
+		auditBalance: [GATEWAY_ACCESS_TOKEN],
+		getMyBalance: [GATEWAY_ACCESS_TOKEN],
+		depositAmount: [GATEWAY_ACCESS_TOKEN],
+		withdrawalAmount: [GATEWAY_ACCESS_TOKEN],
+		transferAmount: [GATEWAY_ACCESS_TOKEN],
+		putResetBalanceJob: [GATEWAY_ACCESS_TOKEN],
+		startResetBalanceJob: [GATEWAY_ACCESS_TOKEN],
+		stopResetBalanceJob: [GATEWAY_ACCESS_TOKEN],
+		resetAllBalances: [JOB_ACCESS_TOKEN]
+	}
 );
-
-// @Controller()
-// export class BalanceController {
-// 	constructor(private readonly balanceService: BalanceService) {}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async getMyBalance(
-// 		data: GetMyBalanceRequest
-// 	): Promise<GetMyBalanceResponse> {
-// 		return this.balanceService.getMyBalance(data);
-// 	}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async auditBalance(
-// 		data: AuditBalanceRequest
-// 	): Promise<AuditBalanceResponse> {
-// 		return this.balanceService.auditBalance(data);
-// 	}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async depositAmount(
-// 		data: DepositAmountRequest
-// 	): Promise<DepositAmountResponse> {
-// 		return this.balanceService.depositAmount(data);
-// 	}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async withdrawalAmount(
-// 		data: WithdrawalAmountRequest
-// 	): Promise<WithdrawalAmountResponse> {
-// 		return this.balanceService.withdrawalAmount(data);
-// 	}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async transferAmount(
-// 		data: TransferAmountRequest
-// 	): Promise<TransferAmountResponse> {
-// 		return this.balanceService.transferAmount(data);
-// 	}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async putResetBalanceJob(
-// 		data: BalanceResetJobRequest
-// 	): Promise<StringMessage> {
-// 		return { message: '' };
-// 	}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async startResetBalanceJob(
-// 		data: BalanceResetJobRequest
-// 	): Promise<StringMessage> {
-// 		return { message: '' };
-// 	}
-
-// 	@GrpcMethod(BALANCE_SERVICE_NAME)
-// 	public async stopResetBalanceJob(
-// 		data: BalanceResetJobRequest
-// 	): Promise<StringMessage> {
-// 		return { message: '' };
-// 	}
-// }

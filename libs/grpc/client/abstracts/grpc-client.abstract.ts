@@ -1,3 +1,4 @@
+import { Metadata } from '@grpc/grpc-js';
 import type { OnModuleInit } from '@nestjs/common';
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
@@ -12,11 +13,12 @@ export abstract class AbstractGrpcClient<
 	T extends Record<string, any>
 > implements OnModuleInit {
 	protected service!: T;
-	private readonly logger = new Logger('GrpcClient');
+	private readonly logger = new Logger(this.constructor.name);
 
 	protected constructor(
 		private readonly client: ClientGrpc,
-		private readonly serviceName: string
+		private readonly serviceName: string,
+		private readonly token?: string
 	) {}
 
 	public onModuleInit() {
@@ -28,7 +30,12 @@ export abstract class AbstractGrpcClient<
 		payload: Parameters<T[K]>[0],
 		options = { timeout: 3000, retries: 2, delay: 500 }
 	): Promise<UnwrapObservable<ReturnType<T[K]>>> {
-		const observable = this.service[method](payload).pipe(
+		const metadata = new Metadata();
+		if (this.token) {
+			metadata.add('authorization', `Bearer ${this.token}`);
+		}
+
+		const observable = this.service[method](payload, metadata).pipe(
 			timeout(options.timeout),
 			retry({
 				count: options.retries,

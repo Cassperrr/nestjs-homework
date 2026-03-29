@@ -2,7 +2,8 @@ import { generalSchema } from '@libs/config';
 import { z } from 'zod';
 
 export const jobServiceEnvSchema = generalSchema.extend({
-	USER_JOB_API_TOKEN: z.string().nonempty(),
+	USER_ACCESS_TOKEN: z.string().nonempty(),
+	JOB_ACCESS_TOKEN: z.string().nonempty(),
 
 	REDIS_USER: z.string().nonempty(),
 	REDIS_PASSWORD: z.string().nonempty(),

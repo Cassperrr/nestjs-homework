@@ -1,5 +1,7 @@
+import { GatewayEnv } from '@gateway/src/config';
 import { AbstractGrpcClient, InjectGrpcClient } from '@libs/grpc';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
 	AUTH_PACKAGE_NAME,
@@ -10,8 +12,10 @@ import {
 @Injectable()
 export class AuthClientGrpc extends AbstractGrpcClient<AuthServiceClient> {
 	public constructor(
-		@InjectGrpcClient(AUTH_PACKAGE_NAME) client: ClientGrpc
+		@InjectGrpcClient(AUTH_PACKAGE_NAME) client: ClientGrpc,
+		private readonly config: ConfigService<GatewayEnv, true>
 	) {
-		super(client, AUTH_SERVICE_NAME);
+		const token = config.get('GATEWAY_ACCESS_TOKEN', { infer: true });
+		super(client, AUTH_SERVICE_NAME, token);
 	}
 }

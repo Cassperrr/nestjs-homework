@@ -3,31 +3,15 @@ import { USERS_SERVICE_NAME } from 'contracts/gen/users';
 
 import { UsersService } from './users.service';
 
+const GATEWAY_ACCESS_TOKEN = process.env.GATEWAY_ACCESS_TOKEN as string;
+
 export const UsersController = createGrpcController(
 	USERS_SERVICE_NAME,
-	UsersService
+	UsersService,
+	[],
+	{
+		findMe: [GATEWAY_ACCESS_TOKEN],
+		findAll: [GATEWAY_ACCESS_TOKEN],
+		findActive: [GATEWAY_ACCESS_TOKEN]
+	}
 );
-
-// @Controller()
-// export class UsersController {
-// 	constructor(private readonly usersService: UsersService) {}
-
-// 	@GrpcMethod(USERS_SERVICE_NAME)
-// 	public async findMe(data: FindMeRequest): Promise<UserResponse> {
-// 		return this.usersService.findMe(data);
-// 	}
-
-// 	@GrpcMethod(USERS_SERVICE_NAME)
-// 	public async findAll(
-// 		data: FindAllUsersRequest
-// 	): Promise<FindAllUsersResponse> {
-// 		return this.usersService.findAll(data);
-// 	}
-
-// 	@GrpcMethod(USERS_SERVICE_NAME)
-// 	public async findActive(
-// 		data: FindActiveUsersRequest
-// 	): Promise<FindActiveUsersResponse> {
-// 		return this.usersService.findActive(data);
-// 	}
-// }

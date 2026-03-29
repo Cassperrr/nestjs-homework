@@ -10,8 +10,7 @@ service AvatarService {
 
 message CreateAvatarRequest {
   string account_id = 1;
-  string api_token = 2;
-  string path = 3;
+  string path = 2;
 }
 
 message AvatarResponse {
@@ -21,6 +20,5 @@ message AvatarResponse {
 
 message DeleteAvatarRequest {
   string account_id = 1;
-  string api_token = 2;
-  string file_name = 3;
+  string file_name = 2;
 }

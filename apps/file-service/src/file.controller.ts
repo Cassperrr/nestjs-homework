@@ -8,10 +8,11 @@ import {
 	Query
 } from '@nestjs/common';
 import type { AvatarResponse } from 'contracts/gen/avatar';
-import { X_ACCOUNT_ID } from 'shared';
+import { CheckHeaders } from 'libs/proxy';
+import { X_ACCOUNT_ID, X_GATEWAY_ACCESS_TOKEN } from 'shared';
 
 import { FileUploadInterceptor } from './common';
-import { UploadedAvatar } from './common/decorators/param';
+import { UploadedAvatar } from './common/decorators';
 import { FileService } from './file.service';
 import { S3StreamStorage } from './infra';
 
@@ -19,6 +20,7 @@ import { S3StreamStorage } from './infra';
 export class FileController {
 	constructor(private readonly fileService: FileService) {}
 
+	@CheckHeaders(X_ACCOUNT_ID, X_GATEWAY_ACCESS_TOKEN)
 	@Post('avatar/stream')
 	@FileUploadInterceptor('avatar', new S3StreamStorage('avatars'))
 	@HttpCode(HttpStatus.CREATED)
@@ -29,6 +31,7 @@ export class FileController {
 		return this.fileService.saveAvatarPath(accountId, avatar);
 	}
 
+	@CheckHeaders(X_ACCOUNT_ID, X_GATEWAY_ACCESS_TOKEN)
 	@Delete('avatar/:fileName')
 	@HttpCode(HttpStatus.OK)
 	public deleteAvatar(

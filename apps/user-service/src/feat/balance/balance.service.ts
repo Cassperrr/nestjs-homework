@@ -1,8 +1,6 @@
 import { GrpcStatus } from '@libs/grpc';
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { RpcException } from '@nestjs/microservices';
-import { UserServiceEnv } from '@user-service/src/config';
 import { AccountRepository, BalanceRepository } from '@user-service/src/core';
 import { JobClientGrpc } from '@user-service/src/infra';
 import type {
@@ -13,7 +11,6 @@ import type {
 	DepositAmountResponse,
 	GetMyBalanceRequest,
 	GetMyBalanceResponse,
-	ResetAllBalancesRequest,
 	ResetAllBalancesResponse,
 	TransferAmountRequest,
 	TransferAmountResponse,
@@ -27,18 +24,12 @@ import 'shared/extensions/bigint.extension';
 @Injectable()
 export class BalanceService {
 	private readonly logger = new Logger(BalanceService.name);
-	private readonly USER_JOB_API_TOKEN: string;
 
 	public constructor(
 		private readonly balanceRepo: BalanceRepository,
 		private readonly accountRepo: AccountRepository,
-		private readonly jobClient: JobClientGrpc,
-		private readonly config: ConfigService<UserServiceEnv, true>
-	) {
-		this.USER_JOB_API_TOKEN = config.get('USER_JOB_API_TOKEN', {
-			infer: true
-		});
-	}
+		private readonly jobClient: JobClientGrpc
+	) {}
 
 	public async getMyBalance(
 		data: GetMyBalanceRequest
@@ -332,18 +323,7 @@ export class BalanceService {
 	}
 
 	// TODO здесь можно реализовать проверку API token по которому будет првоеряться что этот метод вызвал именно job-service а не другой сервис
-	public async resetAllBalances(
-		data: ResetAllBalancesRequest
-	): Promise<ResetAllBalancesResponse> {
-		const { apiToken } = data;
-
-		if (apiToken !== this.USER_JOB_API_TOKEN) {
-			this.logger.error(
-				`[resetAllBalances] Несанкционированный запрос чужеродного сервиса. Отказ в исполнении. Проверьте API ключи`
-			);
-			return { resetCounts: 0 };
-		}
-
+	public async resetAllBalances(): Promise<ResetAllBalancesResponse> {
 		const resetCounts = await this.balanceRepo.resetAllBalances();
 
 		this.logger.warn(`Произошло обнуление всех балансов пользователей`);

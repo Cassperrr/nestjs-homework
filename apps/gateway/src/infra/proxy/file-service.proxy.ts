@@ -2,7 +2,7 @@ import { GatewayEnv } from '@gateway/src/config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AbstractProxyClient } from 'libs/proxy';
-import { JwtPayload, X_ACCOUNT_ID } from 'shared';
+import { JwtPayload, X_ACCOUNT_ID, X_GATEWAY_ACCESS_TOKEN } from 'shared';
 
 @Injectable()
 export class FileServiceProxyClient extends AbstractProxyClient {
@@ -16,6 +16,7 @@ export class FileServiceProxyClient extends AbstractProxyClient {
 		});
 		const resetAfterMs = config.get('RESET_AFTER_MS', { infer: true });
 		const proxyTimeoutMs = config.get('PROXY_TIMEOUT_MS', { infer: true });
+		const accessToken = config.get('GATEWAY_ACCESS_TOKEN', { infer: true });
 		const url = `http://${host}:${port}`;
 		super(
 			'file-service',
@@ -26,6 +27,7 @@ export class FileServiceProxyClient extends AbstractProxyClient {
 			(proxyReq, req) => {
 				const user = req.user as JwtPayload;
 				proxyReq.setHeader(X_ACCOUNT_ID, user.id);
+				proxyReq.setHeader(X_GATEWAY_ACCESS_TOKEN, accessToken);
 			}
 		);
 	}

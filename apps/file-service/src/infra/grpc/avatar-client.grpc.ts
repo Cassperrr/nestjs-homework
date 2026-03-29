@@ -1,5 +1,7 @@
+import type { FileServiceEnv } from '@file-service/src/config';
 import { AbstractGrpcClient, InjectGrpcClient } from '@libs/grpc';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
 	AVATAR_PACKAGE_NAME,
@@ -10,8 +12,10 @@ import {
 @Injectable()
 export class AvatarClientGrpc extends AbstractGrpcClient<AvatarServiceClient> {
 	public constructor(
-		@InjectGrpcClient(AVATAR_PACKAGE_NAME) client: ClientGrpc
+		@InjectGrpcClient(AVATAR_PACKAGE_NAME) client: ClientGrpc,
+		private readonly config: ConfigService<FileServiceEnv, true>
 	) {
-		super(client, AVATAR_SERVICE_NAME);
+		const token = config.get('FILE_ACCESS_TOKEN', { infer: true });
+		super(client, AVATAR_SERVICE_NAME, token);
 	}
 }

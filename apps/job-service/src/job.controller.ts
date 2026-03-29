@@ -3,4 +3,15 @@ import { JOB_SERVICE_NAME } from 'contracts/gen/job';
 
 import { JobService } from './job.service';
 
-export const JobController = createGrpcController(JOB_SERVICE_NAME, JobService);
+const USER_ACCESS_TOKEN = process.env.USER_ACCESS_TOKEN as string;
+
+export const JobController = createGrpcController(
+	JOB_SERVICE_NAME,
+	JobService,
+	[],
+	{
+		putResetBalanceJob: [USER_ACCESS_TOKEN],
+		startResetBalanceJob: [USER_ACCESS_TOKEN],
+		stopResetBalanceJob: [USER_ACCESS_TOKEN]
+	}
+);

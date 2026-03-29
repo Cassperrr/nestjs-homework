@@ -19,7 +19,6 @@ import type { StringMessage } from 'contracts/gen/shared';
 @Injectable()
 export class AvatarService {
 	private readonly logger = new Logger(AvatarService.name);
-	private readonly USER_FILE_API_TOKEN: string;
 	private readonly maxAvatars: number;
 
 	public constructor(
@@ -28,9 +27,6 @@ export class AvatarService {
 		private readonly eventEmmiter: EventEmitter2,
 		private readonly config: ConfigService<UserServiceEnv, true>
 	) {
-		this.USER_FILE_API_TOKEN = config.get('USER_FILE_API_TOKEN', {
-			infer: true
-		});
 		this.maxAvatars = config.get('MAX_AVATARS_FOR_PROFILE', {
 			infer: true
 		});
@@ -39,17 +35,7 @@ export class AvatarService {
 	public async createAvatar(
 		data: CreateAvatarRequest
 	): Promise<AvatarResponse> {
-		const { accountId, apiToken, path } = data;
-
-		if (apiToken !== this.USER_FILE_API_TOKEN) {
-			this.logger.error(
-				`[resetAllBalances] Несанкционированный запрос чужеродного сервиса. Отказ в исполнении. Проверьте API ключи`
-			);
-			throw new RpcException({
-				code: GrpcStatus.UNAUTHENTICATED,
-				details: 'Внутренняя ошибка сервисов'
-			});
-		}
+		const { accountId, path } = data;
 
 		const user = await this.usersRepo.findBy({ id: accountId });
 
@@ -81,17 +67,7 @@ export class AvatarService {
 	public async deleteAvatar(
 		data: DeleteAvatarRequest
 	): Promise<StringMessage> {
-		const { accountId, apiToken, fileName } = data;
-
-		if (apiToken !== this.USER_FILE_API_TOKEN) {
-			this.logger.error(
-				`[resetAllBalances] Несанкционированный запрос чужеродного сервиса. Отказ в исполнении. Проверьте API ключи`
-			);
-			throw new RpcException({
-				code: GrpcStatus.UNAUTHENTICATED,
-				details: 'Внутренняя ошибка сервисов'
-			});
-		}
+		const { accountId, fileName } = data;
 
 		const user = await this.usersRepo.findBy({ id: accountId });
 
