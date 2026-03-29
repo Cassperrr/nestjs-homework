@@ -2,10 +2,15 @@ import { GrpcClientModule } from '@libs/grpc';
 import { Module } from '@nestjs/common';
 import { ACCOUNT_PACKAGE_NAME } from 'contracts/gen/account';
 import { AUTH_PACKAGE_NAME } from 'contracts/gen/auth';
-import { AVATAR_PACKAGE_NAME } from 'contracts/gen/avatar';
 import { BALANCE_PACKAGE_NAME } from 'contracts/gen/balance';
 import { PROFILE_PACKAGE_NAME } from 'contracts/gen/profile';
 import { USERS_PACKAGE_NAME } from 'contracts/gen/users';
+
+import { AccountClientGrpc } from './account-client.grpc';
+import { AuthClientGrpc } from './auth-client.grpc';
+import { BalanceClientGrpc } from './balance-client.grpc';
+import { ProfileClientGrpc } from './profile-client.grpc';
+import { UsersClientGrpc } from './users-client.grpc';
 
 @Module({
 	imports: [
@@ -17,6 +22,19 @@ import { USERS_PACKAGE_NAME } from 'contracts/gen/users';
 			BALANCE_PACKAGE_NAME
 		])
 	],
-	exports: [GrpcClientModule]
+	providers: [
+		AuthClientGrpc,
+		AccountClientGrpc,
+		ProfileClientGrpc,
+		UsersClientGrpc,
+		BalanceClientGrpc
+	],
+	exports: [
+		AuthClientGrpc,
+		AccountClientGrpc,
+		ProfileClientGrpc,
+		UsersClientGrpc,
+		BalanceClientGrpc
+	]
 })
 export class GrpcModule {}

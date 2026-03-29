@@ -1,4 +1,5 @@
 import { AccountId, Protected } from '@gateway/src/common';
+import { ProfileClientGrpc } from '@gateway/src/infra/grpc';
 import {
 	Body,
 	Controller,
@@ -14,7 +15,6 @@ import {
 	ProfileResponse,
 	UpdateProfileRequest
 } from './dto';
-import { ProfileClientGrpc } from './profile-client.grpc';
 
 @Controller('profile')
 export class ProfileController {

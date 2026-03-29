@@ -1,4 +1,5 @@
 import { AccountId, Protected } from '@gateway/src/common';
+import { AccountClientGrpc } from '@gateway/src/infra/grpc';
 import {
 	Body,
 	Controller,
@@ -14,7 +15,6 @@ import { Role } from 'shared';
 
 import { OtpCodeResponse } from '../auth/dto';
 
-import { AccountClientGrpc } from './account-client.grpc';
 import { ApiDeleteAccount, ApiPasswordChange, ApiPasswordConfirm } from './api';
 import { ChangePasswordRequest, ConfirmPasswordRequest } from './dto';
 

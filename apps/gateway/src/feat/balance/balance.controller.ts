@@ -1,4 +1,5 @@
 import { AccountId, IdempotencyKey, Protected } from '@gateway/src/common';
+import { BalanceClientGrpc } from '@gateway/src/infra/grpc';
 import {
 	Body,
 	Controller,
@@ -20,7 +21,6 @@ import {
 	ApiTransfer,
 	ApiWithdrawn
 } from './api';
-import { BalanceClientGrpc } from './balance-client.grpc';
 import {
 	AuditBalanceRequest,
 	AuditBalanceResponse,

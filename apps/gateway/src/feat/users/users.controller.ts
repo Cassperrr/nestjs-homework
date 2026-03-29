@@ -1,4 +1,5 @@
 import { AccountId, Protected } from '@gateway/src/common';
+import { UsersClientGrpc } from '@gateway/src/infra/grpc';
 import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { Role } from 'shared';
 
@@ -10,7 +11,6 @@ import {
 	FindAllUsersResponse,
 	UserResponse
 } from './dto';
-import { UsersClientGrpc } from './users-client.grpc';
 
 @Controller('users')
 export class UsersController {

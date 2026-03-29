@@ -1,5 +1,6 @@
 import { RefreshToken } from '@gateway/src/common';
 import { CookieService } from '@gateway/src/core';
+import { AuthClientGrpc } from '@gateway/src/infra/grpc';
 import {
 	Body,
 	Controller,
@@ -20,7 +21,6 @@ import {
 	ApiResend,
 	ApiVerify
 } from './api';
-import { AuthClientGrpc } from './auth-client.grpc';
 import {
 	AccessTokenResponse,
 	LoginRequest,
