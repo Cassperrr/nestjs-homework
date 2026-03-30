@@ -1,10 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 
-import { GrpcModule } from './grpc';
+import { GrpcClientsModule } from './grpc';
 
 @Global()
 @Module({
-	imports: [GrpcModule],
-	exports: [GrpcModule]
+	imports: [GrpcClientsModule],
+	exports: [GrpcClientsModule]
 })
 export class InfraModule {}

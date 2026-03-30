@@ -9,4 +9,4 @@ import { BalanceClientGrpc } from './balance-client.grpc';
 	providers: [BalanceClientGrpc],
 	exports: [BalanceClientGrpc]
 })
-export class GrpcModule {}
+export class GrpcClientsModule {}
