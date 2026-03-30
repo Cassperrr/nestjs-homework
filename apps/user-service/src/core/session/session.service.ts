@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserServiceEnv } from '@user-service/src/config';
-import { RedisService } from '@user-service/src/infra';
+import { RedisService } from 'libs/redis';
 import ms, { type StringValue } from 'ms';
 
 @Injectable()

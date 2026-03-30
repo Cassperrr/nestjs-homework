@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RpcException } from '@nestjs/microservices';
 import { UserServiceEnv } from '@user-service/src/config';
-import { RedisService } from '@user-service/src/infra';
+import { RedisService } from 'libs/redis';
 import { createHash } from 'node:crypto';
 import { generateCode } from 'patcode';
 import type { OtpKey } from 'shared';
