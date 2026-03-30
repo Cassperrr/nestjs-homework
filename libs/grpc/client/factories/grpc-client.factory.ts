@@ -1,29 +1,51 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
 import {
-	ClientGrpc,
+	ClientGrpcProxy,
 	ClientProxyFactory,
 	GrpcOptions,
 	Transport
 } from '@nestjs/microservices';
 
 @Injectable()
-export class GrpcClientFactory {
-	private clients = new Map<string, ClientGrpc>();
+export class GrpcClientFactory implements OnModuleDestroy {
+	private clients = new Map<string, ClientGrpcProxy>();
 	private readonly logger = new Logger(GrpcClientFactory.name);
+
+	public onModuleDestroy() {
+		for (const [token, client] of this.clients.entries()) {
+			try {
+				client.close();
+				this.logger.log(`gRPC клиент "${token}" закрыт`);
+			} catch (err) {
+				this.logger.error(
+					`Ошибка закрытия gRPC клиента "${token}"`,
+					err
+				);
+			}
+		}
+		this.clients.clear();
+	}
 
 	public createClient(options: GrpcOptions['options']) {
 		return ClientProxyFactory.create({
 			transport: Transport.GRPC,
 			options
-		}) as ClientGrpc;
+		});
 	}
 
-	public register(token: string, client: ClientGrpc) {
+	public register(token: string, client: ClientGrpcProxy) {
+		if (this.clients.has(token)) {
+			this.logger.warn(
+				`gRPC клиент "${token}" уже зарегистрирован, перезапись`
+			);
+		}
 		this.clients.set(token, client);
 		this.logger.warn(`Пакет клиента gRPC "${token}" зарегистрирован`);
 	}
 
-	public getClient<T extends ClientGrpc = ClientGrpc>(token: string): T {
+	public getClient<T extends ClientGrpcProxy = ClientGrpcProxy>(
+		token: string
+	): T {
 		const client = this.clients.get(token);
 
 		if (!client)

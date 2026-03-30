@@ -37,6 +37,15 @@
 				"tsConfigPath": "apps/job-service/tsconfig.app.json"
 			}
 		},
+		"mail-service": {
+			"type": "application",
+			"root": "apps/mail-service",
+			"entryFile": "main",
+			"sourceRoot": "apps/mail-service/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/mail-service/tsconfig.app.json"
+			}
+		},
 		"user-service": {
 			"type": "application",
 			"root": "apps/user-service",

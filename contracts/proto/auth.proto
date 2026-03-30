@@ -5,8 +5,8 @@ package auth;
 import "shared.proto";
 
 service AuthService {
-  rpc Register (RegisterRequest) returns (shared.OtpCodeResponse);
-  rpc Resend (ResendRequest) returns (shared.OtpCodeResponse);
+  rpc Register (RegisterRequest) returns (shared.StringMessage);
+  rpc Resend (ResendRequest) returns (shared.StringMessage);
   rpc Verify (VerifyRequest) returns (TokensResponse);
   rpc Login (LoginRequest) returns (TokensResponse);
   rpc Refresh (RefreshRequest) returns (TokensResponse);

@@ -10,6 +10,7 @@ import {
 	Post,
 	Res
 } from '@nestjs/common';
+import { StringMessage } from 'contracts/gen/shared';
 import type { Response } from 'express';
 import ms from 'ms';
 
@@ -42,14 +43,14 @@ export class AuthController {
 	@HttpCode(HttpStatus.CREATED)
 	public async register(
 		@Body() dto: RegisterRequest
-	): Promise<OtpCodeResponse> {
+	): Promise<StringMessage> {
 		return this.client.call('register', dto);
 	}
 
 	@ApiResend()
 	@Post('resend')
 	@HttpCode(HttpStatus.OK)
-	public async resend(@Body() dto: ResendRequest): Promise<OtpCodeResponse> {
+	public async resend(@Body() dto: ResendRequest): Promise<StringMessage> {
 		return this.client.call('resend', dto);
 	}
 

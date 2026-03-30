@@ -42,7 +42,6 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
-    container_name: kafka
     ports:
       - 9092:9092     # для сервисов (внутри docker сети)
       - 9094:9094      # для подключения с хоста (локально)
@@ -55,7 +54,6 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
     ports:
       - 8080:8080
     env_file:
@@ -65,11 +63,33 @@ services:
     networks:
       - nestjs-homework
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    ports: 
+      - 5672:5672
+      - 15672:15672
+    env_file:
+      - .env
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - nestjs-homework
+
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - nestjs-homework
+
 volumes:
   postgres_data:
   redis_data:
   minio_storage:
   kafka_data:
+  rabbitmq_data:
 
 networks:
   nestjs-homework:

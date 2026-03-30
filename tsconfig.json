@@ -23,13 +23,13 @@
 		"noFallthroughCasesInSwitch": false,
 		"paths": {
 			"@contracts": ["contracts/index.ts"],
+			"@file-service/*": ["apps/file-service/*"],
 			"@gateway/*": ["apps/gateway/*"],
 			"@job-service/*": ["apps/job-service/*"],
 			"@libs/config": ["libs/config/index.ts"],
 			"@libs/grpc": ["libs/grpc/index.ts"],
 			"@libs/utils": ["libs/utils/index.ts"],
-			"@user-service/*": ["apps/user-service/*"],
-			"@file-service/*": ["apps/file-service/*"]
+			"@user-service/*": ["apps/user-service/*"]
 		}
 	}
 }

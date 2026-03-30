@@ -1,1 +1,1 @@
-export * from './grpc.constants';
+export * from './grpc-client.constants';

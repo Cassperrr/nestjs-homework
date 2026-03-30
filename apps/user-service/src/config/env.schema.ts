@@ -26,6 +26,9 @@ export const userServiceEnvSchema = generalSchema.extend({
 	MINIO_REGION: z.string().nonempty(),
 	MINIO_BUCKET_NAME: z.string().nonempty(),
 
+	RMQ_URL: z.string().nonempty(),
+	MAIL_QUEUE: z.string().nonempty(),
+
 	OTP_CODE_TTL: z.coerce.number().min(100),
 	OTP_ATTEMPTS_COUNT: z.coerce.number().min(1),
 	COOLDOWN_TTL: z.coerce.number().positive().min(30),

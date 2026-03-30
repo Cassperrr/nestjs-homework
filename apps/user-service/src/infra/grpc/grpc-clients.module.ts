@@ -9,4 +9,4 @@ import { JobClientGrpc } from './job-client.grpc';
 	providers: [JobClientGrpc],
 	exports: [JobClientGrpc]
 })
-export class GrpcModule {}
+export class GrpcClientsModule {}

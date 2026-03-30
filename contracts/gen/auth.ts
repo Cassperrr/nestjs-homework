@@ -7,7 +7,7 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
-import { OtpCodeResponse, StringMessage } from './shared';
+import { StringMessage } from './shared';
 
 export const protobufPackage = 'auth';
 
@@ -44,9 +44,9 @@ export interface RefreshRequest {
 export const AUTH_PACKAGE_NAME = 'auth';
 
 export interface AuthServiceClient {
-	register(request: RegisterRequest): Observable<OtpCodeResponse>;
+	register(request: RegisterRequest): Observable<StringMessage>;
 
-	resend(request: ResendRequest): Observable<OtpCodeResponse>;
+	resend(request: ResendRequest): Observable<StringMessage>;
 
 	verify(request: VerifyRequest): Observable<TokensResponse>;
 
@@ -60,11 +60,11 @@ export interface AuthServiceClient {
 export interface AuthServiceController {
 	register(
 		request: RegisterRequest
-	): Promise<OtpCodeResponse> | Observable<OtpCodeResponse> | OtpCodeResponse;
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
 	resend(
 		request: ResendRequest
-	): Promise<OtpCodeResponse> | Observable<OtpCodeResponse> | OtpCodeResponse;
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 
 	verify(
 		request: VerifyRequest

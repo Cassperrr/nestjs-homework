@@ -1,0 +1,1 @@
+export const RMQ_CLIENT_PREFIX = 'RMQ_CLIENT';

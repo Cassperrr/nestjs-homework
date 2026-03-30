@@ -14,6 +14,7 @@ import {
 	TOKEN_SERVICE,
 	TokenService
 } from '@user-service/src/core';
+import { MailClientRmq } from '@user-service/src/infra/rmq';
 import type {
 	LoginRequest,
 	RefreshRequest,
@@ -37,10 +38,12 @@ export class AuthService {
 		@Inject(OTP_SERVICE) private readonly otpService: OtpService,
 		@Inject(TOKEN_SERVICE)
 		private readonly tokenService: TokenService,
-		@Inject(SESSION_SERVICE) private readonly session: SessionService
+		@Inject(SESSION_SERVICE) private readonly session: SessionService,
+
+		private readonly mailClientRmq: MailClientRmq
 	) {}
 
-	public async register(data: RegisterRequest): Promise<OtpCodeResponse> {
+	public async register(data: RegisterRequest): Promise<StringMessage> {
 		const { email, username, password } = data;
 
 		const account = await this.accountRepo.findBy({ email, username });
@@ -63,10 +66,17 @@ export class AuthService {
 
 		this.logger.log(`[${id}] [${role}] Аккаунт зарегистрирован`);
 
-		return this.otpService.generate(id, OtpKey.EMAIL);
+		const { code } = await this.otpService.generate(id, OtpKey.EMAIL);
+
+		await this.mailClientRmq.otpRequested({ code, email });
+
+		return {
+			message:
+				'Код отправлен на почту. Ссылка на почту: http://localhost:8025/'
+		};
 	}
 
-	public async resend(data: ResendRequest): Promise<OtpCodeResponse> {
+	public async resend(data: ResendRequest): Promise<StringMessage> {
 		const { email } = data;
 
 		const account = await this.accountRepo.findBy({ email });
@@ -87,7 +97,12 @@ export class AuthService {
 			`[${account.id}] [${account.role}] Перевыпуск OTP кода`
 		);
 
-		return { code };
+		await this.mailClientRmq.otpRequested({ code, email });
+
+		return {
+			message:
+				'Код отправлен на почту. Ссылка на почту: http://localhost:8025/'
+		};
 	}
 
 	public async verify(data: VerifyRequest): Promise<TokensResponse> {
