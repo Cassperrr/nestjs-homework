@@ -9,4 +9,4 @@ import { AvatarClientGrpc } from './avatar-client.grpc';
 	providers: [AvatarClientGrpc],
 	exports: [AvatarClientGrpc]
 })
-export class GrpcModule {}
+export class GrpcClientsModule {}

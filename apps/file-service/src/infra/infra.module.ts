@@ -1,11 +1,11 @@
 import { Global, Module } from '@nestjs/common';
 
-import { GrpcModule } from './grpc';
+import { GrpcClientsModule } from './grpc';
 import { StorageModule } from './storage';
 
 @Global()
 @Module({
-	imports: [GrpcModule, StorageModule],
-	exports: [GrpcModule, StorageModule]
+	imports: [GrpcClientsModule, StorageModule],
+	exports: [GrpcClientsModule, StorageModule]
 })
 export class InfraModule {}
