@@ -37,4 +37,4 @@ import { UsersClientGrpc } from './users-client.grpc';
 		BalanceClientGrpc
 	]
 })
-export class GrpcModule {}
+export class GrpcClientsModule {}

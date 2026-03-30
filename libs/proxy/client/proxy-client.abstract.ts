@@ -7,14 +7,12 @@ import {
 } from '@nestjs/common';
 import type { RequestHandler } from 'express';
 import type { Request, Response } from 'express';
-import { ClientRequest } from 'http';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-type CircuitState = 'closed' | 'open' | 'half-open';
-type ProxyReqHandler = (proxyReq: ClientRequest, req: Request) => void;
+import type { CircuitState, ProxyReqHandler } from './interfaces';
 
 export abstract class AbstractProxyClient implements OnModuleInit {
-	private readonly logger: Logger;
+	private readonly logger = new Logger(this.constructor.name);
 	private proxy: RequestHandler;
 	private probeTimeout?: NodeJS.Timeout;
 
@@ -25,15 +23,12 @@ export abstract class AbstractProxyClient implements OnModuleInit {
 	private probeInFlight = false;
 
 	public constructor(
-		private readonly serviceName: string,
 		private readonly url: string,
 		private readonly FAILURE_THRESHOLD: number,
 		private readonly RESET_AFTER_MS: number,
 		private readonly PROXY_TIMEOUT_MS: number,
 		private readonly onProxyReq: ProxyReqHandler
-	) {
-		this.logger = new Logger(serviceName);
-	}
+	) {}
 
 	public onModuleInit(): void {
 		this.proxy = createProxyMiddleware({
@@ -45,11 +40,8 @@ export abstract class AbstractProxyClient implements OnModuleInit {
 			on: {
 				proxyReq: (proxyReq, req: Request) => {
 					this.onProxyReq(proxyReq, req);
-					// const user = req.user as JwtPayload;
-					// proxyReq.setHeader('x-account-id', user.id);
 				},
 				proxyRes: proxyRes => {
-					//
 					if (proxyRes.statusCode && proxyRes.statusCode < 500) {
 						this.success();
 					} else {
@@ -115,19 +107,19 @@ export abstract class AbstractProxyClient implements OnModuleInit {
 				return false;
 
 			case 'open':
-				if (Date.now() - this.circuitOpenedAt! > this.RESET_AFTER_MS) {
-					this.state = 'half-open';
-					this.logger.log('Circuit → half-open, пробный запрос');
-					// fall through в half-open
-				} else {
+				if (Date.now() - this.circuitOpenedAt! <= this.RESET_AFTER_MS) {
 					return true;
 				}
+				this.state = 'half-open';
+				this.logger.log('Circuit → half-open, пробный запрос');
+				this.probeInFlight = true;
+				this.startProbeTimeout();
+				return false;
+
 			// eslint-disable-next-line no-fallthrough
 			case 'half-open':
-				// пробный запрос уже летит - все остальные отклоняем
 				if (this.probeInFlight) return true;
-
-				// пропускаем ровно один пробный запрос
+				// сюда попадаем если зонд завис и был сброшен таймаутом
 				this.probeInFlight = true;
 				this.startProbeTimeout();
 				return false;
@@ -165,14 +157,31 @@ export abstract class AbstractProxyClient implements OnModuleInit {
 	}
 
 	private failure(err: Error): void {
-		if (!this.probeInFlight && this.state === 'half-open') {
+		// если half-open и зонд уже не летит — дубликат, игнорируем
+		if (this.state === 'half-open' && !this.probeInFlight) {
 			this.logger.warn(
 				`Duplicate failure ignored in half-open: ${err.message}`
 			);
 			return;
 		}
 
-		this.probeInFlight = false;
+		this.probeInFlight = false; // сбрасываем зонд
+
+		// в half-open один фейл сразу открывает circuit, не накапливаем
+		if (this.state === 'half-open') {
+			this.state = 'open';
+			this.circuitOpenedAt = Date.now();
+			this.failures = 0;
+			this.logger.error(
+				`Probe failed → Circuit открыт снова, повтор через ${this.RESET_AFTER_MS / 1000}s`
+			);
+			if (this.probeTimeout) {
+				clearTimeout(this.probeTimeout);
+				this.probeTimeout = undefined;
+			}
+			return;
+		}
+
 		this.failures++;
 		this.logger.warn(
 			`Ошибка [${this.failures}/${this.FAILURE_THRESHOLD}]: ${err.message}`

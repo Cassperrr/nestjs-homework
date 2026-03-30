@@ -1,7 +1,7 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import { RmqContext } from '@nestjs/microservices';
-import { RmqService } from 'libs/rmq';
+import { RmqServerService } from 'libs/rmq';
 import { OtpRequestedEvent } from 'shared';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class MailService {
 	private readonly logger = new Logger(MailService.name);
 
 	public constructor(
-		private readonly rmqService: RmqService,
+		private readonly rmqService: RmqServerService,
 		private readonly mailerService: MailerService
 	) {}
 

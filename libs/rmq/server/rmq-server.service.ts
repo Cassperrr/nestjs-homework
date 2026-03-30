@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import type { RmqContext } from '@nestjs/microservices';
 
 @Injectable()
-export class RmqService {
-	private readonly logger = new Logger(RmqService.name);
+export class RmqServerService {
+	private readonly logger = new Logger(RmqServerService.name);
 
 	public ack(context: RmqContext): void {
 		const channel = context.getChannelRef();

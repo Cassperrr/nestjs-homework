@@ -1,6 +1,6 @@
 import { AccountId, FileProtected, Protected } from '@gateway/src/common';
 import { FILE_SIZE_MB } from '@gateway/src/core/constants';
-import { FileServiceProxyClient } from '@gateway/src/infra';
+import { FileClientProxy } from '@gateway/src/infra';
 import {
 	Controller,
 	Delete,
@@ -18,9 +18,7 @@ import { DeleteAvatarRequest } from './dto';
 
 @Controller('avatar')
 export class AvatarController {
-	public constructor(
-		private readonly fileServiceProxy: FileServiceProxyClient
-	) {}
+	public constructor(private readonly fileClient: FileClientProxy) {}
 
 	@ApiUploadFileStream()
 	@Protected()
@@ -32,7 +30,7 @@ export class AvatarController {
 		@Res() res: Response,
 		@AccountId() _accountId: string
 	) {
-		return this.fileServiceProxy.proxyToService(req, res);
+		return this.fileClient.proxyToService(req, res);
 	}
 
 	@ApiDeleteFile()
@@ -45,6 +43,6 @@ export class AvatarController {
 		@AccountId() _accountId: string,
 		@Query() _dto: DeleteAvatarRequest
 	): any {
-		return this.fileServiceProxy.proxyToService(req, res);
+		return this.fileClient.proxyToService(req, res);
 	}
 }

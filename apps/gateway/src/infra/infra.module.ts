@@ -1,12 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 
-import { GrpcModule } from './grpc';
+import { GrpcClientsModule } from './grpc';
 import { KafkaModule } from './kafka';
-import { ProxyModule } from './proxy';
+import { ProxyClientsModule } from './proxy';
 
 @Global()
 @Module({
-	imports: [GrpcModule, ProxyModule],
-	exports: [GrpcModule, ProxyModule]
+	imports: [GrpcClientsModule, ProxyClientsModule],
+	exports: [GrpcClientsModule, ProxyClientsModule]
 })
 export class InfraModule {}

@@ -1,4 +1,4 @@
-export * from './grpc-client.module';
+export * from './grpc-clients.module';
 export * from './account-client.grpc';
 export * from './auth-client.grpc';
 export * from './balance-client.grpc';

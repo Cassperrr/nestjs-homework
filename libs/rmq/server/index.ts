@@ -1,3 +1,3 @@
 export * from './factories';
-export * from './rmq.module';
-export * from './rmq.service';
+export * from './rmq-server.module';
+export * from './rmq-server.service';
