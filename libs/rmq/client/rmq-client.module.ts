@@ -1,9 +1,9 @@
 import { type DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { RMQ_CLIENTS } from './config';
 import { RMQ_CLIENT_PREFIX } from './constants';
 import { RmqClientFactory } from './factories';
-import { RMQ_CLIENTS } from './rmq-client.registry';
 
 @Module({})
 export class RmqClientModule {

@@ -1,11 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { Avatar } from '@user-service/prisma/generated/client';
-import { PrismaService } from '@user-service/src/infra';
+import type {
+	Avatar,
+	PrismaClient
+} from '@user-service/prisma/generated/client';
+import { InjectPrismaClient } from 'libs/prisma';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
 export class AvatarRepository {
-	public constructor(private readonly prisma: PrismaService) {}
+	public constructor(
+		@InjectPrismaClient() private readonly prisma: PrismaClient
+	) {}
 
 	public async create(profileId: string, name: string) {
 		return this.prisma.avatar.create({

@@ -25,7 +25,6 @@ export class RedisFactoryModule {
 	static forRootAsync(options: RedisModuleAsyncOptions): DynamicModule {
 		return {
 			global: true,
-
 			module: RedisFactoryModule,
 			imports: options.imports ?? [],
 			providers: [...this.createAsyncProviders(options), RedisService],

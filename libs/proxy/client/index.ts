@@ -1,1 +1,1 @@
-export * from './proxy-client.abstract';
+export * from './abstracts';

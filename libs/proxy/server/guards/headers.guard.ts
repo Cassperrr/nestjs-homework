@@ -9,8 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
 
+import { TOKEN_VALIDATORS } from '../config';
 import { HEADERS_KEY } from '../constants';
-import { TOKEN_VALIDATORS } from '../token-validators.registry';
 
 @Injectable()
 export class HeadersGuard implements CanActivate {

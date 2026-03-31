@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@user-service/prisma/generated/client';
-import { PrismaService } from '@user-service/src/infra';
+import {
+	Prisma,
+	type PrismaClient
+} from '@user-service/prisma/generated/client';
+import { InjectPrismaClient } from 'libs/prisma';
 import { TransactionType } from 'shared';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
 export class BalanceRepository {
-	public constructor(private readonly prisma: PrismaService) {}
+	public constructor(
+		@InjectPrismaClient() private readonly prisma: PrismaClient
+	) {}
 
 	public async findBalance(accountId: string) {
 		return this.prisma.balance.findUnique({

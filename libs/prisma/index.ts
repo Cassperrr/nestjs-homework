@@ -1,1 +1,2 @@
-export * from './prisma-service.mixin';
+export * from './prisma-factory.module';
+export * from './decorators';

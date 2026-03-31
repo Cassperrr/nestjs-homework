@@ -5,7 +5,7 @@ import {
 	Payload,
 	type RmqContext
 } from '@nestjs/microservices';
-import { RMQ_CLIENTS } from 'libs/rmq/client/rmq-client.registry';
+import { RMQ_CLIENTS } from 'libs/rmq/client';
 import type { OtpRequestedEvent } from 'shared';
 
 import { MailService } from './mail.service';

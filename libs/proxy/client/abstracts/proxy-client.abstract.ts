@@ -9,7 +9,7 @@ import type { RequestHandler } from 'express';
 import type { Request, Response } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-import type { CircuitState, ProxyReqHandler } from './interfaces';
+import type { CircuitState, ProxyReqHandler } from '../interfaces';
 
 export abstract class AbstractProxyClient implements OnModuleInit {
 	private readonly logger = new Logger(this.constructor.name);

@@ -1,9 +1,9 @@
 import { type DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { GRPC_CLIENTS } from './config';
 import { GRPC_CLIENT_PREFIX } from './constants';
 import { GrpcClientFactory } from './factories';
-import { GRPC_CLIENTS } from './grpc-client.registry';
 
 @Module({})
 export class GrpcClientModule {

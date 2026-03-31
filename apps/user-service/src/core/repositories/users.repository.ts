@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@user-service/src/infra';
+import type { PrismaClient } from '@user-service/prisma/generated/client';
+import { InjectPrismaClient } from 'libs/prisma';
 
 @Injectable()
 export class UsersRepository {
-	public constructor(private readonly prisma: PrismaService) {}
+	public constructor(
+		@InjectPrismaClient() private readonly prisma: PrismaClient
+	) {}
 
 	public async findBy(params: {
 		id?: string;

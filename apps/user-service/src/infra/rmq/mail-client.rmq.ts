@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { InjectRmqClient } from 'libs/rmq';
-import { RMQ_CLIENTS } from 'libs/rmq/client/rmq-client.registry';
+import { RMQ_CLIENTS } from 'libs/rmq/client';
 import { OtpRequestedEvent } from 'shared';
 
 @Injectable()
