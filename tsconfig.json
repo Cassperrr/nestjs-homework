@@ -30,9 +30,9 @@
 			"@libs/grpc": ["libs/grpc/index.ts"],
 			"@libs/utils": ["libs/utils/index.ts"],
 			"@mail-service/*": ["apps/mail-service/*"],
-			"@user-service/*": ["apps/user-service/*"],
+			"@notification-service/*": ["apps/notification-service/*"],
 			"@payment-service/*": ["apps/payment-service/*"],
-			"@notification-service/*": ["apps/notification-service/*"]
+			"@user-service/*": ["apps/user-service/*"]
 		}
 	}
 }

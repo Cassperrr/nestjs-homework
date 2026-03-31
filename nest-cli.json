@@ -55,13 +55,13 @@
 				"tsConfigPath": "apps/notification-service/tsconfig.app.json"
 			}
 		},
-		"payment-service": {
+		"transaction-service": {
 			"type": "application",
-			"root": "apps/payment-service",
+			"root": "apps/transaction-service",
 			"entryFile": "main",
-			"sourceRoot": "apps/payment-service/src",
+			"sourceRoot": "apps/transaction-service/src",
 			"compilerOptions": {
-				"tsConfigPath": "apps/payment-service/tsconfig.app.json"
+				"tsConfigPath": "apps/transaction-service/tsconfig.app.json"
 			}
 		},
 		"user-service": {
