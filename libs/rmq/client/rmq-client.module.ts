@@ -23,7 +23,6 @@ export class RmqClientModule {
 							config: ConfigService
 						) => {
 							const url = config.getOrThrow(cfg.env.url);
-							// const name = config.getOrThrow(cfg.env.name);
 							const queue = config.getOrThrow(cfg.env.queue);
 
 							const client = factory.createClient({

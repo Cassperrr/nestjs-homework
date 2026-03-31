@@ -1,2 +1,2 @@
-export * from './grpc-client.module';
+export * from './grpc-clients.module';
 export * from './avatar-client.grpc';

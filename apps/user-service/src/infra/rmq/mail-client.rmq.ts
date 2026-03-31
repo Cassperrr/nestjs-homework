@@ -12,7 +12,7 @@ export class MailClientRmq {
 
 	public async otpRequested(data: OtpRequestedEvent) {
 		return this.client.emit(
-			RMQ_CLIENTS.MAIL_CLIENT.patterns['otp.requested'],
+			RMQ_CLIENTS.MAIL_CLIENT.patterns.otpRequested,
 			data
 		);
 	}

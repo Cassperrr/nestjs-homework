@@ -14,7 +14,7 @@ import { MailService } from './mail.service';
 export class MailController {
 	constructor(private readonly mailService: MailService) {}
 
-	@EventPattern(RMQ_CLIENTS.MAIL_CLIENT.patterns['otp.requested'])
+	@EventPattern(RMQ_CLIENTS.MAIL_CLIENT.patterns.otpRequested)
 	public async otpRequested(
 		@Payload() data: OtpRequestedEvent,
 		@Ctx() ctx: RmqContext
