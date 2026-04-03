@@ -6,8 +6,11 @@ import "shared.proto";
 import "google/protobuf/empty.proto";
 
 service BalanceService {
-  rpc GetMyBalance (GetMyBalanceRequest) returns (GetMyBalanceResponse); 
-  rpc AuditBalance (AuditBalanceRequest) returns (AuditBalanceResponse); 
+  rpc GetMyBalances (GetMyBalancesRequest) returns (GetMyBalancesResponse);
+  rpc ValidationAccount (ValidationAccountRequest) returns (google.protobuf.Empty);
+
+  rpc CheckBalance (CheckBalanceRequest) returns (CheckBalanceResponse);
+  rpc AuditBalance (AuditBalanceRequest) returns (AuditBalanceResponse);
   rpc DepositAmount (DepositAmountRequest) returns (DepositAmountResponse); 
   rpc WithdrawalAmount (WithdrawalAmountRequest) returns (WithdrawalAmountResponse); 
   rpc TransferAmount (TransferAmountRequest) returns (TransferAmountResponse); 
@@ -17,12 +20,31 @@ service BalanceService {
   rpc ResetAllBalances (google.protobuf.Empty) returns (ResetAllBalancesResponse); 
 }
 
-message GetMyBalanceRequest {
+message Balance {
+  string amount = 1;
+  string currency = 2;
+  optional string blocked_at = 3;
+}
+
+message GetMyBalancesRequest {
   string account_id = 1;
 }
 
-message GetMyBalanceResponse {
-  string balance = 1;
+message GetMyBalancesResponse {
+  repeated Balance balances = 1;
+}
+
+message ValidationAccountRequest {
+  string account_id = 1;
+  string currency = 2;
+}
+
+message CheckBalanceRequest {
+  string account_id = 1;
+}
+
+message CheckBalanceResponse {
+  uint64 amount = 1;
 }
 
 message AuditBalanceRequest {

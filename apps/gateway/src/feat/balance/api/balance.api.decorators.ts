@@ -17,7 +17,7 @@ import {
 export const ApiGetBalance = () =>
 	applyDecorators(
 		ApiOperation({
-			summary: 'Показать мой баланс USD'
+			summary: 'Показать мой баланс'
 		}),
 		ApiOkResponse({ type: BalanceResponse }),
 		ApiBearerAuth()
@@ -27,7 +27,7 @@ export const ApiAudit = () =>
 	applyDecorators(
 		ApiOperation({
 			summary:
-				'Проверить консистеность баланса USD пользователя по истории транзакций, только для администратора'
+				'Проверить консистеность баланса пользователя по истории транзакций, только для администратора'
 		}),
 		ApiOkResponse({ type: AuditBalanceResponse }),
 		ApiBearerAuth()
@@ -36,7 +36,7 @@ export const ApiAudit = () =>
 export const ApiDeposit = () =>
 	applyDecorators(
 		ApiOperation({
-			summary: 'Пополнить баланс USD'
+			summary: 'Пополнить баланс'
 		}),
 		ApiHeader({
 			name: 'Idempotency-Key',
@@ -50,7 +50,7 @@ export const ApiDeposit = () =>
 export const ApiWithdrawn = () =>
 	applyDecorators(
 		ApiOperation({
-			summary: 'Вывод USD на другой счет'
+			summary: 'Вывод на другой счет'
 		}),
 		ApiHeader({
 			name: 'Idempotency-Key',

@@ -38,6 +38,7 @@ export type BalanceSumAggregateOutputType = {
 export type BalanceMinAggregateOutputType = {
 	id: string | null;
 	amount: bigint | null;
+	currency: string | null;
 	accountId: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
@@ -47,6 +48,7 @@ export type BalanceMinAggregateOutputType = {
 export type BalanceMaxAggregateOutputType = {
 	id: string | null;
 	amount: bigint | null;
+	currency: string | null;
 	accountId: string | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
@@ -56,6 +58,7 @@ export type BalanceMaxAggregateOutputType = {
 export type BalanceCountAggregateOutputType = {
 	id: number;
 	amount: number;
+	currency: number;
 	accountId: number;
 	createdAt: number;
 	updatedAt: number;
@@ -74,6 +77,7 @@ export type BalanceSumAggregateInputType = {
 export type BalanceMinAggregateInputType = {
 	id?: true;
 	amount?: true;
+	currency?: true;
 	accountId?: true;
 	createdAt?: true;
 	updatedAt?: true;
@@ -83,6 +87,7 @@ export type BalanceMinAggregateInputType = {
 export type BalanceMaxAggregateInputType = {
 	id?: true;
 	amount?: true;
+	currency?: true;
 	accountId?: true;
 	createdAt?: true;
 	updatedAt?: true;
@@ -92,6 +97,7 @@ export type BalanceMaxAggregateInputType = {
 export type BalanceCountAggregateInputType = {
 	id?: true;
 	amount?: true;
+	currency?: true;
 	accountId?: true;
 	createdAt?: true;
 	updatedAt?: true;
@@ -195,6 +201,7 @@ export type BalanceGroupByArgs<
 export type BalanceGroupByOutputType = {
 	id: string;
 	amount: bigint;
+	currency: string;
 	accountId: string;
 	createdAt: Date;
 	updatedAt: Date;
@@ -229,6 +236,7 @@ export type BalanceWhereInput = {
 	NOT?: Prisma.BalanceWhereInput | Prisma.BalanceWhereInput[];
 	id?: Prisma.StringFilter<'Balance'> | string;
 	amount?: Prisma.BigIntFilter<'Balance'> | bigint | number;
+	currency?: Prisma.StringFilter<'Balance'> | string;
 	accountId?: Prisma.StringFilter<'Balance'> | string;
 	createdAt?: Prisma.DateTimeFilter<'Balance'> | Date | string;
 	updatedAt?: Prisma.DateTimeFilter<'Balance'> | Date | string;
@@ -242,6 +250,7 @@ export type BalanceWhereInput = {
 export type BalanceOrderByWithRelationInput = {
 	id?: Prisma.SortOrder;
 	amount?: Prisma.SortOrder;
+	currency?: Prisma.SortOrder;
 	accountId?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
@@ -252,11 +261,12 @@ export type BalanceOrderByWithRelationInput = {
 export type BalanceWhereUniqueInput = Prisma.AtLeast<
 	{
 		id?: string;
-		accountId?: string;
 		AND?: Prisma.BalanceWhereInput | Prisma.BalanceWhereInput[];
 		OR?: Prisma.BalanceWhereInput[];
 		NOT?: Prisma.BalanceWhereInput | Prisma.BalanceWhereInput[];
 		amount?: Prisma.BigIntFilter<'Balance'> | bigint | number;
+		currency?: Prisma.StringFilter<'Balance'> | string;
+		accountId?: Prisma.StringFilter<'Balance'> | string;
 		createdAt?: Prisma.DateTimeFilter<'Balance'> | Date | string;
 		updatedAt?: Prisma.DateTimeFilter<'Balance'> | Date | string;
 		blockedAt?:
@@ -269,12 +279,13 @@ export type BalanceWhereUniqueInput = Prisma.AtLeast<
 			Prisma.AccountWhereInput
 		>;
 	},
-	'id' | 'accountId'
+	'id'
 >;
 
 export type BalanceOrderByWithAggregationInput = {
 	id?: Prisma.SortOrder;
 	amount?: Prisma.SortOrder;
+	currency?: Prisma.SortOrder;
 	accountId?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
@@ -296,6 +307,7 @@ export type BalanceScalarWhereWithAggregatesInput = {
 		| Prisma.BalanceScalarWhereWithAggregatesInput[];
 	id?: Prisma.StringWithAggregatesFilter<'Balance'> | string;
 	amount?: Prisma.BigIntWithAggregatesFilter<'Balance'> | bigint | number;
+	currency?: Prisma.StringWithAggregatesFilter<'Balance'> | string;
 	accountId?: Prisma.StringWithAggregatesFilter<'Balance'> | string;
 	createdAt?: Prisma.DateTimeWithAggregatesFilter<'Balance'> | Date | string;
 	updatedAt?: Prisma.DateTimeWithAggregatesFilter<'Balance'> | Date | string;
@@ -309,6 +321,7 @@ export type BalanceScalarWhereWithAggregatesInput = {
 export type BalanceCreateInput = {
 	id: string;
 	amount?: bigint | number;
+	currency: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	blockedAt?: Date | string | null;
@@ -318,6 +331,7 @@ export type BalanceCreateInput = {
 export type BalanceUncheckedCreateInput = {
 	id: string;
 	amount?: bigint | number;
+	currency: string;
 	accountId: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
@@ -327,6 +341,7 @@ export type BalanceUncheckedCreateInput = {
 export type BalanceUpdateInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	blockedAt?:
@@ -340,6 +355,7 @@ export type BalanceUpdateInput = {
 export type BalanceUncheckedUpdateInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
 	accountId?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -353,6 +369,7 @@ export type BalanceUncheckedUpdateInput = {
 export type BalanceCreateManyInput = {
 	id: string;
 	amount?: bigint | number;
+	currency: string;
 	accountId: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
@@ -362,6 +379,7 @@ export type BalanceCreateManyInput = {
 export type BalanceUpdateManyMutationInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	blockedAt?:
@@ -374,6 +392,7 @@ export type BalanceUpdateManyMutationInput = {
 export type BalanceUncheckedUpdateManyInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
 	accountId?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
@@ -384,14 +403,20 @@ export type BalanceUncheckedUpdateManyInput = {
 		| null;
 };
 
-export type BalanceNullableScalarRelationFilter = {
-	is?: Prisma.BalanceWhereInput | null;
-	isNot?: Prisma.BalanceWhereInput | null;
+export type BalanceListRelationFilter = {
+	every?: Prisma.BalanceWhereInput;
+	some?: Prisma.BalanceWhereInput;
+	none?: Prisma.BalanceWhereInput;
+};
+
+export type BalanceOrderByRelationAggregateInput = {
+	_count?: Prisma.SortOrder;
 };
 
 export type BalanceCountOrderByAggregateInput = {
 	id?: Prisma.SortOrder;
 	amount?: Prisma.SortOrder;
+	currency?: Prisma.SortOrder;
 	accountId?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
@@ -405,6 +430,7 @@ export type BalanceAvgOrderByAggregateInput = {
 export type BalanceMaxOrderByAggregateInput = {
 	id?: Prisma.SortOrder;
 	amount?: Prisma.SortOrder;
+	currency?: Prisma.SortOrder;
 	accountId?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
@@ -414,6 +440,7 @@ export type BalanceMaxOrderByAggregateInput = {
 export type BalanceMinOrderByAggregateInput = {
 	id?: Prisma.SortOrder;
 	amount?: Prisma.SortOrder;
+	currency?: Prisma.SortOrder;
 	accountId?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
@@ -424,60 +451,98 @@ export type BalanceSumOrderByAggregateInput = {
 	amount?: Prisma.SortOrder;
 };
 
-export type BalanceCreateNestedOneWithoutAccountInput = {
-	create?: Prisma.XOR<
-		Prisma.BalanceCreateWithoutAccountInput,
-		Prisma.BalanceUncheckedCreateWithoutAccountInput
-	>;
-	connectOrCreate?: Prisma.BalanceCreateOrConnectWithoutAccountInput;
-	connect?: Prisma.BalanceWhereUniqueInput;
+export type BalanceCreateNestedManyWithoutAccountInput = {
+	create?:
+		| Prisma.XOR<
+				Prisma.BalanceCreateWithoutAccountInput,
+				Prisma.BalanceUncheckedCreateWithoutAccountInput
+		  >
+		| Prisma.BalanceCreateWithoutAccountInput[]
+		| Prisma.BalanceUncheckedCreateWithoutAccountInput[];
+	connectOrCreate?:
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput[];
+	createMany?: Prisma.BalanceCreateManyAccountInputEnvelope;
+	connect?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
 };
 
-export type BalanceUncheckedCreateNestedOneWithoutAccountInput = {
-	create?: Prisma.XOR<
-		Prisma.BalanceCreateWithoutAccountInput,
-		Prisma.BalanceUncheckedCreateWithoutAccountInput
-	>;
-	connectOrCreate?: Prisma.BalanceCreateOrConnectWithoutAccountInput;
-	connect?: Prisma.BalanceWhereUniqueInput;
+export type BalanceUncheckedCreateNestedManyWithoutAccountInput = {
+	create?:
+		| Prisma.XOR<
+				Prisma.BalanceCreateWithoutAccountInput,
+				Prisma.BalanceUncheckedCreateWithoutAccountInput
+		  >
+		| Prisma.BalanceCreateWithoutAccountInput[]
+		| Prisma.BalanceUncheckedCreateWithoutAccountInput[];
+	connectOrCreate?:
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput[];
+	createMany?: Prisma.BalanceCreateManyAccountInputEnvelope;
+	connect?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
 };
 
-export type BalanceUpdateOneWithoutAccountNestedInput = {
-	create?: Prisma.XOR<
-		Prisma.BalanceCreateWithoutAccountInput,
-		Prisma.BalanceUncheckedCreateWithoutAccountInput
-	>;
-	connectOrCreate?: Prisma.BalanceCreateOrConnectWithoutAccountInput;
-	upsert?: Prisma.BalanceUpsertWithoutAccountInput;
-	disconnect?: Prisma.BalanceWhereInput | boolean;
-	delete?: Prisma.BalanceWhereInput | boolean;
-	connect?: Prisma.BalanceWhereUniqueInput;
-	update?: Prisma.XOR<
-		Prisma.XOR<
-			Prisma.BalanceUpdateToOneWithWhereWithoutAccountInput,
-			Prisma.BalanceUpdateWithoutAccountInput
-		>,
-		Prisma.BalanceUncheckedUpdateWithoutAccountInput
-	>;
+export type BalanceUpdateManyWithoutAccountNestedInput = {
+	create?:
+		| Prisma.XOR<
+				Prisma.BalanceCreateWithoutAccountInput,
+				Prisma.BalanceUncheckedCreateWithoutAccountInput
+		  >
+		| Prisma.BalanceCreateWithoutAccountInput[]
+		| Prisma.BalanceUncheckedCreateWithoutAccountInput[];
+	connectOrCreate?:
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput[];
+	upsert?:
+		| Prisma.BalanceUpsertWithWhereUniqueWithoutAccountInput
+		| Prisma.BalanceUpsertWithWhereUniqueWithoutAccountInput[];
+	createMany?: Prisma.BalanceCreateManyAccountInputEnvelope;
+	set?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
+	disconnect?:
+		| Prisma.BalanceWhereUniqueInput
+		| Prisma.BalanceWhereUniqueInput[];
+	delete?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
+	connect?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
+	update?:
+		| Prisma.BalanceUpdateWithWhereUniqueWithoutAccountInput
+		| Prisma.BalanceUpdateWithWhereUniqueWithoutAccountInput[];
+	updateMany?:
+		| Prisma.BalanceUpdateManyWithWhereWithoutAccountInput
+		| Prisma.BalanceUpdateManyWithWhereWithoutAccountInput[];
+	deleteMany?:
+		| Prisma.BalanceScalarWhereInput
+		| Prisma.BalanceScalarWhereInput[];
 };
 
-export type BalanceUncheckedUpdateOneWithoutAccountNestedInput = {
-	create?: Prisma.XOR<
-		Prisma.BalanceCreateWithoutAccountInput,
-		Prisma.BalanceUncheckedCreateWithoutAccountInput
-	>;
-	connectOrCreate?: Prisma.BalanceCreateOrConnectWithoutAccountInput;
-	upsert?: Prisma.BalanceUpsertWithoutAccountInput;
-	disconnect?: Prisma.BalanceWhereInput | boolean;
-	delete?: Prisma.BalanceWhereInput | boolean;
-	connect?: Prisma.BalanceWhereUniqueInput;
-	update?: Prisma.XOR<
-		Prisma.XOR<
-			Prisma.BalanceUpdateToOneWithWhereWithoutAccountInput,
-			Prisma.BalanceUpdateWithoutAccountInput
-		>,
-		Prisma.BalanceUncheckedUpdateWithoutAccountInput
-	>;
+export type BalanceUncheckedUpdateManyWithoutAccountNestedInput = {
+	create?:
+		| Prisma.XOR<
+				Prisma.BalanceCreateWithoutAccountInput,
+				Prisma.BalanceUncheckedCreateWithoutAccountInput
+		  >
+		| Prisma.BalanceCreateWithoutAccountInput[]
+		| Prisma.BalanceUncheckedCreateWithoutAccountInput[];
+	connectOrCreate?:
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput
+		| Prisma.BalanceCreateOrConnectWithoutAccountInput[];
+	upsert?:
+		| Prisma.BalanceUpsertWithWhereUniqueWithoutAccountInput
+		| Prisma.BalanceUpsertWithWhereUniqueWithoutAccountInput[];
+	createMany?: Prisma.BalanceCreateManyAccountInputEnvelope;
+	set?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
+	disconnect?:
+		| Prisma.BalanceWhereUniqueInput
+		| Prisma.BalanceWhereUniqueInput[];
+	delete?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
+	connect?: Prisma.BalanceWhereUniqueInput | Prisma.BalanceWhereUniqueInput[];
+	update?:
+		| Prisma.BalanceUpdateWithWhereUniqueWithoutAccountInput
+		| Prisma.BalanceUpdateWithWhereUniqueWithoutAccountInput[];
+	updateMany?:
+		| Prisma.BalanceUpdateManyWithWhereWithoutAccountInput
+		| Prisma.BalanceUpdateManyWithWhereWithoutAccountInput[];
+	deleteMany?:
+		| Prisma.BalanceScalarWhereInput
+		| Prisma.BalanceScalarWhereInput[];
 };
 
 export type BigIntFieldUpdateOperationsInput = {
@@ -491,6 +556,7 @@ export type BigIntFieldUpdateOperationsInput = {
 export type BalanceCreateWithoutAccountInput = {
 	id: string;
 	amount?: bigint | number;
+	currency: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	blockedAt?: Date | string | null;
@@ -499,6 +565,7 @@ export type BalanceCreateWithoutAccountInput = {
 export type BalanceUncheckedCreateWithoutAccountInput = {
 	id: string;
 	amount?: bigint | number;
+	currency: string;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	blockedAt?: Date | string | null;
@@ -512,7 +579,15 @@ export type BalanceCreateOrConnectWithoutAccountInput = {
 	>;
 };
 
-export type BalanceUpsertWithoutAccountInput = {
+export type BalanceCreateManyAccountInputEnvelope = {
+	data:
+		| Prisma.BalanceCreateManyAccountInput
+		| Prisma.BalanceCreateManyAccountInput[];
+	skipDuplicates?: boolean;
+};
+
+export type BalanceUpsertWithWhereUniqueWithoutAccountInput = {
+	where: Prisma.BalanceWhereUniqueInput;
 	update: Prisma.XOR<
 		Prisma.BalanceUpdateWithoutAccountInput,
 		Prisma.BalanceUncheckedUpdateWithoutAccountInput
@@ -521,20 +596,50 @@ export type BalanceUpsertWithoutAccountInput = {
 		Prisma.BalanceCreateWithoutAccountInput,
 		Prisma.BalanceUncheckedCreateWithoutAccountInput
 	>;
-	where?: Prisma.BalanceWhereInput;
 };
 
-export type BalanceUpdateToOneWithWhereWithoutAccountInput = {
-	where?: Prisma.BalanceWhereInput;
+export type BalanceUpdateWithWhereUniqueWithoutAccountInput = {
+	where: Prisma.BalanceWhereUniqueInput;
 	data: Prisma.XOR<
 		Prisma.BalanceUpdateWithoutAccountInput,
 		Prisma.BalanceUncheckedUpdateWithoutAccountInput
 	>;
 };
 
+export type BalanceUpdateManyWithWhereWithoutAccountInput = {
+	where: Prisma.BalanceScalarWhereInput;
+	data: Prisma.XOR<
+		Prisma.BalanceUpdateManyMutationInput,
+		Prisma.BalanceUncheckedUpdateManyWithoutAccountInput
+	>;
+};
+
+export type BalanceScalarWhereInput = {
+	AND?: Prisma.BalanceScalarWhereInput | Prisma.BalanceScalarWhereInput[];
+	OR?: Prisma.BalanceScalarWhereInput[];
+	NOT?: Prisma.BalanceScalarWhereInput | Prisma.BalanceScalarWhereInput[];
+	id?: Prisma.StringFilter<'Balance'> | string;
+	amount?: Prisma.BigIntFilter<'Balance'> | bigint | number;
+	currency?: Prisma.StringFilter<'Balance'> | string;
+	accountId?: Prisma.StringFilter<'Balance'> | string;
+	createdAt?: Prisma.DateTimeFilter<'Balance'> | Date | string;
+	updatedAt?: Prisma.DateTimeFilter<'Balance'> | Date | string;
+	blockedAt?: Prisma.DateTimeNullableFilter<'Balance'> | Date | string | null;
+};
+
+export type BalanceCreateManyAccountInput = {
+	id: string;
+	amount?: bigint | number;
+	currency: string;
+	createdAt?: Date | string;
+	updatedAt?: Date | string;
+	blockedAt?: Date | string | null;
+};
+
 export type BalanceUpdateWithoutAccountInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	blockedAt?:
@@ -547,6 +652,20 @@ export type BalanceUpdateWithoutAccountInput = {
 export type BalanceUncheckedUpdateWithoutAccountInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	blockedAt?:
+		| Prisma.NullableDateTimeFieldUpdateOperationsInput
+		| Date
+		| string
+		| null;
+};
+
+export type BalanceUncheckedUpdateManyWithoutAccountInput = {
+	id?: Prisma.StringFieldUpdateOperationsInput | string;
+	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	blockedAt?:
@@ -563,6 +682,7 @@ export type BalanceSelect<
 	{
 		id?: boolean;
 		amount?: boolean;
+		currency?: boolean;
 		accountId?: boolean;
 		createdAt?: boolean;
 		updatedAt?: boolean;
@@ -579,6 +699,7 @@ export type BalanceSelectCreateManyAndReturn<
 	{
 		id?: boolean;
 		amount?: boolean;
+		currency?: boolean;
 		accountId?: boolean;
 		createdAt?: boolean;
 		updatedAt?: boolean;
@@ -595,6 +716,7 @@ export type BalanceSelectUpdateManyAndReturn<
 	{
 		id?: boolean;
 		amount?: boolean;
+		currency?: boolean;
 		accountId?: boolean;
 		createdAt?: boolean;
 		updatedAt?: boolean;
@@ -607,6 +729,7 @@ export type BalanceSelectUpdateManyAndReturn<
 export type BalanceSelectScalar = {
 	id?: boolean;
 	amount?: boolean;
+	currency?: boolean;
 	accountId?: boolean;
 	createdAt?: boolean;
 	updatedAt?: boolean;
@@ -617,7 +740,13 @@ export type BalanceOmit<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
 		runtime.Types.Extensions.DefaultArgs
 > = runtime.Types.Extensions.GetOmit<
-	'id' | 'amount' | 'accountId' | 'createdAt' | 'updatedAt' | 'blockedAt',
+	| 'id'
+	| 'amount'
+	| 'currency'
+	| 'accountId'
+	| 'createdAt'
+	| 'updatedAt'
+	| 'blockedAt',
 	ExtArgs['result']['balance']
 >;
 export type BalanceInclude<
@@ -651,6 +780,7 @@ export type $BalancePayload<
 		{
 			id: string;
 			amount: bigint;
+			currency: string;
 			accountId: string;
 			createdAt: Date;
 			updatedAt: Date;
@@ -1266,6 +1396,7 @@ export interface Prisma__BalanceClient<
 export interface BalanceFieldRefs {
 	readonly id: Prisma.FieldRef<'Balance', 'String'>;
 	readonly amount: Prisma.FieldRef<'Balance', 'BigInt'>;
+	readonly currency: Prisma.FieldRef<'Balance', 'String'>;
 	readonly accountId: Prisma.FieldRef<'Balance', 'String'>;
 	readonly createdAt: Prisma.FieldRef<'Balance', 'DateTime'>;
 	readonly updatedAt: Prisma.FieldRef<'Balance', 'DateTime'>;

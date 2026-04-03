@@ -227,11 +227,7 @@ export type AccountWhereInput = {
 		Prisma.ProfileNullableScalarRelationFilter,
 		Prisma.ProfileWhereInput
 	> | null;
-	balance?: Prisma.XOR<
-		Prisma.BalanceNullableScalarRelationFilter,
-		Prisma.BalanceWhereInput
-	> | null;
-	transactions?: Prisma.TransactionListRelationFilter;
+	balance?: Prisma.BalanceListRelationFilter;
 };
 
 export type AccountOrderByWithRelationInput = {
@@ -245,8 +241,7 @@ export type AccountOrderByWithRelationInput = {
 	updatedAt?: Prisma.SortOrder;
 	deletedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
 	profile?: Prisma.ProfileOrderByWithRelationInput;
-	balance?: Prisma.BalanceOrderByWithRelationInput;
-	transactions?: Prisma.TransactionOrderByRelationAggregateInput;
+	balance?: Prisma.BalanceOrderByRelationAggregateInput;
 };
 
 export type AccountWhereUniqueInput = Prisma.AtLeast<
@@ -271,11 +266,7 @@ export type AccountWhereUniqueInput = Prisma.AtLeast<
 			Prisma.ProfileNullableScalarRelationFilter,
 			Prisma.ProfileWhereInput
 		> | null;
-		balance?: Prisma.XOR<
-			Prisma.BalanceNullableScalarRelationFilter,
-			Prisma.BalanceWhereInput
-		> | null;
-		transactions?: Prisma.TransactionListRelationFilter;
+		balance?: Prisma.BalanceListRelationFilter;
 	},
 	'id' | 'username' | 'email'
 >;
@@ -329,8 +320,7 @@ export type AccountCreateInput = {
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
 	profile?: Prisma.ProfileCreateNestedOneWithoutAccountInput;
-	balance?: Prisma.BalanceCreateNestedOneWithoutAccountInput;
-	transactions?: Prisma.TransactionCreateNestedManyWithoutAccountInput;
+	balance?: Prisma.BalanceCreateNestedManyWithoutAccountInput;
 };
 
 export type AccountUncheckedCreateInput = {
@@ -344,8 +334,7 @@ export type AccountUncheckedCreateInput = {
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
 	profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutAccountInput;
-	balance?: Prisma.BalanceUncheckedCreateNestedOneWithoutAccountInput;
-	transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutAccountInput;
+	balance?: Prisma.BalanceUncheckedCreateNestedManyWithoutAccountInput;
 };
 
 export type AccountUpdateInput = {
@@ -363,8 +352,7 @@ export type AccountUpdateInput = {
 		| string
 		| null;
 	profile?: Prisma.ProfileUpdateOneWithoutAccountNestedInput;
-	balance?: Prisma.BalanceUpdateOneWithoutAccountNestedInput;
-	transactions?: Prisma.TransactionUpdateManyWithoutAccountNestedInput;
+	balance?: Prisma.BalanceUpdateManyWithoutAccountNestedInput;
 };
 
 export type AccountUncheckedUpdateInput = {
@@ -382,8 +370,7 @@ export type AccountUncheckedUpdateInput = {
 		| string
 		| null;
 	profile?: Prisma.ProfileUncheckedUpdateOneWithoutAccountNestedInput;
-	balance?: Prisma.BalanceUncheckedUpdateOneWithoutAccountNestedInput;
-	transactions?: Prisma.TransactionUncheckedUpdateManyWithoutAccountNestedInput;
+	balance?: Prisma.BalanceUncheckedUpdateManyWithoutAccountNestedInput;
 };
 
 export type AccountCreateManyInput = {
@@ -487,58 +474,6 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 	set?: Date | string | null;
 };
 
-export type AccountCreateNestedOneWithoutBalanceInput = {
-	create?: Prisma.XOR<
-		Prisma.AccountCreateWithoutBalanceInput,
-		Prisma.AccountUncheckedCreateWithoutBalanceInput
-	>;
-	connectOrCreate?: Prisma.AccountCreateOrConnectWithoutBalanceInput;
-	connect?: Prisma.AccountWhereUniqueInput;
-};
-
-export type AccountUpdateOneRequiredWithoutBalanceNestedInput = {
-	create?: Prisma.XOR<
-		Prisma.AccountCreateWithoutBalanceInput,
-		Prisma.AccountUncheckedCreateWithoutBalanceInput
-	>;
-	connectOrCreate?: Prisma.AccountCreateOrConnectWithoutBalanceInput;
-	upsert?: Prisma.AccountUpsertWithoutBalanceInput;
-	connect?: Prisma.AccountWhereUniqueInput;
-	update?: Prisma.XOR<
-		Prisma.XOR<
-			Prisma.AccountUpdateToOneWithWhereWithoutBalanceInput,
-			Prisma.AccountUpdateWithoutBalanceInput
-		>,
-		Prisma.AccountUncheckedUpdateWithoutBalanceInput
-	>;
-};
-
-export type AccountCreateNestedOneWithoutTransactionsInput = {
-	create?: Prisma.XOR<
-		Prisma.AccountCreateWithoutTransactionsInput,
-		Prisma.AccountUncheckedCreateWithoutTransactionsInput
-	>;
-	connectOrCreate?: Prisma.AccountCreateOrConnectWithoutTransactionsInput;
-	connect?: Prisma.AccountWhereUniqueInput;
-};
-
-export type AccountUpdateOneRequiredWithoutTransactionsNestedInput = {
-	create?: Prisma.XOR<
-		Prisma.AccountCreateWithoutTransactionsInput,
-		Prisma.AccountUncheckedCreateWithoutTransactionsInput
-	>;
-	connectOrCreate?: Prisma.AccountCreateOrConnectWithoutTransactionsInput;
-	upsert?: Prisma.AccountUpsertWithoutTransactionsInput;
-	connect?: Prisma.AccountWhereUniqueInput;
-	update?: Prisma.XOR<
-		Prisma.XOR<
-			Prisma.AccountUpdateToOneWithWhereWithoutTransactionsInput,
-			Prisma.AccountUpdateWithoutTransactionsInput
-		>,
-		Prisma.AccountUncheckedUpdateWithoutTransactionsInput
-	>;
-};
-
 export type AccountCreateNestedOneWithoutProfileInput = {
 	create?: Prisma.XOR<
 		Prisma.AccountCreateWithoutProfileInput,
@@ -565,6 +500,120 @@ export type AccountUpdateOneRequiredWithoutProfileNestedInput = {
 	>;
 };
 
+export type AccountCreateNestedOneWithoutBalanceInput = {
+	create?: Prisma.XOR<
+		Prisma.AccountCreateWithoutBalanceInput,
+		Prisma.AccountUncheckedCreateWithoutBalanceInput
+	>;
+	connectOrCreate?: Prisma.AccountCreateOrConnectWithoutBalanceInput;
+	connect?: Prisma.AccountWhereUniqueInput;
+};
+
+export type AccountUpdateOneRequiredWithoutBalanceNestedInput = {
+	create?: Prisma.XOR<
+		Prisma.AccountCreateWithoutBalanceInput,
+		Prisma.AccountUncheckedCreateWithoutBalanceInput
+	>;
+	connectOrCreate?: Prisma.AccountCreateOrConnectWithoutBalanceInput;
+	upsert?: Prisma.AccountUpsertWithoutBalanceInput;
+	connect?: Prisma.AccountWhereUniqueInput;
+	update?: Prisma.XOR<
+		Prisma.XOR<
+			Prisma.AccountUpdateToOneWithWhereWithoutBalanceInput,
+			Prisma.AccountUpdateWithoutBalanceInput
+		>,
+		Prisma.AccountUncheckedUpdateWithoutBalanceInput
+	>;
+};
+
+export type AccountCreateWithoutProfileInput = {
+	id: string;
+	username: string;
+	password: string;
+	email: string;
+	isVerified?: boolean;
+	role?: string;
+	createdAt?: Date | string;
+	updatedAt?: Date | string;
+	deletedAt?: Date | string | null;
+	balance?: Prisma.BalanceCreateNestedManyWithoutAccountInput;
+};
+
+export type AccountUncheckedCreateWithoutProfileInput = {
+	id: string;
+	username: string;
+	password: string;
+	email: string;
+	isVerified?: boolean;
+	role?: string;
+	createdAt?: Date | string;
+	updatedAt?: Date | string;
+	deletedAt?: Date | string | null;
+	balance?: Prisma.BalanceUncheckedCreateNestedManyWithoutAccountInput;
+};
+
+export type AccountCreateOrConnectWithoutProfileInput = {
+	where: Prisma.AccountWhereUniqueInput;
+	create: Prisma.XOR<
+		Prisma.AccountCreateWithoutProfileInput,
+		Prisma.AccountUncheckedCreateWithoutProfileInput
+	>;
+};
+
+export type AccountUpsertWithoutProfileInput = {
+	update: Prisma.XOR<
+		Prisma.AccountUpdateWithoutProfileInput,
+		Prisma.AccountUncheckedUpdateWithoutProfileInput
+	>;
+	create: Prisma.XOR<
+		Prisma.AccountCreateWithoutProfileInput,
+		Prisma.AccountUncheckedCreateWithoutProfileInput
+	>;
+	where?: Prisma.AccountWhereInput;
+};
+
+export type AccountUpdateToOneWithWhereWithoutProfileInput = {
+	where?: Prisma.AccountWhereInput;
+	data: Prisma.XOR<
+		Prisma.AccountUpdateWithoutProfileInput,
+		Prisma.AccountUncheckedUpdateWithoutProfileInput
+	>;
+};
+
+export type AccountUpdateWithoutProfileInput = {
+	id?: Prisma.StringFieldUpdateOperationsInput | string;
+	username?: Prisma.StringFieldUpdateOperationsInput | string;
+	password?: Prisma.StringFieldUpdateOperationsInput | string;
+	email?: Prisma.StringFieldUpdateOperationsInput | string;
+	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
+	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	deletedAt?:
+		| Prisma.NullableDateTimeFieldUpdateOperationsInput
+		| Date
+		| string
+		| null;
+	balance?: Prisma.BalanceUpdateManyWithoutAccountNestedInput;
+};
+
+export type AccountUncheckedUpdateWithoutProfileInput = {
+	id?: Prisma.StringFieldUpdateOperationsInput | string;
+	username?: Prisma.StringFieldUpdateOperationsInput | string;
+	password?: Prisma.StringFieldUpdateOperationsInput | string;
+	email?: Prisma.StringFieldUpdateOperationsInput | string;
+	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
+	role?: Prisma.StringFieldUpdateOperationsInput | string;
+	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	deletedAt?:
+		| Prisma.NullableDateTimeFieldUpdateOperationsInput
+		| Date
+		| string
+		| null;
+	balance?: Prisma.BalanceUncheckedUpdateManyWithoutAccountNestedInput;
+};
+
 export type AccountCreateWithoutBalanceInput = {
 	id: string;
 	username: string;
@@ -576,7 +625,6 @@ export type AccountCreateWithoutBalanceInput = {
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
 	profile?: Prisma.ProfileCreateNestedOneWithoutAccountInput;
-	transactions?: Prisma.TransactionCreateNestedManyWithoutAccountInput;
 };
 
 export type AccountUncheckedCreateWithoutBalanceInput = {
@@ -590,7 +638,6 @@ export type AccountUncheckedCreateWithoutBalanceInput = {
 	updatedAt?: Date | string;
 	deletedAt?: Date | string | null;
 	profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutAccountInput;
-	transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutAccountInput;
 };
 
 export type AccountCreateOrConnectWithoutBalanceInput = {
@@ -636,7 +683,6 @@ export type AccountUpdateWithoutBalanceInput = {
 		| string
 		| null;
 	profile?: Prisma.ProfileUpdateOneWithoutAccountNestedInput;
-	transactions?: Prisma.TransactionUpdateManyWithoutAccountNestedInput;
 };
 
 export type AccountUncheckedUpdateWithoutBalanceInput = {
@@ -654,191 +700,6 @@ export type AccountUncheckedUpdateWithoutBalanceInput = {
 		| string
 		| null;
 	profile?: Prisma.ProfileUncheckedUpdateOneWithoutAccountNestedInput;
-	transactions?: Prisma.TransactionUncheckedUpdateManyWithoutAccountNestedInput;
-};
-
-export type AccountCreateWithoutTransactionsInput = {
-	id: string;
-	username: string;
-	password: string;
-	email: string;
-	isVerified?: boolean;
-	role?: string;
-	createdAt?: Date | string;
-	updatedAt?: Date | string;
-	deletedAt?: Date | string | null;
-	profile?: Prisma.ProfileCreateNestedOneWithoutAccountInput;
-	balance?: Prisma.BalanceCreateNestedOneWithoutAccountInput;
-};
-
-export type AccountUncheckedCreateWithoutTransactionsInput = {
-	id: string;
-	username: string;
-	password: string;
-	email: string;
-	isVerified?: boolean;
-	role?: string;
-	createdAt?: Date | string;
-	updatedAt?: Date | string;
-	deletedAt?: Date | string | null;
-	profile?: Prisma.ProfileUncheckedCreateNestedOneWithoutAccountInput;
-	balance?: Prisma.BalanceUncheckedCreateNestedOneWithoutAccountInput;
-};
-
-export type AccountCreateOrConnectWithoutTransactionsInput = {
-	where: Prisma.AccountWhereUniqueInput;
-	create: Prisma.XOR<
-		Prisma.AccountCreateWithoutTransactionsInput,
-		Prisma.AccountUncheckedCreateWithoutTransactionsInput
-	>;
-};
-
-export type AccountUpsertWithoutTransactionsInput = {
-	update: Prisma.XOR<
-		Prisma.AccountUpdateWithoutTransactionsInput,
-		Prisma.AccountUncheckedUpdateWithoutTransactionsInput
-	>;
-	create: Prisma.XOR<
-		Prisma.AccountCreateWithoutTransactionsInput,
-		Prisma.AccountUncheckedCreateWithoutTransactionsInput
-	>;
-	where?: Prisma.AccountWhereInput;
-};
-
-export type AccountUpdateToOneWithWhereWithoutTransactionsInput = {
-	where?: Prisma.AccountWhereInput;
-	data: Prisma.XOR<
-		Prisma.AccountUpdateWithoutTransactionsInput,
-		Prisma.AccountUncheckedUpdateWithoutTransactionsInput
-	>;
-};
-
-export type AccountUpdateWithoutTransactionsInput = {
-	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	username?: Prisma.StringFieldUpdateOperationsInput | string;
-	password?: Prisma.StringFieldUpdateOperationsInput | string;
-	email?: Prisma.StringFieldUpdateOperationsInput | string;
-	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.StringFieldUpdateOperationsInput | string;
-	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	deletedAt?:
-		| Prisma.NullableDateTimeFieldUpdateOperationsInput
-		| Date
-		| string
-		| null;
-	profile?: Prisma.ProfileUpdateOneWithoutAccountNestedInput;
-	balance?: Prisma.BalanceUpdateOneWithoutAccountNestedInput;
-};
-
-export type AccountUncheckedUpdateWithoutTransactionsInput = {
-	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	username?: Prisma.StringFieldUpdateOperationsInput | string;
-	password?: Prisma.StringFieldUpdateOperationsInput | string;
-	email?: Prisma.StringFieldUpdateOperationsInput | string;
-	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.StringFieldUpdateOperationsInput | string;
-	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	deletedAt?:
-		| Prisma.NullableDateTimeFieldUpdateOperationsInput
-		| Date
-		| string
-		| null;
-	profile?: Prisma.ProfileUncheckedUpdateOneWithoutAccountNestedInput;
-	balance?: Prisma.BalanceUncheckedUpdateOneWithoutAccountNestedInput;
-};
-
-export type AccountCreateWithoutProfileInput = {
-	id: string;
-	username: string;
-	password: string;
-	email: string;
-	isVerified?: boolean;
-	role?: string;
-	createdAt?: Date | string;
-	updatedAt?: Date | string;
-	deletedAt?: Date | string | null;
-	balance?: Prisma.BalanceCreateNestedOneWithoutAccountInput;
-	transactions?: Prisma.TransactionCreateNestedManyWithoutAccountInput;
-};
-
-export type AccountUncheckedCreateWithoutProfileInput = {
-	id: string;
-	username: string;
-	password: string;
-	email: string;
-	isVerified?: boolean;
-	role?: string;
-	createdAt?: Date | string;
-	updatedAt?: Date | string;
-	deletedAt?: Date | string | null;
-	balance?: Prisma.BalanceUncheckedCreateNestedOneWithoutAccountInput;
-	transactions?: Prisma.TransactionUncheckedCreateNestedManyWithoutAccountInput;
-};
-
-export type AccountCreateOrConnectWithoutProfileInput = {
-	where: Prisma.AccountWhereUniqueInput;
-	create: Prisma.XOR<
-		Prisma.AccountCreateWithoutProfileInput,
-		Prisma.AccountUncheckedCreateWithoutProfileInput
-	>;
-};
-
-export type AccountUpsertWithoutProfileInput = {
-	update: Prisma.XOR<
-		Prisma.AccountUpdateWithoutProfileInput,
-		Prisma.AccountUncheckedUpdateWithoutProfileInput
-	>;
-	create: Prisma.XOR<
-		Prisma.AccountCreateWithoutProfileInput,
-		Prisma.AccountUncheckedCreateWithoutProfileInput
-	>;
-	where?: Prisma.AccountWhereInput;
-};
-
-export type AccountUpdateToOneWithWhereWithoutProfileInput = {
-	where?: Prisma.AccountWhereInput;
-	data: Prisma.XOR<
-		Prisma.AccountUpdateWithoutProfileInput,
-		Prisma.AccountUncheckedUpdateWithoutProfileInput
-	>;
-};
-
-export type AccountUpdateWithoutProfileInput = {
-	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	username?: Prisma.StringFieldUpdateOperationsInput | string;
-	password?: Prisma.StringFieldUpdateOperationsInput | string;
-	email?: Prisma.StringFieldUpdateOperationsInput | string;
-	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.StringFieldUpdateOperationsInput | string;
-	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	deletedAt?:
-		| Prisma.NullableDateTimeFieldUpdateOperationsInput
-		| Date
-		| string
-		| null;
-	balance?: Prisma.BalanceUpdateOneWithoutAccountNestedInput;
-	transactions?: Prisma.TransactionUpdateManyWithoutAccountNestedInput;
-};
-
-export type AccountUncheckedUpdateWithoutProfileInput = {
-	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	username?: Prisma.StringFieldUpdateOperationsInput | string;
-	password?: Prisma.StringFieldUpdateOperationsInput | string;
-	email?: Prisma.StringFieldUpdateOperationsInput | string;
-	isVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	role?: Prisma.StringFieldUpdateOperationsInput | string;
-	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	deletedAt?:
-		| Prisma.NullableDateTimeFieldUpdateOperationsInput
-		| Date
-		| string
-		| null;
-	balance?: Prisma.BalanceUncheckedUpdateOneWithoutAccountNestedInput;
-	transactions?: Prisma.TransactionUncheckedUpdateManyWithoutAccountNestedInput;
 };
 
 /**
@@ -846,14 +707,14 @@ export type AccountUncheckedUpdateWithoutProfileInput = {
  */
 
 export type AccountCountOutputType = {
-	transactions: number;
+	balance: number;
 };
 
 export type AccountCountOutputTypeSelect<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
 		runtime.Types.Extensions.DefaultArgs
 > = {
-	transactions?: boolean | AccountCountOutputTypeCountTransactionsArgs;
+	balance?: boolean | AccountCountOutputTypeCountBalanceArgs;
 };
 
 /**
@@ -872,11 +733,11 @@ export type AccountCountOutputTypeDefaultArgs<
 /**
  * AccountCountOutputType without action
  */
-export type AccountCountOutputTypeCountTransactionsArgs<
+export type AccountCountOutputTypeCountBalanceArgs<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
 		runtime.Types.Extensions.DefaultArgs
 > = {
-	where?: Prisma.TransactionWhereInput;
+	where?: Prisma.BalanceWhereInput;
 };
 
 export type AccountSelect<
@@ -895,7 +756,6 @@ export type AccountSelect<
 		deletedAt?: boolean;
 		profile?: boolean | Prisma.Account$profileArgs<ExtArgs>;
 		balance?: boolean | Prisma.Account$balanceArgs<ExtArgs>;
-		transactions?: boolean | Prisma.Account$transactionsArgs<ExtArgs>;
 		_count?: boolean | Prisma.AccountCountOutputTypeDefaultArgs<ExtArgs>;
 	},
 	ExtArgs['result']['account']
@@ -970,7 +830,6 @@ export type AccountInclude<
 > = {
 	profile?: boolean | Prisma.Account$profileArgs<ExtArgs>;
 	balance?: boolean | Prisma.Account$balanceArgs<ExtArgs>;
-	transactions?: boolean | Prisma.Account$transactionsArgs<ExtArgs>;
 	_count?: boolean | Prisma.AccountCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type AccountIncludeCreateManyAndReturn<
@@ -989,8 +848,7 @@ export type $AccountPayload<
 	name: 'Account';
 	objects: {
 		profile: Prisma.$ProfilePayload<ExtArgs> | null;
-		balance: Prisma.$BalancePayload<ExtArgs> | null;
-		transactions: Prisma.$TransactionPayload<ExtArgs>[];
+		balance: Prisma.$BalancePayload<ExtArgs>[];
 	};
 	scalars: runtime.Types.Extensions.GetPayloadResult<
 		{
@@ -1571,22 +1429,9 @@ export interface Prisma__AccountClient<
 	>;
 	balance<T extends Prisma.Account$balanceArgs<ExtArgs> = {}>(
 		args?: Prisma.Subset<T, Prisma.Account$balanceArgs<ExtArgs>>
-	): Prisma.Prisma__BalanceClient<
-		runtime.Types.Result.GetResult<
-			Prisma.$BalancePayload<ExtArgs>,
-			T,
-			'findUniqueOrThrow',
-			GlobalOmitOptions
-		> | null,
-		null,
-		ExtArgs,
-		GlobalOmitOptions
-	>;
-	transactions<T extends Prisma.Account$transactionsArgs<ExtArgs> = {}>(
-		args?: Prisma.Subset<T, Prisma.Account$transactionsArgs<ExtArgs>>
 	): Prisma.PrismaPromise<
 		| runtime.Types.Result.GetResult<
-				Prisma.$TransactionPayload<ExtArgs>,
+				Prisma.$BalancePayload<ExtArgs>,
 				T,
 				'findMany',
 				GlobalOmitOptions
@@ -2138,37 +1983,13 @@ export type Account$balanceArgs<
 	 */
 	include?: Prisma.BalanceInclude<ExtArgs> | null;
 	where?: Prisma.BalanceWhereInput;
-};
-
-/**
- * Account.transactions
- */
-export type Account$transactionsArgs<
-	ExtArgs extends runtime.Types.Extensions.InternalArgs =
-		runtime.Types.Extensions.DefaultArgs
-> = {
-	/**
-	 * Select specific fields to fetch from the Transaction
-	 */
-	select?: Prisma.TransactionSelect<ExtArgs> | null;
-	/**
-	 * Omit specific fields from the Transaction
-	 */
-	omit?: Prisma.TransactionOmit<ExtArgs> | null;
-	/**
-	 * Choose, which related nodes to fetch as well
-	 */
-	include?: Prisma.TransactionInclude<ExtArgs> | null;
-	where?: Prisma.TransactionWhereInput;
 	orderBy?:
-		| Prisma.TransactionOrderByWithRelationInput
-		| Prisma.TransactionOrderByWithRelationInput[];
-	cursor?: Prisma.TransactionWhereUniqueInput;
+		| Prisma.BalanceOrderByWithRelationInput
+		| Prisma.BalanceOrderByWithRelationInput[];
+	cursor?: Prisma.BalanceWhereUniqueInput;
 	take?: number;
 	skip?: number;
-	distinct?:
-		| Prisma.TransactionScalarFieldEnum
-		| Prisma.TransactionScalarFieldEnum[];
+	distinct?: Prisma.BalanceScalarFieldEnum | Prisma.BalanceScalarFieldEnum[];
 };
 
 /**

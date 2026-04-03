@@ -26,6 +26,7 @@
 			"@file-service/*": ["apps/file-service/*"],
 			"@gateway/*": ["apps/gateway/*"],
 			"@job-service/*": ["apps/job-service/*"],
+			"@transaction-service/*": ["apps/transaction-service/*"],
 			"@libs/config": ["libs/config/index.ts"],
 			"@libs/grpc": ["libs/grpc/index.ts"],
 			"@libs/utils": ["libs/utils/index.ts"],

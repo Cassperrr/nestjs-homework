@@ -1,28 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TransactionType } from 'shared';
 
 export class DepositAmountResponse {
 	@ApiProperty({
-		description: 'Id транзакции',
-		example: 'uuid'
+		description: 'Ссылка на оплату',
+		example: 'https://url.com'
 	})
-	readonly id: string;
-
-	@ApiProperty({
-		description: 'Сумма пополнения',
-		example: '1000.50'
-	})
-	readonly amount: string;
-
-	@ApiProperty({
-		description: 'Тип транзакции',
-		example: TransactionType.DEPOSIT
-	})
-	readonly type: string;
-
-	@ApiProperty({
-		description: 'Время создания транзакции',
-		example: '2026-03-11T00:30:20.000Z'
-	})
-	readonly createdAt: string;
+	readonly url: string;
 }

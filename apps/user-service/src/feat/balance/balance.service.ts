@@ -7,13 +7,16 @@ import type {
 	AuditBalanceRequest,
 	AuditBalanceResponse,
 	BalanceResetJobRequest,
+	CheckBalanceRequest,
+	CheckBalanceResponse,
 	DepositAmountRequest,
 	DepositAmountResponse,
-	GetMyBalanceRequest,
-	GetMyBalanceResponse,
+	GetMyBalancesRequest,
+	GetMyBalancesResponse,
 	ResetAllBalancesResponse,
 	TransferAmountRequest,
 	TransferAmountResponse,
+	ValidationAccountRequest,
 	WithdrawalAmountRequest,
 	WithdrawalAmountResponse
 } from 'contracts/gen/balance';
@@ -31,9 +34,9 @@ export class BalanceService {
 		private readonly jobClient: JobClientGrpc
 	) {}
 
-	public async getMyBalance(
-		data: GetMyBalanceRequest
-	): Promise<GetMyBalanceResponse> {
+	public async getMyBalances(
+		data: GetMyBalancesRequest
+	): Promise<GetMyBalancesResponse> {
 		const { accountId } = data;
 
 		const account = await this.accountRepo.findBy({ id: accountId });
@@ -44,290 +47,343 @@ export class BalanceService {
 				details: 'Аккаунт не существует'
 			});
 
-		const balance = await this.balanceRepo.findBalance(account.id);
+		const balances = await this.balanceRepo.findBalances(account.id);
 
-		if (!balance || balance.blockedAt)
+		if (balances.length === 0)
 			throw new RpcException({
 				code: GrpcStatus.NOT_FOUND,
-				details: 'Счет не найден или заблокирвован'
+				details: 'Счета не найдены'
 			});
 
-		return { balance: balance.amount.toDollars() };
+		return {
+			balances: balances.map(b => ({
+				amount: b.amount.toDollarsStr(),
+				currency: b.currency,
+				blockedAt: b.blockedAt?.toISOString()
+			}))
+		};
 	}
 
-	public async auditBalance(
-		data: AuditBalanceRequest
-	): Promise<AuditBalanceResponse> {
-		const { accountId, accountIdForAudit } = data;
+	public async validationAccount(data: ValidationAccountRequest) {
+		const { accountId, currency } = data;
 
 		const account = await this.accountRepo.findBy({ id: accountId });
 
 		if (!account || account.deletedAt)
 			throw new RpcException({
 				code: GrpcStatus.UNAUTHENTICATED,
-				details: 'Ваш аккаунт не существует или удален'
+				details: 'Аккаунт не существует'
 			});
 
-		const auditingAccount = await this.accountRepo.findBy({
-			id: accountIdForAudit
-		});
-
-		if (!auditingAccount)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Аккаунт отправленный на аудит не существует'
-			});
-
-		const balance = await this.balanceRepo.findBalance(auditingAccount.id);
-
-		if (!balance)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Счет не найден'
-			});
-
-		const aggregate = await this.balanceRepo.aggregateTxAmounts(
-			auditingAccount.id
+		const balance = await this.balanceRepo.findBalance(
+			account.id,
+			currency
 		);
-
-		return {
-			balance: balance.amount.toDollars(),
-			aggregate: aggregate.toDollars(),
-			isConsistent: balance.amount === aggregate
-		};
-	}
-
-	public async depositAmount(
-		data: DepositAmountRequest
-	): Promise<DepositAmountResponse> {
-		const { accountId, idempotencyKey, amount } = data;
-
-		const account = await this.accountRepo.findBy({ id: accountId });
-
-		if (!account || account.deletedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Ваш аккаунт не существует или удален'
-			});
-
-		const balance = await this.balanceRepo.findBalance(account.id);
 
 		if (!balance || balance.blockedAt)
 			throw new RpcException({
 				code: GrpcStatus.NOT_FOUND,
-				details: 'Счет не найден или заблокирован'
+				details: 'Счет не найден или заблокирвован'
 			});
-
-		const tx = await this.balanceRepo
-			.txDeposit(accountId, idempotencyKey, amount)
-			.catch(error => {
-				this.logger.warn(
-					`[${account.id}] [${account.role}] [${TransactionType.DEPOSIT}] FAIL ${amount}$: ${error}`
-				);
-				throw new RpcException({
-					code: GrpcStatus.CANCELLED,
-					details:
-						error instanceof Error ? error.message : String(error)
-				});
-			});
-
-		this.logger.log(
-			`[${account.id}] [${account.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$`
-		);
-
-		return {
-			...tx,
-			amount: tx.amount.toDollars(),
-			createdAt: tx.createdAt.toISOString()
-		};
 	}
 
-	public async withdrawalAmount(
-		data: WithdrawalAmountRequest
-	): Promise<WithdrawalAmountResponse> {
-		const { accountId, idempotencyKey, amount, withdrawalAccount } = data;
+	// public async checkBalance(
+	// 	data: CheckBalanceRequest
+	// ): Promise<CheckBalanceResponse> {
+	// 	const { accountId } = data;
 
-		const account = await this.accountRepo.findBy({ id: accountId });
+	// 	const account = await this.accountRepo.findBy({ id: accountId });
 
-		if (!account || account.deletedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Ваш аккаунт не существует или удален'
-			});
+	// 	if (!account || account.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.UNAUTHENTICATED,
+	// 			details: 'Аккаунт не существует'
+	// 		});
 
-		const balance = await this.balanceRepo.findBalance(account.id);
+	// 	const balance = await this.balanceRepo.findBalance(account.id);
 
-		if (!balance || balance.blockedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Счет не найден или заблокирован'
-			});
+	// 	if (!balance || balance.blockedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Счет не найден или заблокирвован'
+	// 		});
 
-		const tx = await this.balanceRepo
-			.txWithdrawal(accountId, idempotencyKey, amount, withdrawalAccount)
-			.catch(error => {
-				this.logger.warn(
-					`[${account.id}] [${account.role}] [${TransactionType.WITHDRAWAL}] FAIL ${amount}$ TO "${withdrawalAccount}": ${error}`
-				);
-				throw new RpcException({
-					code: GrpcStatus.CANCELLED,
-					details:
-						error instanceof Error ? error.message : String(error)
-				});
-			});
+	// 	return { amount: balance.amount };
+	// }
 
-		this.logger.log(
-			`[${account.id}] [${account.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$ TO "${withdrawalAccount}"`
-		);
+	// public async auditBalance(
+	// 	data: AuditBalanceRequest
+	// ): Promise<AuditBalanceResponse> {
+	// 	const { accountId, accountIdForAudit } = data;
 
-		return {
-			...tx,
-			withdrawalAccount,
-			amount: tx.amount.toDollars(),
-			createdAt: tx.createdAt.toISOString()
-		};
-	}
+	// 	const account = await this.accountRepo.findBy({ id: accountId });
 
-	public async transferAmount(
-		data: TransferAmountRequest
-	): Promise<TransferAmountResponse> {
-		const { accountId, idempotencyKey, amount, toAccountId } = data;
+	// 	if (!account || account.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.UNAUTHENTICATED,
+	// 			details: 'Ваш аккаунт не существует или удален'
+	// 		});
 
-		if (accountId === toAccountId)
-			throw new RpcException({
-				code: GrpcStatus.INVALID_ARGUMENT,
-				details: 'Нельзя переводить самому себе'
-			});
+	// 	const auditingAccount = await this.accountRepo.findBy({
+	// 		id: accountIdForAudit
+	// 	});
 
-		const [fromAccount, toAccount] = await Promise.all([
-			this.accountRepo.findBy({ id: accountId }),
-			this.accountRepo.findBy({ id: toAccountId })
-		]);
+	// 	if (!auditingAccount)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Аккаунт отправленный на аудит не существует'
+	// 		});
 
-		if (!fromAccount || fromAccount.deletedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Ваш аккаунт не существует или удален'
-			});
-		if (!toAccount || toAccount.deletedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Aккаунта получателя не существует или удален'
-			});
+	// 	const balance = await this.balanceRepo.findBalance(auditingAccount.id);
 
-		const [fromBalance, toBalance] = await Promise.all([
-			this.balanceRepo.findBalance(fromAccount.id),
-			this.balanceRepo.findBalance(toAccount.id)
-		]);
+	// 	if (!balance)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Счет не найден'
+	// 		});
 
-		if (!fromBalance || fromBalance.blockedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Ваш счет не существет или заблокирован'
-			});
-		if (!toBalance || toBalance.blockedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Счет получателя не существет или заблокирован'
-			});
+	// 	const aggregate = await this.balanceRepo.aggregateTxAmounts(
+	// 		auditingAccount.id
+	// 	);
 
-		const tx = await this.balanceRepo
-			.txTransfer(fromAccount.id, toAccount.id, idempotencyKey, amount)
-			.catch(error => {
-				this.logger.warn(
-					`[${fromAccount.id}] [${fromAccount.role}] [${TransactionType.TRANSFER_OUT}] FAIL ${amount}$ TO accountId="${toAccount.id}": ${error}`
-				);
-				throw new RpcException({
-					code: GrpcStatus.CANCELLED,
-					details:
-						error instanceof Error ? error.message : String(error)
-				});
-			});
+	// 	return {
+	// 		balance: balance.amount.toDollars(),
+	// 		aggregate: aggregate.toDollars(),
+	// 		isConsistent: balance.amount === aggregate
+	// 	};
+	// }
 
-		this.logger.log(
-			`[${fromAccount.id}] [${fromAccount.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$ TO accountId="${toAccount.id}"`
-		);
+	// public async depositAmount(
+	// 	data: DepositAmountRequest
+	// ): Promise<DepositAmountResponse> {
+	// 	const { accountId, idempotencyKey, amount } = data;
 
-		return {
-			...tx,
-			toAccountId,
-			amount: tx.amount.toDollars(),
-			createdAt: tx.createdAt.toISOString()
-		};
-	}
+	// 	const account = await this.accountRepo.findBy({ id: accountId });
 
-	public async putResetBalanceJob(
-		data: BalanceResetJobRequest
-	): Promise<StringMessage> {
-		const { accountId } = data;
+	// 	if (!account || account.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Ваш аккаунт не существует или удален'
+	// 		});
 
-		const account = await this.accountRepo.findBy({ id: accountId });
+	// 	const balance = await this.balanceRepo.findBalance(account.id);
 
-		if (!account || account.deletedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Ваш аккаунт не существует или удален'
-			});
+	// 	if (!balance || balance.blockedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Счет не найден или заблокирован'
+	// 		});
 
-		await this.jobClient.call('putResetBalanceJob', {});
+	// 	const tx = await this.balanceRepo
+	// 		.txDeposit(accountId, idempotencyKey, amount)
+	// 		.catch(error => {
+	// 			this.logger.warn(
+	// 				`[${account.id}] [${account.role}] [${TransactionType.DEPOSIT}] FAIL ${amount}$: ${error}`
+	// 			);
+	// 			throw new RpcException({
+	// 				code: GrpcStatus.CANCELLED,
+	// 				details:
+	// 					error instanceof Error ? error.message : String(error)
+	// 			});
+	// 		});
 
-		this.logger.log(
-			`[${account.id}] [${account.role}] Положил в очередь Cron job "balane-reset-all"`
-		);
+	// 	this.logger.log(
+	// 		`[${account.id}] [${account.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$`
+	// 	);
 
-		return { message: 'Job "balane-reset-all" отправлен в очередь' };
-	}
+	// 	return {
+	// 		...tx,
+	// 		amount: tx.amount.toDollars(),
+	// 		createdAt: tx.createdAt.toISOString()
+	// 	};
+	// }
 
-	public async startResetBalanceJob(
-		data: BalanceResetJobRequest
-	): Promise<StringMessage> {
-		const { accountId } = data;
+	// public async withdrawalAmount(
+	// 	data: WithdrawalAmountRequest
+	// ): Promise<WithdrawalAmountResponse> {
+	// 	const { accountId, idempotencyKey, amount, withdrawalAccount } = data;
 
-		const account = await this.accountRepo.findBy({ id: accountId });
+	// 	const account = await this.accountRepo.findBy({ id: accountId });
 
-		if (!account || account.deletedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Ваш аккаунт не существует или удален'
-			});
+	// 	if (!account || account.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Ваш аккаунт не существует или удален'
+	// 		});
 
-		await this.jobClient.call('startResetBalanceJob', {});
+	// 	const balance = await this.balanceRepo.findBalance(account.id);
 
-		this.logger.log(
-			`[${account.id}] [${account.role}] Запустил Cron job "balane-reset-all"`
-		);
+	// 	if (!balance || balance.blockedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Счет не найден или заблокирован'
+	// 		});
 
-		return { message: 'Job "balane-reset-all" запущен' };
-	}
+	// 	const tx = await this.balanceRepo
+	// 		.txWithdrawal(accountId, idempotencyKey, amount, withdrawalAccount)
+	// 		.catch(error => {
+	// 			this.logger.warn(
+	// 				`[${account.id}] [${account.role}] [${TransactionType.WITHDRAWAL}] FAIL ${amount}$ TO "${withdrawalAccount}": ${error}`
+	// 			);
+	// 			throw new RpcException({
+	// 				code: GrpcStatus.CANCELLED,
+	// 				details:
+	// 					error instanceof Error ? error.message : String(error)
+	// 			});
+	// 		});
 
-	public async stopResetBalanceJob(
-		data: BalanceResetJobRequest
-	): Promise<StringMessage> {
-		const { accountId } = data;
+	// 	this.logger.log(
+	// 		`[${account.id}] [${account.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$ TO "${withdrawalAccount}"`
+	// 	);
 
-		const account = await this.accountRepo.findBy({ id: accountId });
+	// 	return {
+	// 		...tx,
+	// 		withdrawalAccount,
+	// 		amount: tx.amount.toDollars(),
+	// 		createdAt: tx.createdAt.toISOString()
+	// 	};
+	// }
 
-		if (!account || account.deletedAt)
-			throw new RpcException({
-				code: GrpcStatus.NOT_FOUND,
-				details: 'Ваш аккаунт не существует или удален'
-			});
+	// public async transferAmount(
+	// 	data: TransferAmountRequest
+	// ): Promise<TransferAmountResponse> {
+	// 	const { accountId, idempotencyKey, amount, toAccountId } = data;
 
-		await this.jobClient.call('stopResetBalanceJob', {});
+	// 	if (accountId === toAccountId)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.INVALID_ARGUMENT,
+	// 			details: 'Нельзя переводить самому себе'
+	// 		});
 
-		this.logger.log(
-			`[${account.id}] [${account.role}] Остановил Cron job "balane-reset-all"`
-		);
+	// 	const [fromAccount, toAccount] = await Promise.all([
+	// 		this.accountRepo.findBy({ id: accountId }),
+	// 		this.accountRepo.findBy({ id: toAccountId })
+	// 	]);
 
-		return { message: 'Job "balane-reset-all" остановлен' };
-	}
+	// 	if (!fromAccount || fromAccount.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Ваш аккаунт не существует или удален'
+	// 		});
+	// 	if (!toAccount || toAccount.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Aккаунта получателя не существует или удален'
+	// 		});
 
-	// TODO здесь можно реализовать проверку API token по которому будет првоеряться что этот метод вызвал именно job-service а не другой сервис
-	public async resetAllBalances(): Promise<ResetAllBalancesResponse> {
-		const resetCounts = await this.balanceRepo.resetAllBalances();
+	// 	const [fromBalance, toBalance] = await Promise.all([
+	// 		this.balanceRepo.findBalance(fromAccount.id),
+	// 		this.balanceRepo.findBalance(toAccount.id)
+	// 	]);
 
-		this.logger.warn(`Произошло обнуление всех балансов пользователей`);
+	// 	if (!fromBalance || fromBalance.blockedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Ваш счет не существет или заблокирован'
+	// 		});
+	// 	if (!toBalance || toBalance.blockedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Счет получателя не существет или заблокирован'
+	// 		});
 
-		return { resetCounts };
-	}
+	// 	const tx = await this.balanceRepo
+	// 		.txTransfer(fromAccount.id, toAccount.id, idempotencyKey, amount)
+	// 		.catch(error => {
+	// 			this.logger.warn(
+	// 				`[${fromAccount.id}] [${fromAccount.role}] [${TransactionType.TRANSFER_OUT}] FAIL ${amount}$ TO accountId="${toAccount.id}": ${error}`
+	// 			);
+	// 			throw new RpcException({
+	// 				code: GrpcStatus.CANCELLED,
+	// 				details:
+	// 					error instanceof Error ? error.message : String(error)
+	// 			});
+	// 		});
+
+	// 	this.logger.log(
+	// 		`[${fromAccount.id}] [${fromAccount.role}] [${tx.type}] SUCCESS ${tx.amount.toDollars()}$ TO accountId="${toAccount.id}"`
+	// 	);
+
+	// 	return {
+	// 		...tx,
+	// 		toAccountId,
+	// 		amount: tx.amount.toDollars(),
+	// 		createdAt: tx.createdAt.toISOString()
+	// 	};
+	// }
+
+	// public async putResetBalanceJob(
+	// 	data: BalanceResetJobRequest
+	// ): Promise<StringMessage> {
+	// 	const { accountId } = data;
+
+	// 	const account = await this.accountRepo.findBy({ id: accountId });
+
+	// 	if (!account || account.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Ваш аккаунт не существует или удален'
+	// 		});
+
+	// 	await this.jobClient.call('putResetBalanceJob', {});
+
+	// 	this.logger.log(
+	// 		`[${account.id}] [${account.role}] Положил в очередь Cron job "balane-reset-all"`
+	// 	);
+
+	// 	return { message: 'Job "balane-reset-all" отправлен в очередь' };
+	// }
+
+	// public async startResetBalanceJob(
+	// 	data: BalanceResetJobRequest
+	// ): Promise<StringMessage> {
+	// 	const { accountId } = data;
+
+	// 	const account = await this.accountRepo.findBy({ id: accountId });
+
+	// 	if (!account || account.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Ваш аккаунт не существует или удален'
+	// 		});
+
+	// 	await this.jobClient.call('startResetBalanceJob', {});
+
+	// 	this.logger.log(
+	// 		`[${account.id}] [${account.role}] Запустил Cron job "balane-reset-all"`
+	// 	);
+
+	// 	return { message: 'Job "balane-reset-all" запущен' };
+	// }
+
+	// public async stopResetBalanceJob(
+	// 	data: BalanceResetJobRequest
+	// ): Promise<StringMessage> {
+	// 	const { accountId } = data;
+
+	// 	const account = await this.accountRepo.findBy({ id: accountId });
+
+	// 	if (!account || account.deletedAt)
+	// 		throw new RpcException({
+	// 			code: GrpcStatus.NOT_FOUND,
+	// 			details: 'Ваш аккаунт не существует или удален'
+	// 		});
+
+	// 	await this.jobClient.call('stopResetBalanceJob', {});
+
+	// 	this.logger.log(
+	// 		`[${account.id}] [${account.role}] Остановил Cron job "balane-reset-all"`
+	// 	);
+
+	// 	return { message: 'Job "balane-reset-all" остановлен' };
+	// }
+
+	// // TODO здесь можно реализовать проверку API token по которому будет првоеряться что этот метод вызвал именно job-service а не другой сервис
+	// public async resetAllBalances(): Promise<ResetAllBalancesResponse> {
+	// 	const resetCounts = await this.balanceRepo.resetAllBalances();
+
+	// 	this.logger.warn(`Произошло обнуление всех балансов пользователей`);
+
+	// 	return { resetCounts };
+	// }
 }

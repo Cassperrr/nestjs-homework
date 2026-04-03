@@ -1,7 +1,6 @@
 import { Global, Module } from '@nestjs/common';
 
 import { GrpcClientsModule } from './grpc';
-import { KafkaModule } from './kafka';
 import { PrismaModule } from './prisma';
 import { RedisModule } from './redis';
 import { RmqClientsModule } from './rmq';

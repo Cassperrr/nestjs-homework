@@ -54,10 +54,10 @@ export const AnyNull = runtime.AnyNull;
 
 export const ModelName = {
 	Account: 'Account',
-	Balance: 'Balance',
-	Transaction: 'Transaction',
 	Profile: 'Profile',
-	Avatar: 'Avatar'
+	Avatar: 'Avatar',
+	Balance: 'Balance',
+	ProcessedEvent: 'ProcessedEvent'
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -91,32 +91,6 @@ export const AccountScalarFieldEnum = {
 export type AccountScalarFieldEnum =
 	(typeof AccountScalarFieldEnum)[keyof typeof AccountScalarFieldEnum];
 
-export const BalanceScalarFieldEnum = {
-	id: 'id',
-	amount: 'amount',
-	accountId: 'accountId',
-	createdAt: 'createdAt',
-	updatedAt: 'updatedAt',
-	blockedAt: 'blockedAt'
-} as const;
-
-export type BalanceScalarFieldEnum =
-	(typeof BalanceScalarFieldEnum)[keyof typeof BalanceScalarFieldEnum];
-
-export const TransactionScalarFieldEnum = {
-	id: 'id',
-	amount: 'amount',
-	type: 'type',
-	idempotencyKey: 'idempotencyKey',
-	withdrawalAccount: 'withdrawalAccount',
-	referenceId: 'referenceId',
-	accountId: 'accountId',
-	createdAt: 'createdAt'
-} as const;
-
-export type TransactionScalarFieldEnum =
-	(typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum];
-
 export const ProfileScalarFieldEnum = {
 	id: 'id',
 	firstName: 'firstName',
@@ -142,6 +116,29 @@ export const AvatarScalarFieldEnum = {
 
 export type AvatarScalarFieldEnum =
 	(typeof AvatarScalarFieldEnum)[keyof typeof AvatarScalarFieldEnum];
+
+export const BalanceScalarFieldEnum = {
+	id: 'id',
+	amount: 'amount',
+	currency: 'currency',
+	accountId: 'accountId',
+	createdAt: 'createdAt',
+	updatedAt: 'updatedAt',
+	blockedAt: 'blockedAt'
+} as const;
+
+export type BalanceScalarFieldEnum =
+	(typeof BalanceScalarFieldEnum)[keyof typeof BalanceScalarFieldEnum];
+
+export const ProcessedEventScalarFieldEnum = {
+	id: 'id',
+	idempotencyKey: 'idempotencyKey',
+	topic: 'topic',
+	processedAt: 'processedAt'
+} as const;
+
+export type ProcessedEventScalarFieldEnum =
+	(typeof ProcessedEventScalarFieldEnum)[keyof typeof ProcessedEventScalarFieldEnum];
 
 export const SortOrder = {
 	asc: 'asc',

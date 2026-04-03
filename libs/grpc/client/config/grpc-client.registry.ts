@@ -5,6 +5,7 @@ import { AVATAR_PACKAGE_NAME } from 'contracts/gen/avatar';
 import { BALANCE_PACKAGE_NAME } from 'contracts/gen/balance';
 import { JOB_PACKAGE_NAME } from 'contracts/gen/job';
 import { PROFILE_PACKAGE_NAME } from 'contracts/gen/profile';
+import { TRANSACTION_PACKAGE_NAME } from 'contracts/gen/transaction';
 import { USERS_PACKAGE_NAME } from 'contracts/gen/users';
 
 export const GRPC_CLIENTS = {
@@ -66,6 +67,16 @@ export const GRPC_CLIENTS = {
 			timeoutMs: 'USER_GRPC_AWAIT_PONG_MS',
 			deadlineSec: 'USER_GRPC_DEADLINE_SECONDS',
 			url: 'USER_GRPC_URL'
+		}
+	},
+	[TRANSACTION_PACKAGE_NAME]: {
+		package: TRANSACTION_PACKAGE_NAME,
+		protoPath: PROTO_PATHS.TRANSACTION,
+		env: {
+			timeMs: 'TRANSACTION_GRPC_PING_TIME_MS',
+			timeoutMs: 'TRANSACTION_GRPC_AWAIT_PONG_MS',
+			deadlineSec: 'TRANSACTION_GRPC_DEADLINE_SECONDS',
+			url: 'TRANSACTION_GRPC_URL'
 		}
 	},
 	[JOB_PACKAGE_NAME]: {

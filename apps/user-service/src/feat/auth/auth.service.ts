@@ -23,7 +23,7 @@ import type {
 	TokensResponse,
 	VerifyRequest
 } from 'contracts/gen/auth';
-import type { OtpCodeResponse, StringMessage } from 'contracts/gen/shared';
+import type { StringMessage } from 'contracts/gen/shared';
 import { OtpKey, Role } from 'shared';
 
 @Injectable()

@@ -4,12 +4,14 @@ import { ACCOUNT_PACKAGE_NAME } from 'contracts/gen/account';
 import { AUTH_PACKAGE_NAME } from 'contracts/gen/auth';
 import { BALANCE_PACKAGE_NAME } from 'contracts/gen/balance';
 import { PROFILE_PACKAGE_NAME } from 'contracts/gen/profile';
+import { TRANSACTION_PACKAGE_NAME } from 'contracts/gen/transaction';
 import { USERS_PACKAGE_NAME } from 'contracts/gen/users';
 
 import { AccountClientGrpc } from './account-client.grpc';
 import { AuthClientGrpc } from './auth-client.grpc';
 import { BalanceClientGrpc } from './balance-client.grpc';
 import { ProfileClientGrpc } from './profile-client.grpc';
+import { TransactionClientGrpc } from './transaction-client.grpc';
 import { UsersClientGrpc } from './users-client.grpc';
 
 @Module({
@@ -19,7 +21,8 @@ import { UsersClientGrpc } from './users-client.grpc';
 			ACCOUNT_PACKAGE_NAME,
 			PROFILE_PACKAGE_NAME,
 			USERS_PACKAGE_NAME,
-			BALANCE_PACKAGE_NAME
+			BALANCE_PACKAGE_NAME,
+			TRANSACTION_PACKAGE_NAME
 		])
 	],
 	providers: [
@@ -27,14 +30,16 @@ import { UsersClientGrpc } from './users-client.grpc';
 		AccountClientGrpc,
 		ProfileClientGrpc,
 		UsersClientGrpc,
-		BalanceClientGrpc
+		BalanceClientGrpc,
+		TransactionClientGrpc
 	],
 	exports: [
 		AuthClientGrpc,
 		AccountClientGrpc,
 		ProfileClientGrpc,
 		UsersClientGrpc,
-		BalanceClientGrpc
+		BalanceClientGrpc,
+		TransactionClientGrpc
 	]
 })
 export class GrpcClientsModule {}

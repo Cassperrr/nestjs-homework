@@ -3,7 +3,7 @@ import { PrismaPg } from '@prisma/adapter-pg';
 import argon2 from 'argon2';
 import dotenv from 'dotenv';
 import { resolve } from 'path';
-import { Role } from 'shared';
+import { Currency, Role } from 'shared';
 import { uuidv7 } from 'uuidv7';
 
 import { PrismaClient } from '../generated/client';
@@ -135,9 +135,12 @@ async function main() {
 				isVerified: true,
 				role: Role.USER,
 				balance: {
-					create: {
-						id: uuidv7(),
-						amount: 0n
+					createMany: {
+						data: [
+							{ id: uuidv7(), currency: Currency.RUB },
+							{ id: uuidv7(), currency: Currency.USD },
+							{ id: uuidv7(), currency: Currency.USDT }
+						]
 					}
 				},
 				...(i < WITH_PROFILE

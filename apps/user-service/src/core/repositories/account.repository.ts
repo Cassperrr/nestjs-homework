@@ -4,6 +4,7 @@ import type {
 	PrismaClient
 } from '@user-service/prisma/generated/client';
 import { InjectPrismaClient } from 'libs/prisma';
+import { Currency } from 'shared';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
@@ -22,8 +23,12 @@ export class AccountRepository {
 				id: uuidv7(),
 				...account,
 				balance: {
-					create: {
-						id: uuidv7()
+					createMany: {
+						data: [
+							{ id: uuidv7(), currency: Currency.RUB },
+							{ id: uuidv7(), currency: Currency.USD },
+							{ id: uuidv7(), currency: Currency.USDT }
+						]
 					}
 				}
 			},

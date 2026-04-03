@@ -9,7 +9,7 @@ export class TransferAmountResponse {
 	readonly id: string;
 
 	@ApiProperty({
-		description: 'Сумма перевода USD',
+		description: 'Сумма перевода',
 		example: '1000.50'
 	})
 	readonly amount: string;

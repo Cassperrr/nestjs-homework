@@ -10,7 +10,7 @@ import {
 
 export class TransferAmountRequest {
 	@ApiProperty({
-		description: 'Сумма перевода в USD',
+		description: 'Сумма перевода',
 		example: 10.5
 	})
 	@IsNotEmpty({ message: 'Сумму нельзя оставлять пустой' })
@@ -24,7 +24,7 @@ export class TransferAmountRequest {
 	readonly amount: number;
 
 	@ApiProperty({
-		description: 'Account Id получателя USD',
+		description: 'Account Id получателя',
 		example: 'uuid'
 	})
 	@IsNotEmpty({ message: 'Account Id получателя должен быть заполнен' })

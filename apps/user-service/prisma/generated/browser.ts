@@ -22,16 +22,6 @@ export * from './enums.js';
  */
 export type Account = Prisma.AccountModel;
 /**
- * Model Balance
- *
- */
-export type Balance = Prisma.BalanceModel;
-/**
- * Model Transaction
- *
- */
-export type Transaction = Prisma.TransactionModel;
-/**
  * Model Profile
  *
  */
@@ -41,3 +31,13 @@ export type Profile = Prisma.ProfileModel;
  *
  */
 export type Avatar = Prisma.AvatarModel;
+/**
+ * Model Balance
+ *
+ */
+export type Balance = Prisma.BalanceModel;
+/**
+ * Model ProcessedEvent
+ *
+ */
+export type ProcessedEvent = Prisma.ProcessedEventModel;

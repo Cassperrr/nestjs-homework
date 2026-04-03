@@ -1,17 +1,16 @@
 import { createGrpcController } from '@libs/grpc';
+import { ACCESS_LIST } from '@user-service/src/config';
 import { ACCOUNT_SERVICE_NAME } from 'contracts/gen/account';
 
 import { AccountService } from './account.service';
-
-const GATEWAY_ACCESS_TOKEN = process.env.GATEWAY_ACCESS_TOKEN as string;
 
 export const AccountController = createGrpcController(
 	ACCOUNT_SERVICE_NAME,
 	AccountService,
 	[],
 	{
-		changePassword: [GATEWAY_ACCESS_TOKEN],
-		confirmPassword: [GATEWAY_ACCESS_TOKEN],
-		delete: [GATEWAY_ACCESS_TOKEN]
+		changePassword: [ACCESS_LIST.gateway],
+		confirmPassword: [ACCESS_LIST.gateway],
+		delete: [ACCESS_LIST.gateway]
 	}
 );

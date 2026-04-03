@@ -8,8 +8,8 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Account.js';
-export type * from './models/Balance.js';
-export type * from './models/Transaction.js';
 export type * from './models/Profile.js';
 export type * from './models/Avatar.js';
+export type * from './models/Balance.js';
+export type * from './models/ProcessedEvent.js';
 export type * from './commonInputTypes.js';

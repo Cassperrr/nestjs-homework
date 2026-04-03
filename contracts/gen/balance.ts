@@ -12,12 +12,31 @@ import { StringMessage } from './shared';
 
 export const protobufPackage = 'balance';
 
-export interface GetMyBalanceRequest {
+export interface Balance {
+	amount: string;
+	currency: string;
+	blockedAt?: string | undefined;
+}
+
+export interface GetMyBalancesRequest {
 	accountId: string;
 }
 
-export interface GetMyBalanceResponse {
-	balance: string;
+export interface GetMyBalancesResponse {
+	balances: Balance[];
+}
+
+export interface ValidationAccountRequest {
+	accountId: string;
+	currency: string;
+}
+
+export interface CheckBalanceRequest {
+	accountId: string;
+}
+
+export interface CheckBalanceResponse {
+	amount: bigint;
 }
 
 export interface AuditBalanceRequest {
@@ -85,9 +104,15 @@ export interface ResetAllBalancesResponse {
 export const BALANCE_PACKAGE_NAME = 'balance';
 
 export interface BalanceServiceClient {
-	getMyBalance(
-		request: GetMyBalanceRequest
-	): Observable<GetMyBalanceResponse>;
+	getMyBalances(
+		request: GetMyBalancesRequest
+	): Observable<GetMyBalancesResponse>;
+
+	validationAccount(request: ValidationAccountRequest): Observable<Empty>;
+
+	checkBalance(
+		request: CheckBalanceRequest
+	): Observable<CheckBalanceResponse>;
 
 	auditBalance(
 		request: AuditBalanceRequest
@@ -121,12 +146,21 @@ export interface BalanceServiceClient {
 }
 
 export interface BalanceServiceController {
-	getMyBalance(
-		request: GetMyBalanceRequest
+	getMyBalances(
+		request: GetMyBalancesRequest
 	):
-		| Promise<GetMyBalanceResponse>
-		| Observable<GetMyBalanceResponse>
-		| GetMyBalanceResponse;
+		| Promise<GetMyBalancesResponse>
+		| Observable<GetMyBalancesResponse>
+		| GetMyBalancesResponse;
+
+	validationAccount(request: ValidationAccountRequest): void | Promise<void>;
+
+	checkBalance(
+		request: CheckBalanceRequest
+	):
+		| Promise<CheckBalanceResponse>
+		| Observable<CheckBalanceResponse>
+		| CheckBalanceResponse;
 
 	auditBalance(
 		request: AuditBalanceRequest
@@ -179,7 +213,9 @@ export interface BalanceServiceController {
 export function BalanceServiceControllerMethods() {
 	return function (constructor: Function) {
 		const grpcMethods: string[] = [
-			'getMyBalance',
+			'getMyBalances',
+			'validationAccount',
+			'checkBalance',
 			'auditBalance',
 			'depositAmount',
 			'withdrawalAmount',

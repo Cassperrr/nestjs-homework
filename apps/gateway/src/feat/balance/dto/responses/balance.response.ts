@@ -1,9 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class BalanceResponse {
+class BalanceResponse {
 	@ApiProperty({
-		description: 'Баланс пользователя USD',
-		example: '101.1'
+		description: 'Количество средств',
+		example: '3000.1'
 	})
-	readonly balance: string;
+	readonly amount: string;
+
+	@ApiProperty({
+		description: 'Валюта',
+		example: 'RUB'
+	})
+	readonly currency: string;
+
+	@ApiProperty({
+		description: 'Дата блокировки (если есть)',
+		example: '2024-01-01T00:00:00.000Z',
+		required: false,
+		nullable: true
+	})
+	readonly blockedAt?: string | undefined;
+}
+
+export class GetMyBalancesResponse {
+	@ApiProperty({
+		type: [BalanceResponse]
+	})
+	readonly balances: BalanceResponse[];
 }

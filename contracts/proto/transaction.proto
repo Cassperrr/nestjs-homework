@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package transaction;
+
+service TransactionService {
+  rpc DepositRub (DepositRubRequest) returns (DepositRubResponse);
+}
+
+message DepositRubRequest {
+  string account_id = 1;
+  string idempotency_key = 2;
+  uint64 amount = 3;
+}
+
+message DepositRubResponse {
+  string url = 1;
+}

@@ -10,7 +10,7 @@ import {
 
 export class WithdrawalAmountRequest {
 	@ApiProperty({
-		description: 'Сумма вывода в USD',
+		description: 'Сумма вывода',
 		example: 10.5
 	})
 	@IsNotEmpty({ message: 'Сумму нельзя оставлять пустой' })
@@ -24,7 +24,7 @@ export class WithdrawalAmountRequest {
 	readonly amount: number;
 
 	@ApiProperty({
-		description: 'Счет банка для вывода USD',
+		description: 'Счет банка для вывода',
 		example: '2200 3405 4567 3234'
 	})
 	@IsNotEmpty({ message: 'Счет в банке для вывода должен быть заполнен' })

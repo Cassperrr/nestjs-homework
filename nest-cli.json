@@ -61,6 +61,8 @@
 			"entryFile": "main",
 			"sourceRoot": "apps/transaction-service/src",
 			"compilerOptions": {
+				"webpack": true,
+				"webpackConfigPath": "apps/transaction-service/webpack.config.cjs",
 				"tsConfigPath": "apps/transaction-service/tsconfig.app.json"
 			}
 		},

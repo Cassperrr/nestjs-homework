@@ -17,6 +17,13 @@ export const generalSchema = z.object({
 	JOB_GRPC_AWAIT_PONG_MS: z.coerce.number().min(1000),
 	JOB_GRPC_DEADLINE_SECONDS: z.coerce.number().min(1),
 
+	TRANSACTION_GRPC_HOST: z.string().nonempty(),
+	TRANSACTION_GRPC_PORT: z.coerce.number().min(1).max(65535),
+	TRANSACTION_GRPC_URL: z.string().nonempty(),
+	TRANSACTION_GRPC_PING_TIME_MS: z.coerce.number().min(1000),
+	TRANSACTION_GRPC_AWAIT_PONG_MS: z.coerce.number().min(1000),
+	TRANSACTION_GRPC_DEADLINE_SECONDS: z.coerce.number().min(1),
+
 	FILE_SERVICE_HOST: z.string().nonempty(),
 	FILE_SERVICE_PORT: z.coerce.number().min(1).max(65535),
 

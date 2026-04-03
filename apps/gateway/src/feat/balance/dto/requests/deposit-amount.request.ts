@@ -3,7 +3,7 @@ import { IsNotEmpty, IsNumber, IsPositive, Max, Min } from 'class-validator';
 
 export class DepositAmountRequest {
 	@ApiProperty({
-		description: 'Сумма внесения в USD',
+		description: 'Сумма внесения',
 		example: 10.5
 	})
 	@IsNotEmpty({ message: 'Сумму нельзя оставлять пустой' })
@@ -12,8 +12,8 @@ export class DepositAmountRequest {
 		{ message: 'Максимум 2 знака после запятой' }
 	)
 	@IsPositive({ message: 'Сумма должна быть положительной' })
-	@Min(0.01, { message: 'Минимальная сумма $0.01' })
-	@Max(10000, { message: 'Максимальная сумма $10,000' })
+	@Min(10, { message: 'Минимальная сумма 10' })
+	@Max(10000, { message: 'Максимальная сумма 10,000' })
 	readonly amount: number;
 
 	get amountInCents(): bigint {

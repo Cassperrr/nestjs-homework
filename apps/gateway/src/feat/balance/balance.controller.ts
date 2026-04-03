@@ -1,5 +1,8 @@
 import { AccountId, IdempotencyKey, Protected } from '@gateway/src/common';
-import { BalanceClientGrpc } from '@gateway/src/infra/grpc';
+import {
+	BalanceClientGrpc,
+	TransactionClientGrpc
+} from '@gateway/src/infra/grpc';
 import {
 	Body,
 	Controller,
@@ -24,9 +27,9 @@ import {
 import {
 	AuditBalanceRequest,
 	AuditBalanceResponse,
-	BalanceResponse,
 	DepositAmountRequest,
 	DepositAmountResponse,
+	GetMyBalancesResponse,
 	TransferAmountRequest,
 	TransferAmountResponse,
 	WithdrawalAmountRequest,
@@ -35,7 +38,10 @@ import {
 
 @Controller('balance')
 export class BalanceController {
-	public constructor(private readonly client: BalanceClientGrpc) {}
+	public constructor(
+		private readonly balanceClient: BalanceClientGrpc,
+		private readonly txClient: TransactionClientGrpc
+	) {}
 
 	@ApiGetBalance()
 	@Protected()
@@ -43,92 +49,92 @@ export class BalanceController {
 	@HttpCode(HttpStatus.OK)
 	public getMyBalance(
 		@AccountId() accountId: string
-	): Promise<BalanceResponse> {
-		return this.client.call('getMyBalance', { accountId });
-	}
-
-	@ApiAudit()
-	@Protected()
-	@Get('audit')
-	@HttpCode(HttpStatus.OK)
-	public auditBalance(
-		@AccountId() accountId: string,
-		@Query() dto: AuditBalanceRequest
-	): Promise<AuditBalanceResponse> {
-		return this.client.call('auditBalance', { accountId, ...dto });
+	): Promise<GetMyBalancesResponse> {
+		return this.balanceClient.call('getMyBalances', { accountId });
 	}
 
 	@ApiDeposit()
 	@Protected()
-	@Post('deposit')
+	@Post('deposit/rub')
 	@HttpCode(HttpStatus.CREATED)
 	public deposit(
 		@AccountId() accountId: string,
 		@IdempotencyKey() idempotencyKey: string,
 		@Body() dto: DepositAmountRequest
 	): Promise<DepositAmountResponse> {
-		return this.client.call('depositAmount', {
+		return this.txClient.call('depositRub', {
 			accountId,
 			idempotencyKey,
 			amount: dto.amountInCents
 		});
 	}
 
-	@ApiWithdrawn()
-	@Protected()
-	@Post('withdrawn')
-	@HttpCode(HttpStatus.CREATED)
-	public withdrawn(
-		@AccountId() accountId: string,
-		@IdempotencyKey() idempotencyKey: string,
-		@Body() dto: WithdrawalAmountRequest
-	): Promise<WithdrawalAmountResponse> {
-		return this.client.call('withdrawalAmount', {
-			accountId,
-			idempotencyKey,
-			amount: dto.amountInCents,
-			withdrawalAccount: dto.withdrawalAccount
-		});
-	}
+	// @ApiAudit()
+	// @Protected()
+	// @Get('audit')
+	// @HttpCode(HttpStatus.OK)
+	// public auditBalance(
+	// 	@AccountId() accountId: string,
+	// 	@Query() dto: AuditBalanceRequest
+	// ): Promise<AuditBalanceResponse> {
+	// 	return this.client.call('auditBalance', { accountId, ...dto });
+	// }
 
-	@ApiTransfer()
-	@Protected()
-	@Post('transfer')
-	@HttpCode(HttpStatus.CREATED)
-	public transfer(
-		@AccountId() accountId: string,
-		@IdempotencyKey() idempotencyKey: string,
-		@Body() dto: TransferAmountRequest
-	): Promise<TransferAmountResponse> {
-		return this.client.call('transferAmount', {
-			accountId,
-			idempotencyKey,
-			amount: dto.amountInCents,
-			toAccountId: dto.toAccountId
-		});
-	}
+	// @ApiWithdrawn()
+	// @Protected()
+	// @Post('withdrawn')
+	// @HttpCode(HttpStatus.CREATED)
+	// public withdrawn(
+	// 	@AccountId() accountId: string,
+	// 	@IdempotencyKey() idempotencyKey: string,
+	// 	@Body() dto: WithdrawalAmountRequest
+	// ): Promise<WithdrawalAmountResponse> {
+	// 	return this.client.call('withdrawalAmount', {
+	// 		accountId,
+	// 		idempotencyKey,
+	// 		amount: dto.amountInCents,
+	// 		withdrawalAccount: dto.withdrawalAccount
+	// 	});
+	// }
 
-	@ApiReset()
-	@Protected()
-	@Post('put-reset-job')
-	@HttpCode(HttpStatus.ACCEPTED)
-	public async putResetBalanceJob(@AccountId() accountId: string) {
-		return this.client.call('putResetBalanceJob', { accountId });
-	}
+	// @ApiTransfer()
+	// @Protected()
+	// @Post('transfer')
+	// @HttpCode(HttpStatus.CREATED)
+	// public transfer(
+	// 	@AccountId() accountId: string,
+	// 	@IdempotencyKey() idempotencyKey: string,
+	// 	@Body() dto: TransferAmountRequest
+	// ): Promise<TransferAmountResponse> {
+	// 	return this.client.call('transferAmount', {
+	// 		accountId,
+	// 		idempotencyKey,
+	// 		amount: dto.amountInCents,
+	// 		toAccountId: dto.toAccountId
+	// 	});
+	// }
 
-	@ApiStartCron()
-	@Protected()
-	@Post('start-reset-job')
-	@HttpCode(HttpStatus.ACCEPTED)
-	public startResetBalanceJob(@AccountId() accountId: string) {
-		return this.client.call('startResetBalanceJob', { accountId });
-	}
+	// @ApiReset()
+	// @Protected()
+	// @Post('put-reset-job')
+	// @HttpCode(HttpStatus.ACCEPTED)
+	// public async putResetBalanceJob(@AccountId() accountId: string) {
+	// 	return this.client.call('putResetBalanceJob', { accountId });
+	// }
 
-	@ApiStopCron()
-	@Protected()
-	@Post('stop-reset-job')
-	@HttpCode(HttpStatus.ACCEPTED)
-	public stopResetBalanceJob(@AccountId() accountId: string) {
-		return this.client.call('stopResetBalanceJob', { accountId });
-	}
+	// @ApiStartCron()
+	// @Protected()
+	// @Post('start-reset-job')
+	// @HttpCode(HttpStatus.ACCEPTED)
+	// public startResetBalanceJob(@AccountId() accountId: string) {
+	// 	return this.client.call('startResetBalanceJob', { accountId });
+	// }
+
+	// @ApiStopCron()
+	// @Protected()
+	// @Post('stop-reset-job')
+	// @HttpCode(HttpStatus.ACCEPTED)
+	// public stopResetBalanceJob(@AccountId() accountId: string) {
+	// 	return this.client.call('stopResetBalanceJob', { accountId });
+	// }
 }

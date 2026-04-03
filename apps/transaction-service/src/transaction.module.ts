@@ -1,11 +1,27 @@
 import { Module } from '@nestjs/common';
 
-import { TransactionController } from './transaction.controller';
-import { TransactionService } from './transaction.service';
+import { ConfigModule } from './config';
+import { InfraModule } from './infra';
+import { IntegrateModule } from './integrate';
+import {
+	OutboxRepository,
+	TransactionGrpcService,
+	TransactionRepository,
+	YookassaWebhookService
+} from './providers';
+import { OutboxWorker } from './providers/outbox';
+import { TransactionGrpcController } from './transaction-grpc.controller';
+import { TransactionWebhookController } from './transaction-webhook.controller';
 
 @Module({
-	imports: [],
-	controllers: [TransactionController],
-	providers: [TransactionService]
+	imports: [ConfigModule, InfraModule, IntegrateModule],
+	controllers: [TransactionGrpcController, TransactionWebhookController],
+	providers: [
+		TransactionRepository,
+		OutboxRepository,
+		TransactionGrpcService,
+		YookassaWebhookService,
+		OutboxWorker
+	]
 })
 export class TransactionModule {}

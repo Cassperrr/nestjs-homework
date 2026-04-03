@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AuditBalanceResponse {
 	@ApiProperty({
-		description: 'Баланс пользователя USD',
+		description: 'Баланс пользователя',
 		example: '101.1'
 	})
 	readonly balance: string;
