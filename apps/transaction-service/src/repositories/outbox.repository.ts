@@ -29,6 +29,20 @@ export class OutboxRepository {
 		});
 	}
 
+	public switchEventToUnprocessed(id: string) {
+		return this.prisma.outboxEvent.update({
+			where: { id },
+			data: {
+				processed: false,
+				retryCount: { increment: 1 },
+				processedAt: null
+			},
+			select: {
+				retryCount: true
+			}
+		});
+	}
+
 	public switchEventToFailed(id: string) {
 		return this.prisma.outboxEvent.update({
 			where: { id },

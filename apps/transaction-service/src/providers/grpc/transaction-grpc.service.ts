@@ -3,6 +3,7 @@ import { rethrowGrpcError } from '@libs/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { BalanceClientGrpc } from '@transaction-service/src/infra';
+import { TransactionRepository } from '@transaction-service/src/repositories';
 import type {
 	DepositRubRequest,
 	DepositRubResponse
@@ -16,8 +17,6 @@ import {
 } from 'shared';
 import 'shared/extensions/bigint.extension';
 import { uuidv7 } from 'uuidv7';
-
-import { TransactionRepository } from '../repositories';
 
 @Injectable()
 export class TransactionGrpcService {

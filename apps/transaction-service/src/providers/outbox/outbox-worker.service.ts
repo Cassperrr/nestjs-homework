@@ -7,9 +7,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 import type { OutboxEvent } from '@transaction-service/prisma/generated/client';
 import type { TxServiceEnv } from '@transaction-service/src/config';
+import { OutboxRepository } from '@transaction-service/src/repositories';
 import { KafkaProducerService, KafkaTopic } from 'libs/kafka';
-
-import { OutboxRepository } from '../repositories';
 
 @Injectable()
 export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
@@ -18,7 +17,6 @@ export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 	private isProcessing = false;
 
 	private readonly BATCH_SIZE: number;
-	private readonly MAX_RETRY: number;
 	private readonly POLL_INTERVAL_MS: number;
 
 	public constructor(
@@ -27,7 +25,6 @@ export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 		private readonly config: ConfigService<TxServiceEnv, true>
 	) {
 		this.BATCH_SIZE = this.config.get('BATCH_SIZE', { infer: true });
-		this.MAX_RETRY = this.config.get('MAX_RETRY', { infer: true });
 		this.POLL_INTERVAL_MS = this.config.get('POLL_INTERVAL_MS', {
 			infer: true
 		});
@@ -74,7 +71,7 @@ export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 	private async processEvent(event: OutboxEvent): Promise<void> {
 		try {
 			await this.kafkaProducer.publish(event.topic as KafkaTopic, {
-				key: event.transactionId,
+				key: event.id,
 				value: event.payload
 			});
 
@@ -86,21 +83,6 @@ export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 		} catch (error) {
 			// если ошибка бд или кафки событие никак не отмечаем оно должно остаться прежним даже с дублем в кафке (идемпотность на уровне user-service), оно обработается в следующий раз
 			this.logger.warn(`Event ${event.id} failed`, error);
-			// // const updated = await this.outboxRepo.incrementRetryCount(event.id);
-			// // const isFailed = updated.retryCount >= this.MAX_RETRY;
-
-			// if (isFailed) {
-			// 	// await this.outboxRepo.switchEventToFailed(event.id);
-			// 	this.logger.error(
-			// 		`Event ${event.id} FAILED after ${this.MAX_RETRY} retries. Manual intervention required.`,
-			// 		error
-			// 	);
-			// 	// TODO: алерт
-			// } else {
-			// 	this.logger.warn(
-			// 		`Event ${event.id} failed, retry ${updated.retryCount}/${this.MAX_RETRY}`
-			// 	);
-			// }
 		}
 	}
 }

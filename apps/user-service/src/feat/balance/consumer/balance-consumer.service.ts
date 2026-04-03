@@ -4,13 +4,17 @@ import type { EachMessagePayload } from 'kafkajs';
 import {
 	AbstractKafkaConsumerService,
 	type DepositCompletedEvent,
+	KafkaProducerService,
 	type KafkaTopic,
 	KafkaTopics
 } from 'libs/kafka';
 
 @Injectable()
 export class BalanceConsumerService extends AbstractKafkaConsumerService {
-	public constructor(private readonly balanceRepo: BalanceRepository) {
+	public constructor(
+		private readonly balanceRepo: BalanceRepository,
+		private readonly kafkaProducer: KafkaProducerService
+	) {
 		super();
 	}
 
@@ -31,10 +35,10 @@ export class BalanceConsumerService extends AbstractKafkaConsumerService {
 	}
 
 	private async handleDepositCompleted(event: DepositCompletedEvent) {
-		const { accountId, amount, currency, transactionId } = event;
+		const { accountId, amount, currency, eventId, transactionId } = event;
 
 		this.logger.log(
-			`[accountId=${accountId}] [transactionId=${transactionId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Обработка начисления баланса...`
+			`[accountId=${accountId}] [eventId=${eventId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Обработка начисления баланса...`
 		);
 		try {
 			const updated = await this.balanceRepo.deposit(
@@ -48,17 +52,31 @@ export class BalanceConsumerService extends AbstractKafkaConsumerService {
 			if (!updated) throw Error('Обновленный объект баланса не получен');
 
 			// здесь публикация успеха
+			await this.kafkaProducer.publish(
+				KafkaTopics.BALANCE_UPDATED_SUCCESS,
+				{
+					key: eventId,
+					value: { eventId, transactionId }
+				}
+			);
 
 			this.logger.log(
-				`[accountId=${accountId}] [transactionId=${transactionId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Баланс успешно начислен`
+				`[accountId=${accountId}] [eventId=${eventId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Баланс успешно начислен`
 			);
 		} catch (error) {
 			this.logger.log(
-				`[accountId=${accountId}] [transactionId=${transactionId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Ошибка начисления баланса`,
+				`[accountId=${accountId}] [eventId=${eventId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Ошибка начисления баланса`,
 				error
 			);
 
 			// здесь публикация провала
+			await this.kafkaProducer.publish(
+				KafkaTopics.BALANCE_UPDATED_FAILED,
+				{
+					key: eventId,
+					value: { eventId, transactionId }
+				}
+			);
 		}
 	}
 }

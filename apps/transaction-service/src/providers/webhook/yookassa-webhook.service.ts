@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { TransactionRepository } from '@transaction-service/src/repositories';
 import { YookassaService, type YookassaWebhookResponse } from 'libs/payments';
 import { TransactionStatus } from 'shared';
-
-import { TransactionRepository } from '../repositories';
 
 @Injectable()
 export class YookassaWebhookService {
@@ -92,7 +91,7 @@ export class YookassaWebhookService {
 				throw new BadRequestException();
 			});
 
-		await this.txRepo.update(payment.id, {
+		await this.txRepo.updateByPaymentId(payment.id, {
 			status: TransactionStatus.TIMEOUT
 		});
 
