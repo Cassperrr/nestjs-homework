@@ -286,10 +286,10 @@ export type OutboxEventOrderByWithRelationInput = {
 export type OutboxEventWhereUniqueInput = Prisma.AtLeast<
 	{
 		id?: string;
+		transactionId?: string;
 		AND?: Prisma.OutboxEventWhereInput | Prisma.OutboxEventWhereInput[];
 		OR?: Prisma.OutboxEventWhereInput[];
 		NOT?: Prisma.OutboxEventWhereInput | Prisma.OutboxEventWhereInput[];
-		transactionId?: Prisma.StringFilter<'OutboxEvent'> | string;
 		topic?: Prisma.StringFilter<'OutboxEvent'> | string;
 		payload?: Prisma.JsonFilter<'OutboxEvent'>;
 		processed?: Prisma.BoolFilter<'OutboxEvent'> | boolean;
@@ -310,7 +310,7 @@ export type OutboxEventWhereUniqueInput = Prisma.AtLeast<
 			Prisma.TransactionWhereInput
 		>;
 	},
-	'id'
+	'id' | 'transactionId'
 >;
 
 export type OutboxEventOrderByWithAggregationInput = {
@@ -475,14 +475,9 @@ export type OutboxEventUncheckedUpdateManyInput = {
 		| null;
 };
 
-export type OutboxEventListRelationFilter = {
-	every?: Prisma.OutboxEventWhereInput;
-	some?: Prisma.OutboxEventWhereInput;
-	none?: Prisma.OutboxEventWhereInput;
-};
-
-export type OutboxEventOrderByRelationAggregateInput = {
-	_count?: Prisma.SortOrder;
+export type OutboxEventNullableScalarRelationFilter = {
+	is?: Prisma.OutboxEventWhereInput | null;
+	isNot?: Prisma.OutboxEventWhereInput | null;
 };
 
 export type OutboxEventCountOrderByAggregateInput = {
@@ -527,114 +522,60 @@ export type OutboxEventSumOrderByAggregateInput = {
 	retryCount?: Prisma.SortOrder;
 };
 
-export type OutboxEventCreateNestedManyWithoutTransactionInput = {
-	create?:
-		| Prisma.XOR<
-				Prisma.OutboxEventCreateWithoutTransactionInput,
-				Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
-		  >
-		| Prisma.OutboxEventCreateWithoutTransactionInput[]
-		| Prisma.OutboxEventUncheckedCreateWithoutTransactionInput[];
-	connectOrCreate?:
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput[];
-	createMany?: Prisma.OutboxEventCreateManyTransactionInputEnvelope;
-	connect?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
+export type OutboxEventCreateNestedOneWithoutTransactionInput = {
+	create?: Prisma.XOR<
+		Prisma.OutboxEventCreateWithoutTransactionInput,
+		Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
+	>;
+	connectOrCreate?: Prisma.OutboxEventCreateOrConnectWithoutTransactionInput;
+	connect?: Prisma.OutboxEventWhereUniqueInput;
 };
 
-export type OutboxEventUncheckedCreateNestedManyWithoutTransactionInput = {
-	create?:
-		| Prisma.XOR<
-				Prisma.OutboxEventCreateWithoutTransactionInput,
-				Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
-		  >
-		| Prisma.OutboxEventCreateWithoutTransactionInput[]
-		| Prisma.OutboxEventUncheckedCreateWithoutTransactionInput[];
-	connectOrCreate?:
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput[];
-	createMany?: Prisma.OutboxEventCreateManyTransactionInputEnvelope;
-	connect?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
+export type OutboxEventUncheckedCreateNestedOneWithoutTransactionInput = {
+	create?: Prisma.XOR<
+		Prisma.OutboxEventCreateWithoutTransactionInput,
+		Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
+	>;
+	connectOrCreate?: Prisma.OutboxEventCreateOrConnectWithoutTransactionInput;
+	connect?: Prisma.OutboxEventWhereUniqueInput;
 };
 
-export type OutboxEventUpdateManyWithoutTransactionNestedInput = {
-	create?:
-		| Prisma.XOR<
-				Prisma.OutboxEventCreateWithoutTransactionInput,
-				Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
-		  >
-		| Prisma.OutboxEventCreateWithoutTransactionInput[]
-		| Prisma.OutboxEventUncheckedCreateWithoutTransactionInput[];
-	connectOrCreate?:
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput[];
-	upsert?:
-		| Prisma.OutboxEventUpsertWithWhereUniqueWithoutTransactionInput
-		| Prisma.OutboxEventUpsertWithWhereUniqueWithoutTransactionInput[];
-	createMany?: Prisma.OutboxEventCreateManyTransactionInputEnvelope;
-	set?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	disconnect?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	delete?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	connect?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	update?:
-		| Prisma.OutboxEventUpdateWithWhereUniqueWithoutTransactionInput
-		| Prisma.OutboxEventUpdateWithWhereUniqueWithoutTransactionInput[];
-	updateMany?:
-		| Prisma.OutboxEventUpdateManyWithWhereWithoutTransactionInput
-		| Prisma.OutboxEventUpdateManyWithWhereWithoutTransactionInput[];
-	deleteMany?:
-		| Prisma.OutboxEventScalarWhereInput
-		| Prisma.OutboxEventScalarWhereInput[];
+export type OutboxEventUpdateOneWithoutTransactionNestedInput = {
+	create?: Prisma.XOR<
+		Prisma.OutboxEventCreateWithoutTransactionInput,
+		Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
+	>;
+	connectOrCreate?: Prisma.OutboxEventCreateOrConnectWithoutTransactionInput;
+	upsert?: Prisma.OutboxEventUpsertWithoutTransactionInput;
+	disconnect?: Prisma.OutboxEventWhereInput | boolean;
+	delete?: Prisma.OutboxEventWhereInput | boolean;
+	connect?: Prisma.OutboxEventWhereUniqueInput;
+	update?: Prisma.XOR<
+		Prisma.XOR<
+			Prisma.OutboxEventUpdateToOneWithWhereWithoutTransactionInput,
+			Prisma.OutboxEventUpdateWithoutTransactionInput
+		>,
+		Prisma.OutboxEventUncheckedUpdateWithoutTransactionInput
+	>;
 };
 
-export type OutboxEventUncheckedUpdateManyWithoutTransactionNestedInput = {
-	create?:
-		| Prisma.XOR<
-				Prisma.OutboxEventCreateWithoutTransactionInput,
-				Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
-		  >
-		| Prisma.OutboxEventCreateWithoutTransactionInput[]
-		| Prisma.OutboxEventUncheckedCreateWithoutTransactionInput[];
-	connectOrCreate?:
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput
-		| Prisma.OutboxEventCreateOrConnectWithoutTransactionInput[];
-	upsert?:
-		| Prisma.OutboxEventUpsertWithWhereUniqueWithoutTransactionInput
-		| Prisma.OutboxEventUpsertWithWhereUniqueWithoutTransactionInput[];
-	createMany?: Prisma.OutboxEventCreateManyTransactionInputEnvelope;
-	set?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	disconnect?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	delete?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	connect?:
-		| Prisma.OutboxEventWhereUniqueInput
-		| Prisma.OutboxEventWhereUniqueInput[];
-	update?:
-		| Prisma.OutboxEventUpdateWithWhereUniqueWithoutTransactionInput
-		| Prisma.OutboxEventUpdateWithWhereUniqueWithoutTransactionInput[];
-	updateMany?:
-		| Prisma.OutboxEventUpdateManyWithWhereWithoutTransactionInput
-		| Prisma.OutboxEventUpdateManyWithWhereWithoutTransactionInput[];
-	deleteMany?:
-		| Prisma.OutboxEventScalarWhereInput
-		| Prisma.OutboxEventScalarWhereInput[];
+export type OutboxEventUncheckedUpdateOneWithoutTransactionNestedInput = {
+	create?: Prisma.XOR<
+		Prisma.OutboxEventCreateWithoutTransactionInput,
+		Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
+	>;
+	connectOrCreate?: Prisma.OutboxEventCreateOrConnectWithoutTransactionInput;
+	upsert?: Prisma.OutboxEventUpsertWithoutTransactionInput;
+	disconnect?: Prisma.OutboxEventWhereInput | boolean;
+	delete?: Prisma.OutboxEventWhereInput | boolean;
+	connect?: Prisma.OutboxEventWhereUniqueInput;
+	update?: Prisma.XOR<
+		Prisma.XOR<
+			Prisma.OutboxEventUpdateToOneWithWhereWithoutTransactionInput,
+			Prisma.OutboxEventUpdateWithoutTransactionInput
+		>,
+		Prisma.OutboxEventUncheckedUpdateWithoutTransactionInput
+	>;
 };
 
 export type BoolFieldUpdateOperationsInput = {
@@ -675,15 +616,7 @@ export type OutboxEventCreateOrConnectWithoutTransactionInput = {
 	>;
 };
 
-export type OutboxEventCreateManyTransactionInputEnvelope = {
-	data:
-		| Prisma.OutboxEventCreateManyTransactionInput
-		| Prisma.OutboxEventCreateManyTransactionInput[];
-	skipDuplicates?: boolean;
-};
-
-export type OutboxEventUpsertWithWhereUniqueWithoutTransactionInput = {
-	where: Prisma.OutboxEventWhereUniqueInput;
+export type OutboxEventUpsertWithoutTransactionInput = {
 	update: Prisma.XOR<
 		Prisma.OutboxEventUpdateWithoutTransactionInput,
 		Prisma.OutboxEventUncheckedUpdateWithoutTransactionInput
@@ -692,60 +625,15 @@ export type OutboxEventUpsertWithWhereUniqueWithoutTransactionInput = {
 		Prisma.OutboxEventCreateWithoutTransactionInput,
 		Prisma.OutboxEventUncheckedCreateWithoutTransactionInput
 	>;
+	where?: Prisma.OutboxEventWhereInput;
 };
 
-export type OutboxEventUpdateWithWhereUniqueWithoutTransactionInput = {
-	where: Prisma.OutboxEventWhereUniqueInput;
+export type OutboxEventUpdateToOneWithWhereWithoutTransactionInput = {
+	where?: Prisma.OutboxEventWhereInput;
 	data: Prisma.XOR<
 		Prisma.OutboxEventUpdateWithoutTransactionInput,
 		Prisma.OutboxEventUncheckedUpdateWithoutTransactionInput
 	>;
-};
-
-export type OutboxEventUpdateManyWithWhereWithoutTransactionInput = {
-	where: Prisma.OutboxEventScalarWhereInput;
-	data: Prisma.XOR<
-		Prisma.OutboxEventUpdateManyMutationInput,
-		Prisma.OutboxEventUncheckedUpdateManyWithoutTransactionInput
-	>;
-};
-
-export type OutboxEventScalarWhereInput = {
-	AND?:
-		| Prisma.OutboxEventScalarWhereInput
-		| Prisma.OutboxEventScalarWhereInput[];
-	OR?: Prisma.OutboxEventScalarWhereInput[];
-	NOT?:
-		| Prisma.OutboxEventScalarWhereInput
-		| Prisma.OutboxEventScalarWhereInput[];
-	id?: Prisma.StringFilter<'OutboxEvent'> | string;
-	transactionId?: Prisma.StringFilter<'OutboxEvent'> | string;
-	topic?: Prisma.StringFilter<'OutboxEvent'> | string;
-	payload?: Prisma.JsonFilter<'OutboxEvent'>;
-	processed?: Prisma.BoolFilter<'OutboxEvent'> | boolean;
-	retryCount?: Prisma.IntFilter<'OutboxEvent'> | number;
-	createdAt?: Prisma.DateTimeFilter<'OutboxEvent'> | Date | string;
-	processedAt?:
-		| Prisma.DateTimeNullableFilter<'OutboxEvent'>
-		| Date
-		| string
-		| null;
-	failedAt?:
-		| Prisma.DateTimeNullableFilter<'OutboxEvent'>
-		| Date
-		| string
-		| null;
-};
-
-export type OutboxEventCreateManyTransactionInput = {
-	id: string;
-	topic: string;
-	payload: Prisma.JsonNullValueInput | runtime.InputJsonValue;
-	processed?: boolean;
-	retryCount?: number;
-	createdAt?: Date | string;
-	processedAt?: Date | string | null;
-	failedAt?: Date | string | null;
 };
 
 export type OutboxEventUpdateWithoutTransactionInput = {
@@ -768,25 +656,6 @@ export type OutboxEventUpdateWithoutTransactionInput = {
 };
 
 export type OutboxEventUncheckedUpdateWithoutTransactionInput = {
-	id?: Prisma.StringFieldUpdateOperationsInput | string;
-	topic?: Prisma.StringFieldUpdateOperationsInput | string;
-	payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue;
-	processed?: Prisma.BoolFieldUpdateOperationsInput | boolean;
-	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
-	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	processedAt?:
-		| Prisma.NullableDateTimeFieldUpdateOperationsInput
-		| Date
-		| string
-		| null;
-	failedAt?:
-		| Prisma.NullableDateTimeFieldUpdateOperationsInput
-		| Date
-		| string
-		| null;
-};
-
-export type OutboxEventUncheckedUpdateManyWithoutTransactionInput = {
 	id?: Prisma.StringFieldUpdateOperationsInput | string;
 	topic?: Prisma.StringFieldUpdateOperationsInput | string;
 	payload?: Prisma.JsonNullValueInput | runtime.InputJsonValue;

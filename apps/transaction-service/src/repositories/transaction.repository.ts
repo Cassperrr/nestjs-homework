@@ -87,11 +87,13 @@ export class TransactionRepository {
 				);
 			if (row.status !== TransactionStatus.PENDING) return;
 
+			// обновляем статус транзы
 			await tx.transaction.update({
 				where: { id: row.id },
 				data: { status: TransactionStatus.COMPLETED }
 			});
 
+			// создаем событие для воркера
 			const eventId = uuidv7();
 
 			await tx.outboxEvent.create({

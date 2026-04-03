@@ -38,7 +38,7 @@ export class BalanceConsumerService extends AbstractKafkaConsumerService {
 		const { accountId, amount, currency, eventId, transactionId } = event;
 
 		this.logger.log(
-			`[accountId=${accountId}] [eventId=${eventId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Обработка начисления баланса...`
+			`[accountId=${accountId}] [transactionId=${transactionId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Обработка начисления баланса...`
 		);
 		try {
 			const updated = await this.balanceRepo.deposit(
@@ -61,22 +61,30 @@ export class BalanceConsumerService extends AbstractKafkaConsumerService {
 			);
 
 			this.logger.log(
-				`[accountId=${accountId}] [eventId=${eventId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Баланс успешно начислен`
+				`[accountId=${accountId}] [transactionId=${transactionId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Баланс успешно начислен`
 			);
 		} catch (error) {
-			this.logger.log(
-				`[accountId=${accountId}] [eventId=${eventId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Ошибка начисления баланса`,
+			this.logger.error(
+				`[accountId=${accountId}] [transactionId=${transactionId}] [${KafkaTopics.TX_DEPOSIT_COMPLETED}] Ошибка начисления баланса`,
 				error
 			);
 
 			// здесь публикация провала
-			await this.kafkaProducer.publish(
-				KafkaTopics.BALANCE_UPDATED_FAILED,
-				{
-					key: eventId,
-					value: { eventId, transactionId }
-				}
-			);
+			try {
+				await this.kafkaProducer.publish(
+					KafkaTopics.BALANCE_UPDATED_FAILED,
+					{
+						key: eventId,
+						value: { eventId, transactionId }
+					}
+				);
+			} catch (publishError) {
+				this.logger.error(
+					'Failed to publish BALANCE_UPDATED_FAILED',
+					publishError
+				);
+				// TODO: DLQ
+			}
 		}
 	}
 }

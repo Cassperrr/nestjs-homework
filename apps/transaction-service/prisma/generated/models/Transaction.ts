@@ -321,7 +321,10 @@ export type TransactionWhereInput = {
 	retryCount?: Prisma.IntFilter<'Transaction'> | number;
 	createdAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
 	updatedAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
-	outboxEvents?: Prisma.OutboxEventListRelationFilter;
+	outboxEvents?: Prisma.XOR<
+		Prisma.OutboxEventNullableScalarRelationFilter,
+		Prisma.OutboxEventWhereInput
+	> | null;
 };
 
 export type TransactionOrderByWithRelationInput = {
@@ -340,7 +343,7 @@ export type TransactionOrderByWithRelationInput = {
 	retryCount?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
-	outboxEvents?: Prisma.OutboxEventOrderByRelationAggregateInput;
+	outboxEvents?: Prisma.OutboxEventOrderByWithRelationInput;
 };
 
 export type TransactionWhereUniqueInput = Prisma.AtLeast<
@@ -372,7 +375,10 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<
 		retryCount?: Prisma.IntFilter<'Transaction'> | number;
 		createdAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
 		updatedAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
-		outboxEvents?: Prisma.OutboxEventListRelationFilter;
+		outboxEvents?: Prisma.XOR<
+			Prisma.OutboxEventNullableScalarRelationFilter,
+			Prisma.OutboxEventWhereInput
+		> | null;
 	},
 	'id' | 'idempotencyKey' | 'providerPaymentId'
 >;
@@ -462,7 +468,7 @@ export type TransactionCreateInput = {
 	retryCount?: number;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
-	outboxEvents?: Prisma.OutboxEventCreateNestedManyWithoutTransactionInput;
+	outboxEvents?: Prisma.OutboxEventCreateNestedOneWithoutTransactionInput;
 };
 
 export type TransactionUncheckedCreateInput = {
@@ -481,7 +487,7 @@ export type TransactionUncheckedCreateInput = {
 	retryCount?: number;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
-	outboxEvents?: Prisma.OutboxEventUncheckedCreateNestedManyWithoutTransactionInput;
+	outboxEvents?: Prisma.OutboxEventUncheckedCreateNestedOneWithoutTransactionInput;
 };
 
 export type TransactionUpdateInput = {
@@ -512,7 +518,7 @@ export type TransactionUpdateInput = {
 	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	outboxEvents?: Prisma.OutboxEventUpdateManyWithoutTransactionNestedInput;
+	outboxEvents?: Prisma.OutboxEventUpdateOneWithoutTransactionNestedInput;
 };
 
 export type TransactionUncheckedUpdateInput = {
@@ -543,7 +549,7 @@ export type TransactionUncheckedUpdateInput = {
 	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	outboxEvents?: Prisma.OutboxEventUncheckedUpdateManyWithoutTransactionNestedInput;
+	outboxEvents?: Prisma.OutboxEventUncheckedUpdateOneWithoutTransactionNestedInput;
 };
 
 export type TransactionCreateManyInput = {
@@ -871,44 +877,6 @@ export type TransactionUncheckedUpdateWithoutOutboxEventsInput = {
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
 
-/**
- * Count Type TransactionCountOutputType
- */
-
-export type TransactionCountOutputType = {
-	outboxEvents: number;
-};
-
-export type TransactionCountOutputTypeSelect<
-	ExtArgs extends runtime.Types.Extensions.InternalArgs =
-		runtime.Types.Extensions.DefaultArgs
-> = {
-	outboxEvents?: boolean | TransactionCountOutputTypeCountOutboxEventsArgs;
-};
-
-/**
- * TransactionCountOutputType without action
- */
-export type TransactionCountOutputTypeDefaultArgs<
-	ExtArgs extends runtime.Types.Extensions.InternalArgs =
-		runtime.Types.Extensions.DefaultArgs
-> = {
-	/**
-	 * Select specific fields to fetch from the TransactionCountOutputType
-	 */
-	select?: Prisma.TransactionCountOutputTypeSelect<ExtArgs> | null;
-};
-
-/**
- * TransactionCountOutputType without action
- */
-export type TransactionCountOutputTypeCountOutboxEventsArgs<
-	ExtArgs extends runtime.Types.Extensions.InternalArgs =
-		runtime.Types.Extensions.DefaultArgs
-> = {
-	where?: Prisma.OutboxEventWhereInput;
-};
-
 export type TransactionSelect<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
 		runtime.Types.Extensions.DefaultArgs
@@ -930,9 +898,6 @@ export type TransactionSelect<
 		createdAt?: boolean;
 		updatedAt?: boolean;
 		outboxEvents?: boolean | Prisma.Transaction$outboxEventsArgs<ExtArgs>;
-		_count?:
-			| boolean
-			| Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>;
 	},
 	ExtArgs['result']['transaction']
 >;
@@ -1029,7 +994,6 @@ export type TransactionInclude<
 		runtime.Types.Extensions.DefaultArgs
 > = {
 	outboxEvents?: boolean | Prisma.Transaction$outboxEventsArgs<ExtArgs>;
-	_count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type TransactionIncludeCreateManyAndReturn<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
@@ -1046,7 +1010,7 @@ export type $TransactionPayload<
 > = {
 	name: 'Transaction';
 	objects: {
-		outboxEvents: Prisma.$OutboxEventPayload<ExtArgs>[];
+		outboxEvents: Prisma.$OutboxEventPayload<ExtArgs> | null;
 	};
 	scalars: runtime.Types.Extensions.GetPayloadResult<
 		{
@@ -1629,14 +1593,16 @@ export interface Prisma__TransactionClient<
 	readonly [Symbol.toStringTag]: 'PrismaPromise';
 	outboxEvents<T extends Prisma.Transaction$outboxEventsArgs<ExtArgs> = {}>(
 		args?: Prisma.Subset<T, Prisma.Transaction$outboxEventsArgs<ExtArgs>>
-	): Prisma.PrismaPromise<
-		| runtime.Types.Result.GetResult<
-				Prisma.$OutboxEventPayload<ExtArgs>,
-				T,
-				'findMany',
-				GlobalOmitOptions
-		  >
-		| Null
+	): Prisma.Prisma__OutboxEventClient<
+		runtime.Types.Result.GetResult<
+			Prisma.$OutboxEventPayload<ExtArgs>,
+			T,
+			'findUniqueOrThrow',
+			GlobalOmitOptions
+		> | null,
+		null,
+		ExtArgs,
+		GlobalOmitOptions
 	>;
 	/**
 	 * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2177,15 +2143,6 @@ export type Transaction$outboxEventsArgs<
 	 */
 	include?: Prisma.OutboxEventInclude<ExtArgs> | null;
 	where?: Prisma.OutboxEventWhereInput;
-	orderBy?:
-		| Prisma.OutboxEventOrderByWithRelationInput
-		| Prisma.OutboxEventOrderByWithRelationInput[];
-	cursor?: Prisma.OutboxEventWhereUniqueInput;
-	take?: number;
-	skip?: number;
-	distinct?:
-		| Prisma.OutboxEventScalarFieldEnum
-		| Prisma.OutboxEventScalarFieldEnum[];
 };
 
 /**

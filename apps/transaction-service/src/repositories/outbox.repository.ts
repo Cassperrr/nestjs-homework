@@ -51,14 +51,4 @@ export class OutboxRepository {
 			}
 		});
 	}
-
-	public incrementRetryCount(id: string) {
-		return this.prisma.outboxEvent.update({
-			where: { id },
-			data: { retryCount: { increment: 1 } },
-			select: {
-				retryCount: true
-			}
-		});
-	}
 }

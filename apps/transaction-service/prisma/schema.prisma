@@ -32,7 +32,7 @@ model Transaction {
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  outboxEvents OutboxEvent[]
+  outboxEvents OutboxEvent?
 
   @@index([accountId])
   @@index([status])
@@ -43,7 +43,7 @@ model Transaction {
 
 model OutboxEvent {
   id            String @id @db.Char(36)
-  transactionId String @map("transaction_id") @db.Char(36)
+  transactionId String @unique @map("transaction_id") @db.Char(36)
 
   topic      String  @db.VarChar(100)
   payload    Json
