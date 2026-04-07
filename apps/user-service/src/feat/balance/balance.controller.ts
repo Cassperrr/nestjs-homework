@@ -4,14 +4,16 @@ import { BALANCE_SERVICE_NAME } from 'contracts/gen/balance';
 
 import { BalanceService } from './balance.service';
 
-const JOB_ACCESS_TOKEN = process.env.JOB_ACCESS_TOKEN as string;
-
 export const BalanceController = createGrpcController(
 	BALANCE_SERVICE_NAME,
 	BalanceService,
 	[],
 	{
 		getMyBalances: [ACCESS_LIST.gateway],
-		validationAccount: [ACCESS_LIST.transaction_service]
+		validationAccount: [ACCESS_LIST.transaction_service],
+		putResetBalanceJob: [ACCESS_LIST.gateway],
+		startResetBalanceJob: [ACCESS_LIST.gateway],
+		stopResetBalanceJob: [ACCESS_LIST.gateway],
+		resetAllBalances: [ACCESS_LIST.job_service]
 	}
 );

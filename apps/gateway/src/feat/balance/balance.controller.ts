@@ -87,44 +87,27 @@ export class BalanceController {
 		});
 	}
 
-	// @ApiWithdrawn()
-	// @Protected()
-	// @Post('withdrawn')
-	// @HttpCode(HttpStatus.CREATED)
-	// public withdrawn(
-	// 	@AccountId() accountId: string,
-	// 	@IdempotencyKey() idempotencyKey: string,
-	// 	@Body() dto: WithdrawalAmountRequest
-	// ): Promise<WithdrawalAmountResponse> {
-	// 	return this.client.call('withdrawalAmount', {
-	// 		accountId,
-	// 		idempotencyKey,
-	// 		amount: dto.amountInCents,
-	// 		withdrawalAccount: dto.withdrawalAccount
-	// 	});
-	// }
+	@ApiReset()
+	@Protected()
+	@Post('put-reset-job')
+	@HttpCode(HttpStatus.ACCEPTED)
+	public async putResetBalanceJob(@AccountId() accountId: string) {
+		return this.balanceClient.call('putResetBalanceJob', { accountId });
+	}
 
-	// @ApiReset()
-	// @Protected()
-	// @Post('put-reset-job')
-	// @HttpCode(HttpStatus.ACCEPTED)
-	// public async putResetBalanceJob(@AccountId() accountId: string) {
-	// 	return this.client.call('putResetBalanceJob', { accountId });
-	// }
+	@ApiStartCron()
+	@Protected()
+	@Post('start-reset-job')
+	@HttpCode(HttpStatus.ACCEPTED)
+	public startResetBalanceJob(@AccountId() accountId: string) {
+		return this.balanceClient.call('startResetBalanceJob', { accountId });
+	}
 
-	// @ApiStartCron()
-	// @Protected()
-	// @Post('start-reset-job')
-	// @HttpCode(HttpStatus.ACCEPTED)
-	// public startResetBalanceJob(@AccountId() accountId: string) {
-	// 	return this.client.call('startResetBalanceJob', { accountId });
-	// }
-
-	// @ApiStopCron()
-	// @Protected()
-	// @Post('stop-reset-job')
-	// @HttpCode(HttpStatus.ACCEPTED)
-	// public stopResetBalanceJob(@AccountId() accountId: string) {
-	// 	return this.client.call('stopResetBalanceJob', { accountId });
-	// }
+	@ApiStopCron()
+	@Protected()
+	@Post('stop-reset-job')
+	@HttpCode(HttpStatus.ACCEPTED)
+	public stopResetBalanceJob(@AccountId() accountId: string) {
+		return this.balanceClient.call('stopResetBalanceJob', { accountId });
+	}
 }
