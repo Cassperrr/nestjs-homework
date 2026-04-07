@@ -31,6 +31,10 @@ export interface ValidationAccountRequest {
 	currency: string;
 }
 
+export interface ValidationAccountResponse {
+	amount: bigint;
+}
+
 export interface CheckBalanceRequest {
 	accountId: string;
 }
@@ -108,7 +112,9 @@ export interface BalanceServiceClient {
 		request: GetMyBalancesRequest
 	): Observable<GetMyBalancesResponse>;
 
-	validationAccount(request: ValidationAccountRequest): Observable<Empty>;
+	validationAccount(
+		request: ValidationAccountRequest
+	): Observable<ValidationAccountResponse>;
 
 	checkBalance(
 		request: CheckBalanceRequest
@@ -153,7 +159,12 @@ export interface BalanceServiceController {
 		| Observable<GetMyBalancesResponse>
 		| GetMyBalancesResponse;
 
-	validationAccount(request: ValidationAccountRequest): void | Promise<void>;
+	validationAccount(
+		request: ValidationAccountRequest
+	):
+		| Promise<ValidationAccountResponse>
+		| Observable<ValidationAccountResponse>
+		| ValidationAccountResponse;
 
 	checkBalance(
 		request: CheckBalanceRequest

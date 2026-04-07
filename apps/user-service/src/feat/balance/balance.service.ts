@@ -17,6 +17,7 @@ import type {
 	TransferAmountRequest,
 	TransferAmountResponse,
 	ValidationAccountRequest,
+	ValidationAccountResponse,
 	WithdrawalAmountRequest,
 	WithdrawalAmountResponse
 } from 'contracts/gen/balance';
@@ -64,7 +65,9 @@ export class BalanceService {
 		};
 	}
 
-	public async validationAccount(data: ValidationAccountRequest) {
+	public async validationAccount(
+		data: ValidationAccountRequest
+	): Promise<ValidationAccountResponse> {
 		const { accountId, currency } = data;
 
 		const account = await this.accountRepo.findBy({ id: accountId });
@@ -85,6 +88,8 @@ export class BalanceService {
 				code: GrpcStatus.NOT_FOUND,
 				details: 'Счет не найден или заблокирвован'
 			});
+
+		return { amount: balance.amount };
 	}
 
 	// public async checkBalance(

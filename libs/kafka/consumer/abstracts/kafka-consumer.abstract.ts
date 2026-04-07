@@ -15,9 +15,6 @@ export abstract class AbstractKafkaConsumerService
 	private consumer: Consumer;
 	private admin: Admin;
 
-	// дочерний класс объявляет какие топики слушать
-	protected abstract getTopics(): KafkaTopic[];
-
 	// дочерний класс обрабатывает каждое сообщение
 	protected abstract handleMessage(
 		topic: KafkaTopic,
@@ -49,7 +46,7 @@ export abstract class AbstractKafkaConsumerService
 
 			await this.consumer.connect();
 			await this.consumer.subscribe({
-				topics: this.getTopics(),
+				topics: this.options.topics,
 				fromBeginning: false
 			});
 
@@ -83,9 +80,8 @@ export abstract class AbstractKafkaConsumerService
 	private async ensureTopicsExist(): Promise<void> {
 		await this.admin.connect();
 
-		const topics = this.getTopics();
 		const existing = await this.admin.listTopics();
-		const missing = topics.filter(t => !existing.includes(t));
+		const missing = this.options.topics.filter(t => !existing.includes(t));
 
 		if (missing.length === 0) return;
 

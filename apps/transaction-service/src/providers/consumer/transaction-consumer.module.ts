@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TxServiceEnv } from '@transaction-service/src/config';
-import { KafkaConsumerFactoryModule } from 'libs/kafka';
+import { KafkaConsumerFactoryModule, KafkaTopics } from 'libs/kafka';
 
 import { TransactionConsumerService } from './transaction-consumer.service';
 
@@ -16,7 +16,13 @@ import { TransactionConsumerService } from './transaction-consumer.service';
 				},
 				consumerConfig: {
 					groupId: 'transaction-service-group'
-				}
+				},
+				topics: [
+					KafkaTopics.BALANCE_UPDATED_SUCCESS,
+					KafkaTopics.BALANCE_UPDATED_FAILED,
+					KafkaTopics.BALANCE_TRANSFER_SUCCESS,
+					KafkaTopics.BALANCE_TRANSFER_FAILED
+				]
 			})
 		})
 	],

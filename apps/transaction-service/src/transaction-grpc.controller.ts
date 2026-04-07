@@ -9,6 +9,7 @@ export const TransactionGrpcController = createGrpcController(
 	TransactionGrpcService,
 	[],
 	{
-		depositRub: [ACCESS_LIST.gateway]
+		depositRub: [ACCESS_LIST.gateway],
+		transferRub: [ACCESS_LIST.gateway]
 	}
 );

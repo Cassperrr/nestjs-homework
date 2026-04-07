@@ -4,9 +4,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { BalanceClientGrpc } from '@transaction-service/src/infra';
 import { TransactionRepository } from '@transaction-service/src/repositories';
+import { StringMessage } from 'contracts/gen/shared';
 import type {
 	DepositRubRequest,
-	DepositRubResponse
+	DepositRubResponse,
+	TransferRubRequest
 } from 'contracts/gen/transaction';
 import { YookassaService } from 'libs/payments';
 import {
@@ -71,20 +73,18 @@ export class TransactionGrpcService {
 			if (!url) throw new Error('Нет сформированной ссылки на оплату');
 
 			// создаем транзакцию в бд
-			await this.txRepo.create(
+			await this.txRepo.createDepositTx(
 				transactionId,
 				accountId,
 				amount,
 				Currency.RUB,
-				TransactionType.DEPOSIT,
-				TransactionStatus.PENDING,
 				idempotencyKey,
 				PaymentProvider.YOOKASSA,
 				paymentId
 			);
 
 			this.logger.log(
-				`[${PaymentProvider.YOOKASSA}] [${TransactionType.DEPOSIT}] [${Currency.RUB}] Ссылка на оплату получена | accountId=${accountId} | txId=${transactionId} | paymentId=${paymentId} | ${url}`
+				`[${PaymentProvider.YOOKASSA}] [${TransactionType.DEPOSIT}] [${amountInt} ${Currency.RUB}] Ссылка на оплату получена | accountId=${accountId} | txId=${transactionId} | paymentId=${paymentId} | ${url}`
 			);
 
 			return { url };
@@ -92,7 +92,67 @@ export class TransactionGrpcService {
 			rethrowGrpcError(error);
 
 			this.logger.error(
-				`[${PaymentProvider.YOOKASSA}] [${TransactionType.DEPOSIT}] [${Currency.RUB}] Ошибка получения ссылки на оплату | accountId=${accountId}`,
+				`[${PaymentProvider.YOOKASSA}] [${TransactionType.DEPOSIT}] [${amountInt} ${Currency.RUB}] Ошибка получения ссылки на оплату | accountId=${accountId}`,
+				error
+			);
+
+			throw new RpcException({
+				code: GrpcStatus.CANCELLED,
+				details: 'Ошибка создания платежа'
+			});
+		}
+	}
+
+	public async transferRub(data: TransferRubRequest): Promise<StringMessage> {
+		const { accountId, idempotencyKey, amount, toAccountId } = data;
+		const amountInt = BigInt(amount).toDollarsInt();
+
+		if (accountId === toAccountId)
+			throw new RpcException({
+				code: GrpcStatus.INVALID_ARGUMENT,
+				details: 'Нельзя переводить самому себе'
+			});
+
+		try {
+			const balanceOut = await this.balanceClient.call(
+				'validationAccount',
+				{
+					accountId,
+					currency: Currency.RUB
+				}
+			);
+			await this.balanceClient.call('validationAccount', {
+				accountId: toAccountId,
+				currency: Currency.RUB
+			});
+
+			if (BigInt(balanceOut.amount) < BigInt(amount))
+				return {
+					message: `Не хватает средств для перевода`
+				};
+
+			const txOut = await this.txRepo.createTransferTxs(
+				accountId,
+				toAccountId,
+				BigInt(amount),
+				Currency.RUB,
+				idempotencyKey
+			);
+
+			this.logger.log(
+				`[${TransactionType.TRANSFER_OUT}] [${amountInt} ${Currency.RUB}] Транзакции в обработке | fromAccountId=${accountId} | toAccountId=${toAccountId} | txId=${txOut.id}`
+			);
+
+			return {
+				message:
+					'Транзакция в обработке. Вы получите уведомление о ее статусе по Websocket'
+			};
+		} catch (error) {
+			console.log(error);
+			rethrowGrpcError(error);
+
+			this.logger.error(
+				`[${TransactionType.TRANSFER_OUT}] [${amountInt} ${Currency.RUB}] Ошибка создания транзакций | fromAccountId=${accountId} | toAccountId=${toAccountId}`,
 				error
 			);
 

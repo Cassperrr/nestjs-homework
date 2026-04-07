@@ -42,6 +42,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
+    restart: always
     ports:
       - 9092:9092     # для сервисов (внутри docker сети)
       - 9094:9094      # для подключения с хоста (локально)
@@ -54,6 +55,7 @@ services:
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
+    restart: always
     ports:
       - 8080:8080
     env_file:
@@ -78,6 +80,7 @@ services:
 
   mailpit:
     image: axllent/mailpit
+    restart: always
     ports:
       - "1025:1025"   # SMTP
       - "8025:8025"   # Web UI

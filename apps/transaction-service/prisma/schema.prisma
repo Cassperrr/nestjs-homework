@@ -18,7 +18,7 @@ model Transaction {
   currency       String @db.VarChar(10)
   type           String @db.VarChar(50)
   status         String @db.VarChar(50)
-  idempotencyKey String @unique @map("idempotency_key") @db.VarChar(36)
+  idempotencyKey String @unique @map("idempotency_key") @db.VarChar(40)
 
   provider          String?
   providerPaymentId String? @unique @map("provider_payment_id")

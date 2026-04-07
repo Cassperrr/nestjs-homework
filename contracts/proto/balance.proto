@@ -7,7 +7,7 @@ import "google/protobuf/empty.proto";
 
 service BalanceService {
   rpc GetMyBalances (GetMyBalancesRequest) returns (GetMyBalancesResponse);
-  rpc ValidationAccount (ValidationAccountRequest) returns (google.protobuf.Empty);
+  rpc ValidationAccount (ValidationAccountRequest) returns (ValidationAccountResponse);
 
   rpc CheckBalance (CheckBalanceRequest) returns (CheckBalanceResponse);
   rpc AuditBalance (AuditBalanceRequest) returns (AuditBalanceResponse);
@@ -37,6 +37,10 @@ message GetMyBalancesResponse {
 message ValidationAccountRequest {
   string account_id = 1;
   string currency = 2;
+}
+
+message ValidationAccountResponse {
+  uint64 amount = 1;
 }
 
 message CheckBalanceRequest {

@@ -7,6 +7,8 @@
 import { GrpcMethod, GrpcStreamMethod } from '@nestjs/microservices';
 import { Observable } from 'rxjs';
 
+import { StringMessage } from './shared';
+
 export const protobufPackage = 'transaction';
 
 export interface DepositRubRequest {
@@ -19,10 +21,19 @@ export interface DepositRubResponse {
 	url: string;
 }
 
+export interface TransferRubRequest {
+	accountId: string;
+	idempotencyKey: string;
+	amount: bigint;
+	toAccountId: string;
+}
+
 export const TRANSACTION_PACKAGE_NAME = 'transaction';
 
 export interface TransactionServiceClient {
 	depositRub(request: DepositRubRequest): Observable<DepositRubResponse>;
+
+	transferRub(request: TransferRubRequest): Observable<StringMessage>;
 }
 
 export interface TransactionServiceController {
@@ -32,11 +43,15 @@ export interface TransactionServiceController {
 		| Promise<DepositRubResponse>
 		| Observable<DepositRubResponse>
 		| DepositRubResponse;
+
+	transferRub(
+		request: TransferRubRequest
+	): Promise<StringMessage> | Observable<StringMessage> | StringMessage;
 }
 
 export function TransactionServiceControllerMethods() {
 	return function (constructor: Function) {
-		const grpcMethods: string[] = ['depositRub'];
+		const grpcMethods: string[] = ['depositRub', 'transferRub'];
 		for (const method of grpcMethods) {
 			const descriptor: any = Reflect.getOwnPropertyDescriptor(
 				constructor.prototype,

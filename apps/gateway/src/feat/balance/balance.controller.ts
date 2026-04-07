@@ -12,6 +12,7 @@ import {
 	Post,
 	Query
 } from '@nestjs/common';
+import type { StringMessage } from 'contracts/gen/shared';
 import { Role } from 'shared';
 
 import {
@@ -57,7 +58,7 @@ export class BalanceController {
 	@Protected()
 	@Post('deposit/rub')
 	@HttpCode(HttpStatus.CREATED)
-	public deposit(
+	public depositRub(
 		@AccountId() accountId: string,
 		@IdempotencyKey() idempotencyKey: string,
 		@Body() dto: DepositAmountRequest
@@ -69,16 +70,22 @@ export class BalanceController {
 		});
 	}
 
-	// @ApiAudit()
-	// @Protected()
-	// @Get('audit')
-	// @HttpCode(HttpStatus.OK)
-	// public auditBalance(
-	// 	@AccountId() accountId: string,
-	// 	@Query() dto: AuditBalanceRequest
-	// ): Promise<AuditBalanceResponse> {
-	// 	return this.client.call('auditBalance', { accountId, ...dto });
-	// }
+	@ApiTransfer()
+	@Protected()
+	@Post('transfer/rub')
+	@HttpCode(HttpStatus.CREATED)
+	public transferRub(
+		@AccountId() accountId: string,
+		@IdempotencyKey() idempotencyKey: string,
+		@Body() dto: TransferAmountRequest
+	): Promise<StringMessage> {
+		return this.txClient.call('transferRub', {
+			accountId,
+			idempotencyKey,
+			amount: dto.amountInCents,
+			toAccountId: dto.toAccountId
+		});
+	}
 
 	// @ApiWithdrawn()
 	// @Protected()
@@ -94,23 +101,6 @@ export class BalanceController {
 	// 		idempotencyKey,
 	// 		amount: dto.amountInCents,
 	// 		withdrawalAccount: dto.withdrawalAccount
-	// 	});
-	// }
-
-	// @ApiTransfer()
-	// @Protected()
-	// @Post('transfer')
-	// @HttpCode(HttpStatus.CREATED)
-	// public transfer(
-	// 	@AccountId() accountId: string,
-	// 	@IdempotencyKey() idempotencyKey: string,
-	// 	@Body() dto: TransferAmountRequest
-	// ): Promise<TransferAmountResponse> {
-	// 	return this.client.call('transferAmount', {
-	// 		accountId,
-	// 		idempotencyKey,
-	// 		amount: dto.amountInCents,
-	// 		toAccountId: dto.toAccountId
 	// 	});
 	// }
 

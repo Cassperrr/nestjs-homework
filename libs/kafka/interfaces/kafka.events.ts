@@ -17,3 +17,25 @@ export interface BalanceDepositFailedEvent {
 	eventId: string;
 	transactionId: string;
 }
+
+export interface TransferPendingEvent {
+	eventId: string;
+	outId: string;
+	inId: string;
+	fromAccountId: string;
+	toAccountId: string;
+	currency: Currency;
+	amount: string;
+}
+
+export interface BalanceTranferSuccessEvent {
+	eventId: string;
+	outId: string;
+	inId: string;
+}
+
+export interface BalanceTranferFailedEvent {
+	eventId: string;
+	outId: string;
+	inId: string;
+}

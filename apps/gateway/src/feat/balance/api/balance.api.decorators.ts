@@ -8,8 +8,8 @@ import {
 
 import {
 	AuditBalanceResponse,
-	BalanceResponse,
 	DepositAmountResponse,
+	GetMyBalancesResponse,
 	TransferAmountResponse,
 	WithdrawalAmountResponse
 } from '../dto';
@@ -19,7 +19,7 @@ export const ApiGetBalance = () =>
 		ApiOperation({
 			summary: 'Показать мой баланс'
 		}),
-		ApiOkResponse({ type: BalanceResponse }),
+		ApiOkResponse({ type: GetMyBalancesResponse }),
 		ApiBearerAuth()
 	);
 
@@ -66,7 +66,6 @@ export const ApiTransfer = () =>
 		ApiOperation({
 			summary: 'Перевести средства с одного аккаунта на другой'
 		}),
-		ApiOkResponse({ type: TransferAmountResponse }),
 		ApiBearerAuth()
 	);
 

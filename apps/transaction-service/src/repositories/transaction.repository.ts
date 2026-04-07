@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import {
+	Prisma,
 	PrismaClient,
 	type Transaction
 } from '@transaction-service/prisma/generated/client';
 import { KafkaTopics } from 'libs/kafka';
 import { InjectPrismaClient } from 'libs/prisma';
-import { TransactionStatus } from 'shared';
+import { TransactionStatus, TransactionType } from 'shared';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
@@ -27,13 +28,11 @@ export class TransactionRepository {
 		});
 	}
 
-	public create(
+	public createDepositTx(
 		id: string,
 		accountId: string,
 		amount: bigint,
 		currency: string,
-		type: string,
-		status: string,
 		idempotencyKey: string,
 		provider: string,
 		providerPaymentId: string
@@ -53,13 +52,83 @@ export class TransactionRepository {
 					accountId,
 					amount,
 					currency,
-					type,
-					status,
+					type: TransactionType.DEPOSIT,
+					status: TransactionStatus.PENDING,
 					idempotencyKey,
 					provider,
 					providerPaymentId
 				}
 			});
+		});
+	}
+
+	public createTransferTxs(
+		fromAccountId: string,
+		toAccountId: string,
+		amount: bigint,
+		currency: string,
+		idempotencyKey: string
+	) {
+		return this.prisma.$transaction(async tx => {
+			// проверяем уникальность транзы
+			const existingTx = await tx.transaction.findUnique({
+				where: { idempotencyKey }
+			});
+			// соблюдаем идемпотентность
+			if (existingTx) return existingTx;
+
+			// создаем тх
+			const outId = uuidv7();
+			const inId = uuidv7();
+
+			const txOut = await tx.transaction.create({
+				data: {
+					id: outId,
+					accountId: fromAccountId,
+					amount: -amount,
+					currency,
+					type: TransactionType.TRANSFER_OUT,
+					status: TransactionStatus.PENDING,
+					idempotencyKey,
+					counterpartyAccountId: toAccountId,
+					referenceId: inId
+				}
+			});
+
+			await tx.transaction.create({
+				data: {
+					id: inId,
+					accountId: toAccountId,
+					amount,
+					currency,
+					type: TransactionType.TRANSFER_IN,
+					status: TransactionStatus.PENDING,
+					idempotencyKey: `${idempotencyKey}_in`,
+					counterpartyAccountId: fromAccountId,
+					referenceId: outId
+				}
+			});
+
+			const eventId = uuidv7();
+
+			await tx.outboxEvent.create({
+				data: {
+					id: eventId,
+					transactionId: outId,
+					topic: KafkaTopics.TX_TRANSFER_PENDING,
+					payload: {
+						eventId,
+						outId,
+						inId,
+						fromAccountId,
+						toAccountId,
+						currency,
+						amount: amount.toString()
+					}
+				}
+			});
+
+			return txOut;
 		});
 	}
 
@@ -102,7 +171,7 @@ export class TransactionRepository {
 					transactionId: row.id,
 					topic: KafkaTopics.TX_DEPOSIT_COMPLETED,
 					payload: {
-						eventId: eventId,
+						eventId,
 						transactionId: row.id,
 						accountId: row.account_id,
 						currency: row.currency,
@@ -151,6 +220,30 @@ export class TransactionRepository {
 			await tx.transaction.update({
 				where: { id: row.id },
 				data
+			});
+		});
+	}
+
+	public updateStatusByIds(outId: string, inId: string) {
+		return this.prisma.$transaction(async tx => {
+			const rows = await tx.$queryRaw<{ id: string }[]>`
+				SELECT id 
+				FROM transactions 
+				WHERE id IN (${Prisma.join([outId, inId])}) 
+				FOR UPDATE
+      `;
+
+			if (!rows || rows.length === 0)
+				throw new Error(`Транзакции не найдены`);
+
+			await tx.transaction.update({
+				where: { id: outId },
+				data: { status: TransactionStatus.BALANCE_UPDATED }
+			});
+
+			await tx.transaction.update({
+				where: { id: inId },
+				data: { status: TransactionStatus.BALANCE_UPDATED }
 			});
 		});
 	}

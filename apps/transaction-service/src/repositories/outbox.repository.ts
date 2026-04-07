@@ -4,6 +4,7 @@ import {
 	PrismaClient
 } from '@transaction-service/prisma/generated/client';
 import { InjectPrismaClient } from 'libs/prisma';
+import { TransactionStatus } from 'shared';
 
 @Injectable()
 export class OutboxRepository {
@@ -43,12 +44,40 @@ export class OutboxRepository {
 		});
 	}
 
-	public switchEventToFailed(id: string) {
-		return this.prisma.outboxEvent.update({
-			where: { id },
-			data: {
-				failedAt: new Date()
-			}
+	public switchEventToFailed(id: string, txId: string) {
+		return this.prisma.$transaction(async tx => {
+			await tx.outboxEvent.update({
+				where: { id },
+				data: {
+					failedAt: new Date()
+				}
+			});
+
+			await tx.transaction.update({
+				where: { id: txId },
+				data: { status: TransactionStatus.BALANCE_FAILED }
+			});
+		});
+	}
+
+	public switchEventAndTxsToFailed(id: string, outId: string, inId: string) {
+		return this.prisma.$transaction(async tx => {
+			await tx.outboxEvent.update({
+				where: { id },
+				data: {
+					failedAt: new Date()
+				}
+			});
+
+			await tx.transaction.update({
+				where: { id: outId },
+				data: { status: TransactionStatus.BALANCE_FAILED }
+			});
+
+			await tx.transaction.update({
+				where: { id: inId },
+				data: { status: TransactionStatus.BALANCE_FAILED }
+			});
 		});
 	}
 }

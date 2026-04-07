@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserServiceEnv } from '@user-service/src/config';
-import { KafkaConsumerFactoryModule } from 'libs/kafka';
+import { KafkaConsumerFactoryModule, KafkaTopics } from 'libs/kafka';
 
 import { BalanceConsumerService } from './balance-consumer.service';
 
@@ -16,7 +16,11 @@ import { BalanceConsumerService } from './balance-consumer.service';
 				},
 				consumerConfig: {
 					groupId: 'balance-service-group'
-				}
+				},
+				topics: [
+					KafkaTopics.TX_DEPOSIT_COMPLETED,
+					KafkaTopics.TX_TRANSFER_PENDING
+				]
 			})
 		})
 	],
