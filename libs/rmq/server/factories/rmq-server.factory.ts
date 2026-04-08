@@ -20,6 +20,6 @@ export function createRmqServer(
 		}
 	});
 
-	const logger = new Logger('RmqServerFactory');
-	logger.log(`Кластер серверов RMQ запущен`);
+	const logger = new Logger('Builer RMQ Consumer Server');
+	logger.warn(`Кластер серверов для RMQ Consumer запущен`);
 }

@@ -1,4 +1,4 @@
-import { Currency } from 'shared';
+import type { Currency } from 'shared';
 
 export interface DepositCompletedEvent {
 	amount: string;
@@ -38,4 +38,11 @@ export interface BalanceTranferFailedEvent {
 	eventId: string;
 	outId: string;
 	inId: string;
+}
+
+export interface TransferCompletedEvent {
+	fromAccountId: string;
+	toAccountId: string;
+	amount: string;
+	currency: Currency;
 }

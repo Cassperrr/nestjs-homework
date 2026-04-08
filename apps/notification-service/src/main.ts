@@ -1,9 +1,20 @@
+import { getLoggerOptions } from '@libs/utils';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
+import { NotificationEnv } from './config';
 import { NotificationModule } from './notification.module';
 
 async function bootstrap() {
-	const app = await NestFactory.create(NotificationModule);
-	await app.listen(process.env.port ?? 3000);
+	const isDev = process.env.NODE_ENV === 'development';
+
+	const app = await NestFactory.create(NotificationModule, {
+		logger: getLoggerOptions(isDev)
+	});
+
+	const config = app.get(ConfigService<NotificationEnv, true>);
+	const port = config.get('WSS_PORT', { infer: true });
+
+	await app.listen(port);
 }
-bootstrap();
+void bootstrap();

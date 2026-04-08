@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 
 import { UserServiceEnv } from './config';
 import { grpcSetup } from './grpc.setup';
+import { kafkaSetup } from './kafka.setup';
 import { UserServiceModule } from './user-service.module';
 
 async function bootstrap() {
@@ -15,8 +16,10 @@ async function bootstrap() {
 
 	const config = app.get(ConfigService<UserServiceEnv, true>);
 	const grpcUrl = config.get('USER_GRPC_URL', { infer: true });
+	const kafkaBroker = config.get('KAFKA_BROKER', { infer: true });
 
 	grpcSetup(app, grpcUrl);
+	kafkaSetup(app, 'user-service', 'user-service-group', [kafkaBroker]);
 
 	await app.startAllMicroservices();
 	await app.init();

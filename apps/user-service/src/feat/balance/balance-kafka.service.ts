@@ -1,42 +1,22 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { BalanceRepository } from '@user-service/src/core';
-import type { EachMessagePayload } from 'kafkajs';
 import {
-	AbstractKafkaConsumerService,
-	type DepositCompletedEvent,
+	DepositCompletedEvent,
 	KafkaProducerService,
-	type KafkaTopic,
 	KafkaTopics,
-	type TransferPendingEvent
+	TransferPendingEvent
 } from 'libs/kafka';
-import 'shared/extensions/bigint.extension';
 
 @Injectable()
-export class BalanceConsumerService extends AbstractKafkaConsumerService {
+export class BalanceKafkaService {
+	private readonly logger = new Logger(BalanceKafkaService.name);
+
 	public constructor(
 		private readonly balanceRepo: BalanceRepository,
 		private readonly kafkaProducer: KafkaProducerService
-	) {
-		super();
-	}
+	) {}
 
-	protected async handleMessage(
-		topic: KafkaTopic,
-		payload: EachMessagePayload
-	): Promise<void> {
-		switch (topic) {
-			case KafkaTopics.TX_DEPOSIT_COMPLETED: {
-				const event = this.parseMessage<DepositCompletedEvent>(payload);
-				return this.handleDepositCompleted(event);
-			}
-			case KafkaTopics.TX_TRANSFER_PENDING: {
-				const event = this.parseMessage<TransferPendingEvent>(payload);
-				return this.handleTransferPending(event);
-			}
-		}
-	}
-
-	private async handleDepositCompleted(event: DepositCompletedEvent) {
+	public async depositCompleted(event: DepositCompletedEvent) {
 		const { accountId, amount, currency, eventId, transactionId } = event;
 		const amountInt = BigInt(amount).toDollarsInt();
 
@@ -88,7 +68,7 @@ export class BalanceConsumerService extends AbstractKafkaConsumerService {
 		}
 	}
 
-	private async handleTransferPending(event: TransferPendingEvent) {
+	public async transferPending(event: TransferPendingEvent) {
 		const {
 			outId,
 			inId,

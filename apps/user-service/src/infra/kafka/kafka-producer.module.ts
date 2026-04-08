@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UserServiceEnv } from '@user-service/src/config';
 import { KafkaProducerFactoryModule } from 'libs/kafka';
 
