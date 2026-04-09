@@ -9,32 +9,24 @@ import {
 	Get,
 	HttpCode,
 	HttpStatus,
-	Post,
-	Query
+	Post
 } from '@nestjs/common';
-import type { StringMessage } from 'contracts/gen/shared';
+import type { StringMessage } from 'contracts/grpc/gen/shared';
 import { Role } from 'shared';
 
 import {
-	ApiAudit,
 	ApiDeposit,
 	ApiGetBalance,
 	ApiReset,
 	ApiStartCron,
 	ApiStopCron,
-	ApiTransfer,
-	ApiWithdrawn
+	ApiTransfer
 } from './api';
 import {
-	AuditBalanceRequest,
-	AuditBalanceResponse,
 	DepositAmountRequest,
 	DepositAmountResponse,
 	GetMyBalancesResponse,
-	TransferAmountRequest,
-	TransferAmountResponse,
-	WithdrawalAmountRequest,
-	WithdrawalAmountResponse
+	TransferAmountRequest
 } from './dto';
 
 @Controller('balance')

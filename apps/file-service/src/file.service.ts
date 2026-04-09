@@ -3,7 +3,7 @@ import {
 	Logger,
 	UnprocessableEntityException
 } from '@nestjs/common';
-import type { AvatarResponse } from 'contracts/gen/avatar';
+import type { AvatarResponse } from 'contracts/grpc/gen/avatar';
 
 import { AbstractStorageService, AvatarClientGrpc } from './infra';
 

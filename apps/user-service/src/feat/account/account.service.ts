@@ -1,4 +1,3 @@
-import { GrpcStatus } from '@libs/grpc';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RpcException } from '@nestjs/microservices';
@@ -14,8 +13,9 @@ import type {
 	ChangePasswordRequest,
 	ConfirmPasswordRequest,
 	DeleteRequest
-} from 'contracts/gen/account';
-import { OtpCodeResponse, StringMessage } from 'contracts/gen/shared';
+} from 'contracts/grpc/gen/account';
+import type { OtpCodeResponse, StringMessage } from 'contracts/grpc/gen/shared';
+import { GrpcStatus } from 'libsV2/grpc';
 import { OtpKey } from 'shared';
 
 @Injectable()

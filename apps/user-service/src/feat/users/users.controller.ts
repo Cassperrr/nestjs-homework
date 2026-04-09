@@ -1,6 +1,6 @@
-import { createGrpcController } from '@libs/grpc';
 import { ACCESS_LIST } from '@user-service/src/config';
-import { USERS_SERVICE_NAME } from 'contracts/gen/users';
+import { USERS_SERVICE_NAME } from 'contracts/grpc/gen/users';
+import { createGrpcController } from 'libsV2/grpc';
 
 import { UsersService } from './users.service';
 

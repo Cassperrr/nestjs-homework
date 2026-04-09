@@ -5,15 +5,14 @@ import {
 	type OnModuleInit,
 	ServiceUnavailableException
 } from '@nestjs/common';
-import type { RequestHandler } from 'express';
-import type { Request, Response } from 'express';
+import type { Request, RequestHandler, Response } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-import type { CircuitState, ProxyReqHandler } from '../interfaces';
+import type { CircuitState, ProxyReqHandler } from './interfaces';
 
 export abstract class AbstractProxyClient implements OnModuleInit {
 	private readonly logger = new Logger(this.constructor.name);
-	private proxy: RequestHandler;
+	private proxy!: RequestHandler;
 	private probeTimeout?: NodeJS.Timeout;
 
 	// circuit breaker
@@ -48,7 +47,7 @@ export abstract class AbstractProxyClient implements OnModuleInit {
 						this.failure(new Error(`HTTP ${proxyRes.statusCode}`));
 					}
 				},
-				error: (err: any, _req: Request, res: Response) => {
+				error: (err: any, _req: Request, res: any) => {
 					const error =
 						err instanceof Error ? err : new Error(String(err));
 

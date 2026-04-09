@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OnEvent } from '@nestjs/event-emitter';
-import { UserServiceEnv } from '@user-service/src/config';
-import { RedisService } from 'libs/redis';
+import type { UserServiceEnv } from '@user-service/src/config';
+import { RedisService } from 'libsV2/redis';
 import ms, { type StringValue } from 'ms';
 import { pack, unpack } from 'msgpackr';
 

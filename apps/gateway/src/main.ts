@@ -1,7 +1,7 @@
-import { getLoggerOptions } from '@libs/utils';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { getLoggerOptions } from 'libsV2/utils';
 
 import { appSetup } from './app.setup';
 import { GatewayEnv } from './config';
@@ -19,9 +19,9 @@ async function bootstrap() {
 
 	appSetup(app, isDev);
 
-	const logger = new Logger('Gateway Bootstrap');
-	logger.log(`App listen to port: ${port}`);
-
-	await app.listen(port);
+	await app.listen(port, () => {
+		const logger = new Logger('HTTP SERVER');
+		logger.log(`Listen to port: ${port}`);
+	});
 }
 void bootstrap();

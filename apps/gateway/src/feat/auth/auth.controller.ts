@@ -10,7 +10,7 @@ import {
 	Post,
 	Res
 } from '@nestjs/common';
-import { StringMessage } from 'contracts/gen/shared';
+import type { StringMessage } from 'contracts/grpc/gen/shared';
 import type { Response } from 'express';
 import ms from 'ms';
 
@@ -25,7 +25,6 @@ import {
 import {
 	AccessTokenResponse,
 	LoginRequest,
-	OtpCodeResponse,
 	RegisterRequest,
 	ResendRequest,
 	VerifyRequest

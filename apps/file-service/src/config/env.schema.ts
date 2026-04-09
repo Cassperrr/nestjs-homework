@@ -1,4 +1,4 @@
-import { generalSchema } from '@libs/config';
+import { generalSchema } from 'registries';
 import { z } from 'zod';
 
 export const fileServiceEnvSchema = generalSchema.extend({

@@ -1,4 +1,3 @@
-import { GrpcStatus } from '@libs/grpc';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import {
@@ -13,7 +12,8 @@ import type {
 	FindAllUsersResponse,
 	FindMeRequest,
 	UserResponse
-} from 'contracts/gen/users';
+} from 'contracts/grpc/gen/users';
+import { GrpcStatus } from 'libsV2/grpc';
 
 @Injectable()
 export class UsersService {

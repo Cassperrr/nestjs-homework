@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserServiceEnv } from '@user-service/src/config';
-import { RedisFactoryModule } from 'libs/redis';
+import { RedisFactoryModule } from 'libsV2/redis';
 
 @Module({
 	imports: [
-		RedisFactoryModule.forRootAsync({
+		RedisFactoryModule.registerAsync({
 			inject: [ConfigService],
 			useFactory: (config: ConfigService<UserServiceEnv, true>) => ({
 				username: config.get('REDIS_USER', { infer: true }),

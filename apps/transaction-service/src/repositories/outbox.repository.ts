@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import {
-	type OutboxEvent,
-	PrismaClient
-} from '@transaction-service/prisma/generated/client';
-import { InjectPrismaClient } from 'libs/prisma';
+import { PrismaClient } from '@transaction-service/prisma/generated/client';
+import { InjectPrismaClient } from 'libsV2/prisma';
 import { TransactionStatus } from 'shared';
 
 @Injectable()

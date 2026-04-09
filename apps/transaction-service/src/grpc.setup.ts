@@ -1,13 +1,6 @@
-import { PROTO_PATHS } from '@contracts';
-import { createGrpcServer } from '@libs/grpc';
-import { INestApplication } from '@nestjs/common';
-import { TRANSACTION_PACKAGE_NAME } from 'contracts/gen/transaction';
+import type { INestApplication } from '@nestjs/common';
+import { createGrpcServer } from 'libsV2/grpc';
 
 export const grpcSetup = (app: INestApplication, grpcUrl: string) => {
-	createGrpcServer(
-		app,
-		grpcUrl,
-		[TRANSACTION_PACKAGE_NAME],
-		[PROTO_PATHS.TRANSACTION]
-	);
+	createGrpcServer(app, grpcUrl, ['TRANSACTION']);
 };

@@ -3,7 +3,7 @@ import type {
 	Avatar,
 	PrismaClient
 } from '@user-service/prisma/generated/client';
-import { InjectPrismaClient } from 'libs/prisma';
+import { InjectPrismaClient } from 'libsV2/prisma';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()

@@ -1,18 +1,17 @@
-import { AbstractGrpcClient, InjectGrpcClient } from '@libs/grpc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { UserServiceEnv } from '@user-service/src/config';
+import type { UserServiceEnv } from '@user-service/src/config';
 import {
-	JOB_PACKAGE_NAME,
 	JOB_SERVICE_NAME,
-	JobServiceClient
-} from 'contracts/gen/job';
+	type JobServiceClient
+} from 'contracts/grpc/gen/job';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
 
 @Injectable()
 export class JobClientGrpc extends AbstractGrpcClient<JobServiceClient> {
 	public constructor(
-		@InjectGrpcClient(JOB_PACKAGE_NAME) client: ClientGrpc,
+		@InjectGrpcClient('JOB') client: ClientGrpc,
 		private readonly config: ConfigService<UserServiceEnv, true>
 	) {
 		const token = config.get('USER_ACCESS_TOKEN', { infer: true });

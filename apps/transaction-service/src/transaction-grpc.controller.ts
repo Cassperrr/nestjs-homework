@@ -1,5 +1,5 @@
-import { createGrpcController } from '@libs/grpc';
-import { TRANSACTION_SERVICE_NAME } from 'contracts/gen/transaction';
+import { TRANSACTION_SERVICE_NAME } from 'contracts/grpc/gen/transaction';
+import { createGrpcController } from 'libsV2/grpc';
 
 import { ACCESS_LIST } from './config';
 import { TransactionGrpcService } from './providers/grpc';

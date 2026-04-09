@@ -1,12 +1,12 @@
 import { PROTO_PATHS } from '@contracts';
-import { ACCOUNT_PACKAGE_NAME } from 'contracts/gen/account';
-import { AUTH_PACKAGE_NAME } from 'contracts/gen/auth';
-import { AVATAR_PACKAGE_NAME } from 'contracts/gen/avatar';
-import { BALANCE_PACKAGE_NAME } from 'contracts/gen/balance';
-import { JOB_PACKAGE_NAME } from 'contracts/gen/job';
-import { PROFILE_PACKAGE_NAME } from 'contracts/gen/profile';
-import { TRANSACTION_PACKAGE_NAME } from 'contracts/gen/transaction';
-import { USERS_PACKAGE_NAME } from 'contracts/gen/users';
+import { ACCOUNT_PACKAGE_NAME } from 'contracts/grpc/gen/account';
+import { AUTH_PACKAGE_NAME } from 'contracts/grpc/gen/auth';
+import { AVATAR_PACKAGE_NAME } from 'contracts/grpc/gen/avatar';
+import { BALANCE_PACKAGE_NAME } from 'contracts/grpc/gen/balance';
+import { JOB_PACKAGE_NAME } from 'contracts/grpc/gen/job';
+import { PROFILE_PACKAGE_NAME } from 'contracts/grpc/gen/profile';
+import { TRANSACTION_PACKAGE_NAME } from 'contracts/grpc/gen/transaction';
+import { USERS_PACKAGE_NAME } from 'contracts/grpc/gen/users';
 
 export const GRPC_CLIENTS = {
 	[AUTH_PACKAGE_NAME]: {

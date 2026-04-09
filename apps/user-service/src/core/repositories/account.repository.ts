@@ -3,7 +3,7 @@ import type {
 	Account,
 	PrismaClient
 } from '@user-service/prisma/generated/client';
-import { InjectPrismaClient } from 'libs/prisma';
+import { InjectPrismaClient } from 'libsV2/prisma';
 import { Currency } from 'shared';
 import { uuidv7 } from 'uuidv7';
 

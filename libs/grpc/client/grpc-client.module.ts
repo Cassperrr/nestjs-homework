@@ -2,8 +2,8 @@ import { type DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { GRPC_CLIENTS } from './config';
-import { GRPC_CLIENT_PREFIX } from './constants';
 import { GrpcClientFactory } from './factories';
+import { createClientToken } from './utils';
 
 @Module({})
 export class GrpcClientModule {
@@ -17,7 +17,7 @@ export class GrpcClientModule {
 				...clients.map(token => {
 					const cfg = GRPC_CLIENTS[token];
 					return {
-						provide: `${GRPC_CLIENT_PREFIX}_${token}`,
+						provide: createClientToken(token),
 						useFactory: (
 							factory: GrpcClientFactory,
 							config: ConfigService
@@ -52,7 +52,7 @@ export class GrpcClientModule {
 			],
 			exports: [
 				GrpcClientFactory,
-				...clients.map(token => `${GRPC_CLIENT_PREFIX}_${token}`)
+				...clients.map(token => createClientToken(token))
 			]
 		};
 	}

@@ -1,3 +1,4 @@
+import { X_ACCOUNT_ID, X_GATEWAY_ACCESS_TOKEN } from '@contracts';
 import {
 	Controller,
 	Delete,
@@ -7,9 +8,8 @@ import {
 	Post,
 	Query
 } from '@nestjs/common';
-import type { AvatarResponse } from 'contracts/gen/avatar';
-import { CheckHeaders } from 'libs/proxy';
-import { X_ACCOUNT_ID, X_GATEWAY_ACCESS_TOKEN } from 'shared';
+import type { AvatarResponse } from 'contracts/grpc/gen/avatar';
+import { CheckHeaders } from 'libsV2/proxy';
 
 import { FileUploadInterceptor } from './common';
 import { UploadedAvatar } from './common/decorators';

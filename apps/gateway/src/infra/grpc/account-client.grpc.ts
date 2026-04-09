@@ -1,18 +1,17 @@
-import { GatewayEnv } from '@gateway/src/config';
-import { AbstractGrpcClient, InjectGrpcClient } from '@libs/grpc';
+import type { GatewayEnv } from '@gateway/src/config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { ClientGrpc } from '@nestjs/microservices';
 import {
-	ACCOUNT_PACKAGE_NAME,
 	ACCOUNT_SERVICE_NAME,
-	AccountServiceClient
-} from 'contracts/gen/account';
+	type AccountServiceClient
+} from 'contracts/grpc/gen/account';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
 
 @Injectable()
 export class AccountClientGrpc extends AbstractGrpcClient<AccountServiceClient> {
 	public constructor(
-		@InjectGrpcClient(ACCOUNT_PACKAGE_NAME) client: ClientGrpc,
+		@InjectGrpcClient('ACCOUNT') client: ClientGrpc,
 		private readonly config: ConfigService<GatewayEnv, true>
 	) {
 		const token = config.get('GATEWAY_ACCESS_TOKEN', { infer: true });

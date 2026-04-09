@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { YookassaFactoryModule } from 'libs/payments/yookassa';
-
-import { TxServiceEnv } from '../../config';
+import type { TxServiceEnv } from '@transaction-service/src/config';
+import { YookassaFactoryModule } from 'libsV2/payments';
 
 @Module({
 	imports: [
-		YookassaFactoryModule.forRootAsync({
+		YookassaFactoryModule.registerAsync({
 			inject: [ConfigService],
 			useFactory: (config: ConfigService<TxServiceEnv, true>) => ({
 				shopId: config.get('YOOKASSA_SHOP_ID', { infer: true }),

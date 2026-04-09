@@ -5,7 +5,7 @@ import {
 	type Transaction
 } from '@transaction-service/prisma/generated/client';
 import { KafkaTopics } from 'libs/kafka';
-import { InjectPrismaClient } from 'libs/prisma';
+import { InjectPrismaClient } from 'libsV2/prisma';
 import { TransactionStatus, TransactionType } from 'shared';
 import { uuidv7 } from 'uuidv7';
 

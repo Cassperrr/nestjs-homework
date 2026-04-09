@@ -1,5 +1,4 @@
 import { Metadata } from '@grpc/grpc-js';
-import { GrpcStatus } from '@libs/grpc';
 import {
 	CanActivate,
 	ExecutionContext,
@@ -8,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RpcException } from '@nestjs/microservices';
+import { GrpcStatus } from 'libsV2/grpc';
 
 import { ALLOWED_SERVICES_KEY } from '../constants';
 

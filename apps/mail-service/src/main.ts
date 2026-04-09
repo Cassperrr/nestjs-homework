@@ -1,7 +1,7 @@
-import { getLoggerOptions } from '@libs/utils';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { createRmqServer } from 'libs/rmq';
+import { getLoggerOptions } from 'libsV2/utils';
 
 import { MailServiceEnv } from './config';
 import { MailModule } from './mail.module';

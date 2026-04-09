@@ -1,8 +1,7 @@
-import { generalSchema } from '@libs/config';
+import { generalSchema } from 'registries';
 import { z } from 'zod';
 
 export const mailServiceEnvSchema = generalSchema.extend({
-	RMQ_URL: z.string().nonempty(),
 	MAIL_QUEUE: z.string().nonempty(),
 
 	SMTP_HOST: z.string().nonempty(),

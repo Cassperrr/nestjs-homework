@@ -1,5 +1,5 @@
-import { createGrpcController } from '@libs/grpc';
-import { JOB_SERVICE_NAME } from 'contracts/gen/job';
+import { JOB_SERVICE_NAME } from 'contracts/grpc/gen/job';
+import { createGrpcController } from 'libsV2/grpc';
 
 import { ACCESS_LIST } from './config';
 import { JobService } from './job.service';

@@ -1,4 +1,4 @@
-import { createConfigModule } from '@libs/config';
+import { createConfigModule } from 'libsV2/config';
 
 import { txServiceEnvSchema } from './env.schema';
 

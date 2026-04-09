@@ -1,3 +1,1 @@
-import { status } from '@grpc/grpc-js';
-
-export const GrpcStatus = status;
+export { status as GrpcStatus } from '@grpc/grpc-js';

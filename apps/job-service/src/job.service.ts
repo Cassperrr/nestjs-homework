@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { StringMessage } from 'contracts/gen/shared';
+import type { StringMessage } from 'contracts/grpc/gen/shared';
 
 import { BalanceResetService } from './jobs';
 

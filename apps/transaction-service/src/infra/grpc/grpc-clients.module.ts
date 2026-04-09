@@ -1,11 +1,10 @@
-import { GrpcClientModule } from '@libs/grpc';
 import { Module } from '@nestjs/common';
-import { BALANCE_PACKAGE_NAME } from 'contracts/gen/balance';
+import { GrpcClientFactoryModule } from 'libsV2/grpc';
 
 import { BalanceClientGrpc } from './balance-client.grpc';
 
 @Module({
-	imports: [GrpcClientModule.register([BALANCE_PACKAGE_NAME])],
+	imports: [GrpcClientFactoryModule.registerAsync(['BALANCE'])],
 	providers: [BalanceClientGrpc],
 	exports: [BalanceClientGrpc]
 })

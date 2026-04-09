@@ -13,7 +13,7 @@
 		"start:mail-service": "cross-env NODE_ENV=development nest start mail-service --watch",
 		"start:tx-service": "cross-env NODE_ENV=development nest start transaction-service --watch",
 		"start:notification-service": "cross-env NODE_ENV=development nest start notification-service --watch",
-		"protogen": "./contracts/commands/protogen.cmd",
+		"protogen": "./contracts/grpc/commands/protogen.cmd",
 		"docker:up": "./docker/commands/docker-up.cmd",
 		"docker:down": "./docker/commands/docker-down.cmd",
 		"prisma:seed:users": "./apps/user-service/prisma/commands/seed.cmd",

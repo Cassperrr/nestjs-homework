@@ -1,11 +1,10 @@
-import { GrpcClientModule } from '@libs/grpc';
 import { Module } from '@nestjs/common';
-import { AVATAR_PACKAGE_NAME } from 'contracts/gen/avatar';
+import { GrpcClientFactoryModule } from 'libsV2/grpc';
 
 import { AvatarClientGrpc } from './avatar-client.grpc';
 
 @Module({
-	imports: [GrpcClientModule.register([AVATAR_PACKAGE_NAME])],
+	imports: [GrpcClientFactoryModule.registerAsync(['AVATAR'])],
 	providers: [AvatarClientGrpc],
 	exports: [AvatarClientGrpc]
 })

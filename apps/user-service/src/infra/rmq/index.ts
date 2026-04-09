@@ -1,2 +1,2 @@
-export * from './rmq-clients.module';
-export * from './mail-client.rmq';
+export * from './rmq-producers.module';
+export * from './mail-producer.rmq';

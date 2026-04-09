@@ -1,4 +1,3 @@
-import { GrpcStatus } from '@libs/grpc';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -13,8 +12,9 @@ import type {
 	AvatarResponse,
 	CreateAvatarRequest,
 	DeleteAvatarRequest
-} from 'contracts/gen/avatar';
-import type { StringMessage } from 'contracts/gen/shared';
+} from 'contracts/grpc/gen/avatar';
+import type { StringMessage } from 'contracts/grpc/gen/shared';
+import { GrpcStatus } from 'libsV2/grpc';
 
 @Injectable()
 export class AvatarService {

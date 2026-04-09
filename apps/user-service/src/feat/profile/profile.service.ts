@@ -1,4 +1,3 @@
-import { GrpcStatus } from '@libs/grpc';
 import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { RpcException } from '@nestjs/microservices';
@@ -11,7 +10,8 @@ import type {
 	CreateProfileRequest,
 	ProfileResponse,
 	UpdateProfileRequest
-} from 'contracts/gen/profile';
+} from 'contracts/grpc/gen/profile';
+import { GrpcStatus } from 'libsV2/grpc';
 
 @Injectable()
 export class ProfileService {

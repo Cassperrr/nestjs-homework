@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@transaction-service/prisma/generated/client';
 import { TxServiceEnv } from '@transaction-service/src/config';
-import { PrismaFactoryModule } from 'libs/prisma';
+import { PrismaFactoryModule } from 'libsV2/prisma';
 
 @Module({
 	imports: [
-		PrismaFactoryModule.forRootAsync(PrismaClient, {
+		PrismaFactoryModule.registerAsync(PrismaClient, {
 			inject: [ConfigService],
 			useFactory: (config: ConfigService<TxServiceEnv, true>) => ({
 				adapter: new PrismaPg({

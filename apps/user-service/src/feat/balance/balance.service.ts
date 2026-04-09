@@ -1,28 +1,17 @@
-import { GrpcStatus } from '@libs/grpc';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { AccountRepository, BalanceRepository } from '@user-service/src/core';
 import { JobClientGrpc } from '@user-service/src/infra';
 import type {
-	AuditBalanceRequest,
-	AuditBalanceResponse,
 	BalanceResetJobRequest,
-	CheckBalanceRequest,
-	CheckBalanceResponse,
-	DepositAmountRequest,
-	DepositAmountResponse,
 	GetMyBalancesRequest,
 	GetMyBalancesResponse,
 	ResetAllBalancesResponse,
-	TransferAmountRequest,
-	TransferAmountResponse,
 	ValidationAccountRequest,
-	ValidationAccountResponse,
-	WithdrawalAmountRequest,
-	WithdrawalAmountResponse
-} from 'contracts/gen/balance';
-import { StringMessage } from 'contracts/gen/shared';
-import { TransactionType } from 'shared';
+	ValidationAccountResponse
+} from 'contracts/grpc/gen/balance';
+import type { StringMessage } from 'contracts/grpc/gen/shared';
+import { GrpcStatus } from 'libsV2/grpc';
 import 'shared/extensions/bigint.extension';
 
 @Injectable()

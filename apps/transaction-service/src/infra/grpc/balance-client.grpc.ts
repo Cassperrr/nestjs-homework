@@ -1,18 +1,17 @@
-import { AbstractGrpcClient, InjectGrpcClient } from '@libs/grpc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { ClientGrpc } from '@nestjs/microservices';
-import { TxServiceEnv } from '@transaction-service/src/config';
+import type { TxServiceEnv } from '@transaction-service/src/config';
 import {
-	BALANCE_PACKAGE_NAME,
 	BALANCE_SERVICE_NAME,
-	BalanceServiceClient
-} from 'contracts/gen/balance';
+	type BalanceServiceClient
+} from 'contracts/grpc/gen/balance';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
 
 @Injectable()
 export class BalanceClientGrpc extends AbstractGrpcClient<BalanceServiceClient> {
 	public constructor(
-		@InjectGrpcClient(BALANCE_PACKAGE_NAME) client: ClientGrpc,
+		@InjectGrpcClient('BALANCE') client: ClientGrpc,
 		private readonly config: ConfigService<TxServiceEnv, true>
 	) {
 		const token = config.get('TX_ACCESS_TOKEN', { infer: true });

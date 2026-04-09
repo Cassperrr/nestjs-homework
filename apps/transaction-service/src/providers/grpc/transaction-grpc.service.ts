@@ -1,22 +1,16 @@
-import { GrpcStatus } from '@libs/grpc';
-import { rethrowGrpcError } from '@libs/utils';
 import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { BalanceClientGrpc } from '@transaction-service/src/infra';
 import { TransactionRepository } from '@transaction-service/src/repositories';
-import { StringMessage } from 'contracts/gen/shared';
+import { StringMessage } from 'contracts/grpc/gen/shared';
 import type {
 	DepositRubRequest,
 	DepositRubResponse,
 	TransferRubRequest
-} from 'contracts/gen/transaction';
-import { YookassaService } from 'libs/payments';
-import {
-	Currency,
-	PaymentProvider,
-	TransactionStatus,
-	TransactionType
-} from 'shared';
+} from 'contracts/grpc/gen/transaction';
+import { GrpcStatus, rethrowGrpcError } from 'libsV2/grpc';
+import { YookassaService } from 'libsV2/payments';
+import { Currency, PaymentProvider, TransactionType } from 'shared';
 import 'shared/extensions/bigint.extension';
 import { uuidv7 } from 'uuidv7';
 

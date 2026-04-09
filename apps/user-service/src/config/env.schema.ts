@@ -1,5 +1,5 @@
-import { generalSchema } from '@libs/config';
 import ms, { type StringValue } from 'ms';
+import { generalSchema } from 'registries';
 import { z } from 'zod';
 
 export const userServiceEnvSchema = generalSchema.extend({
@@ -28,7 +28,6 @@ export const userServiceEnvSchema = generalSchema.extend({
 	MINIO_REGION: z.string().nonempty(),
 	MINIO_BUCKET_NAME: z.string().nonempty(),
 
-	RMQ_URL: z.string().nonempty(),
 	MAIL_QUEUE: z.string().nonempty(),
 
 	OTP_CODE_TTL: z.coerce.number().min(100),

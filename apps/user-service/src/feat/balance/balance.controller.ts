@@ -1,6 +1,6 @@
-import { createGrpcController } from '@libs/grpc';
 import { ACCESS_LIST } from '@user-service/src/config';
-import { BALANCE_SERVICE_NAME } from 'contracts/gen/balance';
+import { BALANCE_SERVICE_NAME } from 'contracts/grpc/gen/balance';
+import { createGrpcController } from 'libsV2/grpc';
 
 import { BalanceService } from './balance.service';
 

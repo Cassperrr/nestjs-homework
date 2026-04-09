@@ -3,11 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { UserServiceEnv } from '@user-service/src/config';
 import { PrismaClient } from 'apps/user-service/prisma/generated/client';
-import { PrismaFactoryModule } from 'libs/prisma';
+import { PrismaFactoryModule } from 'libsV2/prisma';
 
 @Module({
 	imports: [
-		PrismaFactoryModule.forRootAsync(PrismaClient, {
+		PrismaFactoryModule.registerAsync(PrismaClient, {
 			inject: [ConfigService],
 			useFactory: (config: ConfigService<UserServiceEnv, true>) => ({
 				adapter: new PrismaPg({

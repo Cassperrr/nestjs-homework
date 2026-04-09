@@ -1,6 +1,6 @@
-import { getLoggerOptions } from '@libs/utils';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { getLoggerOptions } from 'libsV2/utils';
 
 import { UserServiceEnv } from './config';
 import { grpcSetup } from './grpc.setup';
@@ -19,7 +19,7 @@ async function bootstrap() {
 	const kafkaBroker = config.get('KAFKA_BROKER', { infer: true });
 
 	grpcSetup(app, grpcUrl);
-	kafkaSetup(app, 'user-service', 'user-service-group', [kafkaBroker]);
+	kafkaSetup(app, [kafkaBroker]);
 
 	await app.startAllMicroservices();
 	await app.init();

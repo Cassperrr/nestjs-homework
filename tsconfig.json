@@ -28,7 +28,6 @@
 			"@job-service/*": ["apps/job-service/*"],
 			"@transaction-service/*": ["apps/transaction-service/*"],
 			"@libs/config": ["libs/config/index.ts"],
-			"@libs/grpc": ["libs/grpc/index.ts"],
 			"@libs/utils": ["libs/utils/index.ts"],
 			"@mail-service/*": ["apps/mail-service/*"],
 			"@notification-service/*": ["apps/notification-service/*"],

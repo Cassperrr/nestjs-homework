@@ -1,6 +1,6 @@
-import { createGrpcController } from '@libs/grpc';
 import { ACCESS_LIST } from '@user-service/src/config';
-import { AVATAR_SERVICE_NAME } from 'contracts/gen/avatar';
+import { AVATAR_SERVICE_NAME } from 'contracts/grpc/gen/avatar';
+import { createGrpcController } from 'libsV2/grpc';
 
 import { AvatarService } from './avatar.service';
 

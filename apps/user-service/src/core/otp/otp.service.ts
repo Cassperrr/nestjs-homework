@@ -1,9 +1,9 @@
-import { GrpcStatus } from '@libs/grpc';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RpcException } from '@nestjs/microservices';
-import { UserServiceEnv } from '@user-service/src/config';
-import { RedisService } from 'libs/redis';
+import type { UserServiceEnv } from '@user-service/src/config';
+import { GrpcStatus } from 'libsV2/grpc';
+import { RedisService } from 'libsV2/redis';
 import { createHash } from 'node:crypto';
 import { generateCode } from 'patcode';
 import type { OtpKey } from 'shared';
