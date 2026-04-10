@@ -5,22 +5,24 @@ import {
 	type OnModuleInit
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { ClientKafka } from '@nestjs/microservices';
 import type { OutboxEvent } from '@transaction-service/prisma/generated/client';
 import type { TxServiceEnv } from '@transaction-service/src/config';
 import { OutboxRepository } from '@transaction-service/src/repositories';
-import { KafkaProducerService, KafkaTopic } from 'libs/kafka';
+import { InjectKafkaProducer } from 'libsV2/kafka';
 
 @Injectable()
 export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 	private readonly logger = new Logger(OutboxWorker.name);
-	private intervalRef: NodeJS.Timeout;
+	private intervalRef!: NodeJS.Timeout;
 	private isProcessing = false;
 
 	private readonly BATCH_SIZE: number;
 	private readonly POLL_INTERVAL_MS: number;
 
 	public constructor(
-		private readonly kafkaProducer: KafkaProducerService,
+		@InjectKafkaProducer()
+		private readonly kafkaProducer: ClientKafka,
 		private readonly outboxRepo: OutboxRepository,
 		private readonly config: ConfigService<TxServiceEnv, true>
 	) {
@@ -30,7 +32,7 @@ export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 		});
 	}
 
-	public async onModuleInit() {
+	public onModuleInit() {
 		// Запускаем polling
 		this.intervalRef = setInterval(
 			() => void this.processOutbox(),
@@ -41,7 +43,7 @@ export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 		void this.processOutbox();
 	}
 
-	public async onModuleDestroy() {
+	public onModuleDestroy() {
 		clearInterval(this.intervalRef);
 	}
 
@@ -70,7 +72,7 @@ export class OutboxWorker implements OnModuleInit, OnModuleDestroy {
 
 	private async processEvent(event: OutboxEvent): Promise<void> {
 		try {
-			await this.kafkaProducer.publish(event.topic as KafkaTopic, {
+			this.kafkaProducer.emit(event.topic, {
 				key: event.id,
 				value: event.payload
 			});

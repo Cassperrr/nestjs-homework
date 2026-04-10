@@ -1,20 +1,7 @@
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ClientsModule, Transport } from '@nestjs/microservices';
-import { UserServiceEnv } from '@user-service/src/config';
-import { KafkaProducerFactoryModule } from 'libs/kafka';
+import { KafkaProducerFactoryModule } from 'libsV2/kafka';
 
 @Module({
-	imports: [
-		KafkaProducerFactoryModule.forRootAsync({
-			inject: [ConfigService],
-			useFactory: (config: ConfigService<UserServiceEnv, true>) => ({
-				kafkaConfig: {
-					clientId: 'user-service',
-					brokers: [config.get('KAFKA_BROKER', { infer: true })]
-				}
-			})
-		})
-	]
+	imports: [KafkaProducerFactoryModule.regiserAsync('USER')]
 })
 export class KafkaProcuderModule {}

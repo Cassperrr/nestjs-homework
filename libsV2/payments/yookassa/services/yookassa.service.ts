@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	Inject,
 	Injectable,
 	Logger,
@@ -10,7 +11,8 @@ import type {
 	CreatePaymentRequest,
 	CreatePaymentResponse,
 	YookassaModuleOptions,
-	YookassaPaymentObjectResponse
+	YookassaPaymentObjectResponse,
+	YookassaPaymentStatus
 } from '../interfaces';
 
 /**
@@ -58,9 +60,6 @@ export class YookassaService {
 
 		if (!res.ok) {
 			const error = await res.json().catch(() => ({}));
-			this.logger.error(
-				`Yookassa error ${res.status}: ${JSON.stringify(error)}`
-			);
 			throw new UnprocessableEntityException(error);
 		}
 
@@ -87,5 +86,17 @@ export class YookassaService {
 			'GET',
 			`/payments/${paymentId}`
 		);
+	}
+
+	public async checkPaymentStatus(
+		paymentId: string,
+		status: YookassaPaymentStatus
+	): Promise<YookassaPaymentObjectResponse> {
+		const payment = await this.getPayment(paymentId);
+		if (payment.status !== status)
+			throw new BadRequestException(
+				`Неожиданный статус платежа: ${status} !== ${payment.status}`
+			);
+		return payment;
 	}
 }

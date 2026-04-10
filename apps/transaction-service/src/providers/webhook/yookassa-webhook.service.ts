@@ -28,7 +28,7 @@ export class YookassaWebhookService {
 				return this.canceled(providerPaymentId);
 			case 'payment.waiting_for_capture':
 			default:
-				this.logger.warn('Неизвестное событие', data);
+				this.logger.warn(`Неизвестное событие`, data);
 				return;
 		}
 	}

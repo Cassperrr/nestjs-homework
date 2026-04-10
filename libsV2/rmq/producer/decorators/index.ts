@@ -1,1 +1,1 @@
-export * from './inject-rmq-producer.decorator';
+export * from './inject-rmq-queue.decorator';

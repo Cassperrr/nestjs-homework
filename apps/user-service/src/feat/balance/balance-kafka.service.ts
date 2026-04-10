@@ -1,4 +1,6 @@
+import { KAFKA_TOPICS } from '@contracts';
 import { Injectable, Logger } from '@nestjs/common';
+import type { ClientKafka } from '@nestjs/microservices';
 import { BalanceRepository } from '@user-service/src/core';
 import {
 	DepositCompletedEvent,
@@ -6,14 +8,17 @@ import {
 	KafkaTopics,
 	TransferPendingEvent
 } from 'libs/kafka';
+import { InjectKafkaProducer } from 'libsV2/kafka';
 
 @Injectable()
 export class BalanceKafkaService {
 	private readonly logger = new Logger(BalanceKafkaService.name);
 
 	public constructor(
-		private readonly balanceRepo: BalanceRepository,
-		private readonly kafkaProducer: KafkaProducerService
+		@InjectKafkaProducer()
+		private readonly kafkaProducer: ClientKafka,
+
+		private readonly balanceRepo: BalanceRepository
 	) {}
 
 	public async depositCompleted(event: DepositCompletedEvent) {
@@ -35,13 +40,10 @@ export class BalanceKafkaService {
 			if (!updated) throw Error('Обновленный объект баланса не получен');
 
 			// здесь публикация успеха
-			await this.kafkaProducer.publish(
-				KafkaTopics.BALANCE_UPDATED_SUCCESS,
-				{
-					key: eventId,
-					value: { eventId, transactionId }
-				}
-			);
+			this.kafkaProducer.emit(KAFKA_TOPICS.DEPOSIT_SUCCESS, {
+				key: eventId,
+				value: { eventId, transactionId }
+			});
 
 			this.logger.log(
 				`[${KafkaTopics.TX_DEPOSIT_COMPLETED}] [accountId=${accountId}] [transactionId=${transactionId}] [${amountInt} ${currency}] Баланс успешно начислен`
@@ -53,18 +55,10 @@ export class BalanceKafkaService {
 			);
 
 			// здесь публикация провала
-			await this.kafkaProducer
-				.publish(KafkaTopics.BALANCE_UPDATED_FAILED, {
-					key: eventId,
-					value: { eventId, transactionId }
-				})
-				.catch(publishError => {
-					this.logger.error(
-						'Failed to publish BALANCE_UPDATED_FAILED',
-						publishError
-					);
-					// TODO: DLQ
-				});
+			this.kafkaProducer.emit(KAFKA_TOPICS.DEPOSIT_FAILED, {
+				key: eventId,
+				value: { eventId, transactionId }
+			});
 		}
 	}
 
@@ -94,13 +88,10 @@ export class BalanceKafkaService {
 				KafkaTopics.TX_TRANSFER_PENDING
 			);
 
-			await this.kafkaProducer.publish(
-				KafkaTopics.BALANCE_TRANSFER_SUCCESS,
-				{
-					key: eventId,
-					value: { eventId, outId, inId }
-				}
-			);
+			this.kafkaProducer.emit(KAFKA_TOPICS.TRANFER_SUCCESS, {
+				key: eventId,
+				value: { eventId, outId, inId }
+			});
 
 			this.logger.log(
 				`[${KafkaTopics.TX_TRANSFER_PENDING}] [fromAccountId=${fromAccountId}] [toAccountId=${toAccountId}] [outId=${outId}] [inId=${inId}] [${amountInt} ${currency}] Перевод выполнен`
@@ -111,18 +102,10 @@ export class BalanceKafkaService {
 				error
 			);
 			// здесь публикация провала
-			await this.kafkaProducer
-				.publish(KafkaTopics.BALANCE_TRANSFER_FAILED, {
-					key: eventId,
-					value: { eventId, outId, inId }
-				})
-				.catch(publishError => {
-					this.logger.error(
-						'Failed to publish BALANCE_UPDATED_FAILED',
-						publishError
-					);
-					// TODO: DLQ
-				});
+			this.kafkaProducer.emit(KAFKA_TOPICS.TRANFER_FAILED, {
+				key: eventId,
+				value: { eventId, outId, inId }
+			});
 		}
 	}
 }

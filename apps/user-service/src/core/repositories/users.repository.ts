@@ -1,5 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import type { PrismaClient } from '@user-service/prisma/generated/client';
+import {
+	Prisma,
+	type PrismaClient
+} from '@user-service/prisma/generated/client';
 import { InjectPrismaClient } from 'libsV2/prisma';
 
 @Injectable()
@@ -108,33 +111,35 @@ export class UsersRepository {
 	// переданный диапазон возраста
 	// === индексы поставил на возраст (на описание не стал потому что предположил что 90% профилей будет заполнено) и partional (deleted_at IS NULL) на аватар
 	public async findActive(minAge: number, maxAge: number) {
-		return this.prisma.$queryRaw`
-			SELECT accounts.id AS "accountId", 
-				username, 
-				email,
-				accounts.created_at AS "createdAt",
-				profiles.id AS "profileId",
-				profiles.first_name AS "firstName",
-				profiles.last_name AS "lastName",
-				profiles.age,
-				profiles.description,
-				last_avatar.name AS "lastLoadedAvatar"
-			FROM accounts
-				JOIN profiles ON profiles.account_id = accounts.id
-				JOIN avatars ON profiles.id = avatars.profile_id
-				LEFT JOIN (
-					SELECT profile_id, name, ROW_NUMBER() OVER (
-						PARTITION BY profile_id 
-						ORDER BY created_at DESC
-					) AS rn
-					FROM avatars
-					WHERE deleted_at IS NULL
-				) AS last_avatar ON last_avatar.profile_id = profiles.id AND last_avatar.rn = 1
-			WHERE profiles.age BETWEEN ${minAge} AND ${maxAge}
-				AND avatars.deleted_at IS NULL
-				AND profiles.description IS NOT NULL
-			GROUP BY accounts.id, profiles.id, last_avatar.name
-			HAVING count(avatars.id) > 2;
-		`;
+		return this.prisma.$queryRaw(
+			Prisma.sql`
+				SELECT accounts.id AS "accountId", 
+					username, 
+					email,
+					accounts.created_at AS "createdAt",
+					profiles.id AS "profileId",
+					profiles.first_name AS "firstName",
+					profiles.last_name AS "lastName",
+					profiles.age,
+					profiles.description,
+					last_avatar.name AS "lastLoadedAvatar"
+				FROM accounts
+					JOIN profiles ON profiles.account_id = accounts.id
+					JOIN avatars ON profiles.id = avatars.profile_id
+					LEFT JOIN (
+						SELECT profile_id, name, ROW_NUMBER() OVER (
+							PARTITION BY profile_id 
+							ORDER BY created_at DESC
+						) AS rn
+						FROM avatars
+						WHERE deleted_at IS NULL
+					) AS last_avatar ON last_avatar.profile_id = profiles.id AND last_avatar.rn = 1
+				WHERE profiles.age BETWEEN ${minAge} AND ${maxAge}
+					AND avatars.deleted_at IS NULL
+					AND profiles.description IS NOT NULL
+				GROUP BY accounts.id, profiles.id, last_avatar.name
+				HAVING count(avatars.id) > 2;
+			`
+		);
 	}
 }

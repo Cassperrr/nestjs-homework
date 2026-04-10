@@ -82,11 +82,10 @@ export const TransactionScalarFieldEnum = {
 	status: 'status',
 	idempotencyKey: 'idempotencyKey',
 	provider: 'provider',
+	method: 'method',
 	providerPaymentId: 'providerPaymentId',
-	counterpartyAccountId: 'counterpartyAccountId',
 	referenceId: 'referenceId',
 	withdrawalAccount: 'withdrawalAccount',
-	retryCount: 'retryCount',
 	createdAt: 'createdAt',
 	updatedAt: 'updatedAt'
 } as const;
@@ -100,10 +99,8 @@ export const OutboxEventScalarFieldEnum = {
 	topic: 'topic',
 	payload: 'payload',
 	processed: 'processed',
-	retryCount: 'retryCount',
 	createdAt: 'createdAt',
-	processedAt: 'processedAt',
-	failedAt: 'failedAt'
+	processedAt: 'processedAt'
 } as const;
 
 export type OutboxEventScalarFieldEnum =

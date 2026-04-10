@@ -642,11 +642,10 @@ export const TransactionScalarFieldEnum = {
 	status: 'status',
 	idempotencyKey: 'idempotencyKey',
 	provider: 'provider',
+	method: 'method',
 	providerPaymentId: 'providerPaymentId',
-	counterpartyAccountId: 'counterpartyAccountId',
 	referenceId: 'referenceId',
 	withdrawalAccount: 'withdrawalAccount',
-	retryCount: 'retryCount',
 	createdAt: 'createdAt',
 	updatedAt: 'updatedAt'
 } as const;
@@ -660,10 +659,8 @@ export const OutboxEventScalarFieldEnum = {
 	topic: 'topic',
 	payload: 'payload',
 	processed: 'processed',
-	retryCount: 'retryCount',
 	createdAt: 'createdAt',
-	processedAt: 'processedAt',
-	failedAt: 'failedAt'
+	processedAt: 'processedAt'
 } as const;
 
 export type OutboxEventScalarFieldEnum =
@@ -743,22 +740,6 @@ export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<
 >;
 
 /**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<
-	$PrismaModel,
-	'Int'
->;
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<
-	$PrismaModel,
-	'Int[]'
->;
-
-/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<
@@ -796,6 +777,22 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<
 	$PrismaModel,
 	'Boolean'
+>;
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<
+	$PrismaModel,
+	'Int'
+>;
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<
+	$PrismaModel,
+	'Int[]'
 >;
 
 /**

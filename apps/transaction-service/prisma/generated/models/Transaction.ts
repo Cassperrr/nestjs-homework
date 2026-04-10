@@ -29,12 +29,10 @@ export type AggregateTransaction = {
 
 export type TransactionAvgAggregateOutputType = {
 	amount: number | null;
-	retryCount: number | null;
 };
 
 export type TransactionSumAggregateOutputType = {
 	amount: bigint | null;
-	retryCount: number | null;
 };
 
 export type TransactionMinAggregateOutputType = {
@@ -46,11 +44,10 @@ export type TransactionMinAggregateOutputType = {
 	status: string | null;
 	idempotencyKey: string | null;
 	provider: string | null;
+	method: string | null;
 	providerPaymentId: string | null;
-	counterpartyAccountId: string | null;
 	referenceId: string | null;
 	withdrawalAccount: string | null;
-	retryCount: number | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
 };
@@ -64,11 +61,10 @@ export type TransactionMaxAggregateOutputType = {
 	status: string | null;
 	idempotencyKey: string | null;
 	provider: string | null;
+	method: string | null;
 	providerPaymentId: string | null;
-	counterpartyAccountId: string | null;
 	referenceId: string | null;
 	withdrawalAccount: string | null;
-	retryCount: number | null;
 	createdAt: Date | null;
 	updatedAt: Date | null;
 };
@@ -82,11 +78,10 @@ export type TransactionCountAggregateOutputType = {
 	status: number;
 	idempotencyKey: number;
 	provider: number;
+	method: number;
 	providerPaymentId: number;
-	counterpartyAccountId: number;
 	referenceId: number;
 	withdrawalAccount: number;
-	retryCount: number;
 	createdAt: number;
 	updatedAt: number;
 	_all: number;
@@ -94,12 +89,10 @@ export type TransactionCountAggregateOutputType = {
 
 export type TransactionAvgAggregateInputType = {
 	amount?: true;
-	retryCount?: true;
 };
 
 export type TransactionSumAggregateInputType = {
 	amount?: true;
-	retryCount?: true;
 };
 
 export type TransactionMinAggregateInputType = {
@@ -111,11 +104,10 @@ export type TransactionMinAggregateInputType = {
 	status?: true;
 	idempotencyKey?: true;
 	provider?: true;
+	method?: true;
 	providerPaymentId?: true;
-	counterpartyAccountId?: true;
 	referenceId?: true;
 	withdrawalAccount?: true;
-	retryCount?: true;
 	createdAt?: true;
 	updatedAt?: true;
 };
@@ -129,11 +121,10 @@ export type TransactionMaxAggregateInputType = {
 	status?: true;
 	idempotencyKey?: true;
 	provider?: true;
+	method?: true;
 	providerPaymentId?: true;
-	counterpartyAccountId?: true;
 	referenceId?: true;
 	withdrawalAccount?: true;
-	retryCount?: true;
 	createdAt?: true;
 	updatedAt?: true;
 };
@@ -147,11 +138,10 @@ export type TransactionCountAggregateInputType = {
 	status?: true;
 	idempotencyKey?: true;
 	provider?: true;
+	method?: true;
 	providerPaymentId?: true;
-	counterpartyAccountId?: true;
 	referenceId?: true;
 	withdrawalAccount?: true;
-	retryCount?: true;
 	createdAt?: true;
 	updatedAt?: true;
 	_all?: true;
@@ -259,11 +249,10 @@ export type TransactionGroupByOutputType = {
 	status: string;
 	idempotencyKey: string;
 	provider: string | null;
+	method: string | null;
 	providerPaymentId: string | null;
-	counterpartyAccountId: string | null;
 	referenceId: string | null;
 	withdrawalAccount: string | null;
-	retryCount: number;
 	createdAt: Date;
 	updatedAt: Date;
 	_count: TransactionCountAggregateOutputType | null;
@@ -305,11 +294,8 @@ export type TransactionWhereInput = {
 	status?: Prisma.StringFilter<'Transaction'> | string;
 	idempotencyKey?: Prisma.StringFilter<'Transaction'> | string;
 	provider?: Prisma.StringNullableFilter<'Transaction'> | string | null;
+	method?: Prisma.StringNullableFilter<'Transaction'> | string | null;
 	providerPaymentId?:
-		| Prisma.StringNullableFilter<'Transaction'>
-		| string
-		| null;
-	counterpartyAccountId?:
 		| Prisma.StringNullableFilter<'Transaction'>
 		| string
 		| null;
@@ -318,13 +304,9 @@ export type TransactionWhereInput = {
 		| Prisma.StringNullableFilter<'Transaction'>
 		| string
 		| null;
-	retryCount?: Prisma.IntFilter<'Transaction'> | number;
 	createdAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
 	updatedAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
-	outboxEvents?: Prisma.XOR<
-		Prisma.OutboxEventNullableScalarRelationFilter,
-		Prisma.OutboxEventWhereInput
-	> | null;
+	outboxEvents?: Prisma.OutboxEventListRelationFilter;
 };
 
 export type TransactionOrderByWithRelationInput = {
@@ -336,14 +318,13 @@ export type TransactionOrderByWithRelationInput = {
 	status?: Prisma.SortOrder;
 	idempotencyKey?: Prisma.SortOrder;
 	provider?: Prisma.SortOrderInput | Prisma.SortOrder;
+	method?: Prisma.SortOrderInput | Prisma.SortOrder;
 	providerPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder;
-	counterpartyAccountId?: Prisma.SortOrderInput | Prisma.SortOrder;
 	referenceId?: Prisma.SortOrderInput | Prisma.SortOrder;
 	withdrawalAccount?: Prisma.SortOrderInput | Prisma.SortOrder;
-	retryCount?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
-	outboxEvents?: Prisma.OutboxEventOrderByWithRelationInput;
+	outboxEvents?: Prisma.OutboxEventOrderByRelationAggregateInput;
 };
 
 export type TransactionWhereUniqueInput = Prisma.AtLeast<
@@ -360,10 +341,7 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<
 		type?: Prisma.StringFilter<'Transaction'> | string;
 		status?: Prisma.StringFilter<'Transaction'> | string;
 		provider?: Prisma.StringNullableFilter<'Transaction'> | string | null;
-		counterpartyAccountId?:
-			| Prisma.StringNullableFilter<'Transaction'>
-			| string
-			| null;
+		method?: Prisma.StringNullableFilter<'Transaction'> | string | null;
 		referenceId?:
 			| Prisma.StringNullableFilter<'Transaction'>
 			| string
@@ -372,13 +350,9 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<
 			| Prisma.StringNullableFilter<'Transaction'>
 			| string
 			| null;
-		retryCount?: Prisma.IntFilter<'Transaction'> | number;
 		createdAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
 		updatedAt?: Prisma.DateTimeFilter<'Transaction'> | Date | string;
-		outboxEvents?: Prisma.XOR<
-			Prisma.OutboxEventNullableScalarRelationFilter,
-			Prisma.OutboxEventWhereInput
-		> | null;
+		outboxEvents?: Prisma.OutboxEventListRelationFilter;
 	},
 	'id' | 'idempotencyKey' | 'providerPaymentId'
 >;
@@ -392,11 +366,10 @@ export type TransactionOrderByWithAggregationInput = {
 	status?: Prisma.SortOrder;
 	idempotencyKey?: Prisma.SortOrder;
 	provider?: Prisma.SortOrderInput | Prisma.SortOrder;
+	method?: Prisma.SortOrderInput | Prisma.SortOrder;
 	providerPaymentId?: Prisma.SortOrderInput | Prisma.SortOrder;
-	counterpartyAccountId?: Prisma.SortOrderInput | Prisma.SortOrder;
 	referenceId?: Prisma.SortOrderInput | Prisma.SortOrder;
 	withdrawalAccount?: Prisma.SortOrderInput | Prisma.SortOrder;
-	retryCount?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
 	_count?: Prisma.TransactionCountOrderByAggregateInput;
@@ -425,11 +398,11 @@ export type TransactionScalarWhereWithAggregatesInput = {
 		| Prisma.StringNullableWithAggregatesFilter<'Transaction'>
 		| string
 		| null;
-	providerPaymentId?:
+	method?:
 		| Prisma.StringNullableWithAggregatesFilter<'Transaction'>
 		| string
 		| null;
-	counterpartyAccountId?:
+	providerPaymentId?:
 		| Prisma.StringNullableWithAggregatesFilter<'Transaction'>
 		| string
 		| null;
@@ -441,7 +414,6 @@ export type TransactionScalarWhereWithAggregatesInput = {
 		| Prisma.StringNullableWithAggregatesFilter<'Transaction'>
 		| string
 		| null;
-	retryCount?: Prisma.IntWithAggregatesFilter<'Transaction'> | number;
 	createdAt?:
 		| Prisma.DateTimeWithAggregatesFilter<'Transaction'>
 		| Date
@@ -461,14 +433,13 @@ export type TransactionCreateInput = {
 	status: string;
 	idempotencyKey: string;
 	provider?: string | null;
+	method?: string | null;
 	providerPaymentId?: string | null;
-	counterpartyAccountId?: string | null;
 	referenceId?: string | null;
 	withdrawalAccount?: string | null;
-	retryCount?: number;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
-	outboxEvents?: Prisma.OutboxEventCreateNestedOneWithoutTransactionInput;
+	outboxEvents?: Prisma.OutboxEventCreateNestedManyWithoutTransactionInput;
 };
 
 export type TransactionUncheckedCreateInput = {
@@ -480,14 +451,13 @@ export type TransactionUncheckedCreateInput = {
 	status: string;
 	idempotencyKey: string;
 	provider?: string | null;
+	method?: string | null;
 	providerPaymentId?: string | null;
-	counterpartyAccountId?: string | null;
 	referenceId?: string | null;
 	withdrawalAccount?: string | null;
-	retryCount?: number;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
-	outboxEvents?: Prisma.OutboxEventUncheckedCreateNestedOneWithoutTransactionInput;
+	outboxEvents?: Prisma.OutboxEventUncheckedCreateNestedManyWithoutTransactionInput;
 };
 
 export type TransactionUpdateInput = {
@@ -499,11 +469,8 @@ export type TransactionUpdateInput = {
 	status?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+	method?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	providerPaymentId?:
-		| Prisma.NullableStringFieldUpdateOperationsInput
-		| string
-		| null;
-	counterpartyAccountId?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
@@ -515,10 +482,9 @@ export type TransactionUpdateInput = {
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
-	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	outboxEvents?: Prisma.OutboxEventUpdateOneWithoutTransactionNestedInput;
+	outboxEvents?: Prisma.OutboxEventUpdateManyWithoutTransactionNestedInput;
 };
 
 export type TransactionUncheckedUpdateInput = {
@@ -530,11 +496,8 @@ export type TransactionUncheckedUpdateInput = {
 	status?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+	method?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	providerPaymentId?:
-		| Prisma.NullableStringFieldUpdateOperationsInput
-		| string
-		| null;
-	counterpartyAccountId?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
@@ -546,10 +509,9 @@ export type TransactionUncheckedUpdateInput = {
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
-	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
-	outboxEvents?: Prisma.OutboxEventUncheckedUpdateOneWithoutTransactionNestedInput;
+	outboxEvents?: Prisma.OutboxEventUncheckedUpdateManyWithoutTransactionNestedInput;
 };
 
 export type TransactionCreateManyInput = {
@@ -561,11 +523,10 @@ export type TransactionCreateManyInput = {
 	status: string;
 	idempotencyKey: string;
 	provider?: string | null;
+	method?: string | null;
 	providerPaymentId?: string | null;
-	counterpartyAccountId?: string | null;
 	referenceId?: string | null;
 	withdrawalAccount?: string | null;
-	retryCount?: number;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 };
@@ -579,11 +540,8 @@ export type TransactionUpdateManyMutationInput = {
 	status?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+	method?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	providerPaymentId?:
-		| Prisma.NullableStringFieldUpdateOperationsInput
-		| string
-		| null;
-	counterpartyAccountId?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
@@ -595,7 +553,6 @@ export type TransactionUpdateManyMutationInput = {
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
-	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -609,11 +566,8 @@ export type TransactionUncheckedUpdateManyInput = {
 	status?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+	method?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	providerPaymentId?:
-		| Prisma.NullableStringFieldUpdateOperationsInput
-		| string
-		| null;
-	counterpartyAccountId?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
@@ -625,7 +579,6 @@ export type TransactionUncheckedUpdateManyInput = {
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
-	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -639,18 +592,16 @@ export type TransactionCountOrderByAggregateInput = {
 	status?: Prisma.SortOrder;
 	idempotencyKey?: Prisma.SortOrder;
 	provider?: Prisma.SortOrder;
+	method?: Prisma.SortOrder;
 	providerPaymentId?: Prisma.SortOrder;
-	counterpartyAccountId?: Prisma.SortOrder;
 	referenceId?: Prisma.SortOrder;
 	withdrawalAccount?: Prisma.SortOrder;
-	retryCount?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
 };
 
 export type TransactionAvgOrderByAggregateInput = {
 	amount?: Prisma.SortOrder;
-	retryCount?: Prisma.SortOrder;
 };
 
 export type TransactionMaxOrderByAggregateInput = {
@@ -662,11 +613,10 @@ export type TransactionMaxOrderByAggregateInput = {
 	status?: Prisma.SortOrder;
 	idempotencyKey?: Prisma.SortOrder;
 	provider?: Prisma.SortOrder;
+	method?: Prisma.SortOrder;
 	providerPaymentId?: Prisma.SortOrder;
-	counterpartyAccountId?: Prisma.SortOrder;
 	referenceId?: Prisma.SortOrder;
 	withdrawalAccount?: Prisma.SortOrder;
-	retryCount?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
 };
@@ -680,18 +630,16 @@ export type TransactionMinOrderByAggregateInput = {
 	status?: Prisma.SortOrder;
 	idempotencyKey?: Prisma.SortOrder;
 	provider?: Prisma.SortOrder;
+	method?: Prisma.SortOrder;
 	providerPaymentId?: Prisma.SortOrder;
-	counterpartyAccountId?: Prisma.SortOrder;
 	referenceId?: Prisma.SortOrder;
 	withdrawalAccount?: Prisma.SortOrder;
-	retryCount?: Prisma.SortOrder;
 	createdAt?: Prisma.SortOrder;
 	updatedAt?: Prisma.SortOrder;
 };
 
 export type TransactionSumOrderByAggregateInput = {
 	amount?: Prisma.SortOrder;
-	retryCount?: Prisma.SortOrder;
 };
 
 export type TransactionScalarRelationFilter = {
@@ -713,14 +661,6 @@ export type BigIntFieldUpdateOperationsInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
 	set?: string | null;
-};
-
-export type IntFieldUpdateOperationsInput = {
-	set?: number;
-	increment?: number;
-	decrement?: number;
-	multiply?: number;
-	divide?: number;
 };
 
 export type DateTimeFieldUpdateOperationsInput = {
@@ -762,11 +702,10 @@ export type TransactionCreateWithoutOutboxEventsInput = {
 	status: string;
 	idempotencyKey: string;
 	provider?: string | null;
+	method?: string | null;
 	providerPaymentId?: string | null;
-	counterpartyAccountId?: string | null;
 	referenceId?: string | null;
 	withdrawalAccount?: string | null;
-	retryCount?: number;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 };
@@ -780,11 +719,10 @@ export type TransactionUncheckedCreateWithoutOutboxEventsInput = {
 	status: string;
 	idempotencyKey: string;
 	provider?: string | null;
+	method?: string | null;
 	providerPaymentId?: string | null;
-	counterpartyAccountId?: string | null;
 	referenceId?: string | null;
 	withdrawalAccount?: string | null;
-	retryCount?: number;
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 };
@@ -826,11 +764,8 @@ export type TransactionUpdateWithoutOutboxEventsInput = {
 	status?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+	method?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	providerPaymentId?:
-		| Prisma.NullableStringFieldUpdateOperationsInput
-		| string
-		| null;
-	counterpartyAccountId?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
@@ -842,7 +777,6 @@ export type TransactionUpdateWithoutOutboxEventsInput = {
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
-	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 };
@@ -856,11 +790,8 @@ export type TransactionUncheckedUpdateWithoutOutboxEventsInput = {
 	status?: Prisma.StringFieldUpdateOperationsInput | string;
 	idempotencyKey?: Prisma.StringFieldUpdateOperationsInput | string;
 	provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
+	method?: Prisma.NullableStringFieldUpdateOperationsInput | string | null;
 	providerPaymentId?:
-		| Prisma.NullableStringFieldUpdateOperationsInput
-		| string
-		| null;
-	counterpartyAccountId?:
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
@@ -872,9 +803,46 @@ export type TransactionUncheckedUpdateWithoutOutboxEventsInput = {
 		| Prisma.NullableStringFieldUpdateOperationsInput
 		| string
 		| null;
-	retryCount?: Prisma.IntFieldUpdateOperationsInput | number;
 	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
 	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+};
+
+/**
+ * Count Type TransactionCountOutputType
+ */
+
+export type TransactionCountOutputType = {
+	outboxEvents: number;
+};
+
+export type TransactionCountOutputTypeSelect<
+	ExtArgs extends runtime.Types.Extensions.InternalArgs =
+		runtime.Types.Extensions.DefaultArgs
+> = {
+	outboxEvents?: boolean | TransactionCountOutputTypeCountOutboxEventsArgs;
+};
+
+/**
+ * TransactionCountOutputType without action
+ */
+export type TransactionCountOutputTypeDefaultArgs<
+	ExtArgs extends runtime.Types.Extensions.InternalArgs =
+		runtime.Types.Extensions.DefaultArgs
+> = {
+	/**
+	 * Select specific fields to fetch from the TransactionCountOutputType
+	 */
+	select?: Prisma.TransactionCountOutputTypeSelect<ExtArgs> | null;
+};
+
+/**
+ * TransactionCountOutputType without action
+ */
+export type TransactionCountOutputTypeCountOutboxEventsArgs<
+	ExtArgs extends runtime.Types.Extensions.InternalArgs =
+		runtime.Types.Extensions.DefaultArgs
+> = {
+	where?: Prisma.OutboxEventWhereInput;
 };
 
 export type TransactionSelect<
@@ -890,14 +858,16 @@ export type TransactionSelect<
 		status?: boolean;
 		idempotencyKey?: boolean;
 		provider?: boolean;
+		method?: boolean;
 		providerPaymentId?: boolean;
-		counterpartyAccountId?: boolean;
 		referenceId?: boolean;
 		withdrawalAccount?: boolean;
-		retryCount?: boolean;
 		createdAt?: boolean;
 		updatedAt?: boolean;
 		outboxEvents?: boolean | Prisma.Transaction$outboxEventsArgs<ExtArgs>;
+		_count?:
+			| boolean
+			| Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>;
 	},
 	ExtArgs['result']['transaction']
 >;
@@ -915,11 +885,10 @@ export type TransactionSelectCreateManyAndReturn<
 		status?: boolean;
 		idempotencyKey?: boolean;
 		provider?: boolean;
+		method?: boolean;
 		providerPaymentId?: boolean;
-		counterpartyAccountId?: boolean;
 		referenceId?: boolean;
 		withdrawalAccount?: boolean;
-		retryCount?: boolean;
 		createdAt?: boolean;
 		updatedAt?: boolean;
 	},
@@ -939,11 +908,10 @@ export type TransactionSelectUpdateManyAndReturn<
 		status?: boolean;
 		idempotencyKey?: boolean;
 		provider?: boolean;
+		method?: boolean;
 		providerPaymentId?: boolean;
-		counterpartyAccountId?: boolean;
 		referenceId?: boolean;
 		withdrawalAccount?: boolean;
-		retryCount?: boolean;
 		createdAt?: boolean;
 		updatedAt?: boolean;
 	},
@@ -959,11 +927,10 @@ export type TransactionSelectScalar = {
 	status?: boolean;
 	idempotencyKey?: boolean;
 	provider?: boolean;
+	method?: boolean;
 	providerPaymentId?: boolean;
-	counterpartyAccountId?: boolean;
 	referenceId?: boolean;
 	withdrawalAccount?: boolean;
-	retryCount?: boolean;
 	createdAt?: boolean;
 	updatedAt?: boolean;
 };
@@ -980,11 +947,10 @@ export type TransactionOmit<
 	| 'status'
 	| 'idempotencyKey'
 	| 'provider'
+	| 'method'
 	| 'providerPaymentId'
-	| 'counterpartyAccountId'
 	| 'referenceId'
 	| 'withdrawalAccount'
-	| 'retryCount'
 	| 'createdAt'
 	| 'updatedAt',
 	ExtArgs['result']['transaction']
@@ -994,6 +960,7 @@ export type TransactionInclude<
 		runtime.Types.Extensions.DefaultArgs
 > = {
 	outboxEvents?: boolean | Prisma.Transaction$outboxEventsArgs<ExtArgs>;
+	_count?: boolean | Prisma.TransactionCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type TransactionIncludeCreateManyAndReturn<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
@@ -1010,7 +977,7 @@ export type $TransactionPayload<
 > = {
 	name: 'Transaction';
 	objects: {
-		outboxEvents: Prisma.$OutboxEventPayload<ExtArgs> | null;
+		outboxEvents: Prisma.$OutboxEventPayload<ExtArgs>[];
 	};
 	scalars: runtime.Types.Extensions.GetPayloadResult<
 		{
@@ -1022,11 +989,10 @@ export type $TransactionPayload<
 			status: string;
 			idempotencyKey: string;
 			provider: string | null;
+			method: string | null;
 			providerPaymentId: string | null;
-			counterpartyAccountId: string | null;
 			referenceId: string | null;
 			withdrawalAccount: string | null;
-			retryCount: number;
 			createdAt: Date;
 			updatedAt: Date;
 		},
@@ -1593,16 +1559,14 @@ export interface Prisma__TransactionClient<
 	readonly [Symbol.toStringTag]: 'PrismaPromise';
 	outboxEvents<T extends Prisma.Transaction$outboxEventsArgs<ExtArgs> = {}>(
 		args?: Prisma.Subset<T, Prisma.Transaction$outboxEventsArgs<ExtArgs>>
-	): Prisma.Prisma__OutboxEventClient<
-		runtime.Types.Result.GetResult<
-			Prisma.$OutboxEventPayload<ExtArgs>,
-			T,
-			'findUniqueOrThrow',
-			GlobalOmitOptions
-		> | null,
-		null,
-		ExtArgs,
-		GlobalOmitOptions
+	): Prisma.PrismaPromise<
+		| runtime.Types.Result.GetResult<
+				Prisma.$OutboxEventPayload<ExtArgs>,
+				T,
+				'findMany',
+				GlobalOmitOptions
+		  >
+		| Null
 	>;
 	/**
 	 * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1654,11 +1618,10 @@ export interface TransactionFieldRefs {
 	readonly status: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly idempotencyKey: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly provider: Prisma.FieldRef<'Transaction', 'String'>;
+	readonly method: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly providerPaymentId: Prisma.FieldRef<'Transaction', 'String'>;
-	readonly counterpartyAccountId: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly referenceId: Prisma.FieldRef<'Transaction', 'String'>;
 	readonly withdrawalAccount: Prisma.FieldRef<'Transaction', 'String'>;
-	readonly retryCount: Prisma.FieldRef<'Transaction', 'Int'>;
 	readonly createdAt: Prisma.FieldRef<'Transaction', 'DateTime'>;
 	readonly updatedAt: Prisma.FieldRef<'Transaction', 'DateTime'>;
 }
@@ -2143,6 +2106,15 @@ export type Transaction$outboxEventsArgs<
 	 */
 	include?: Prisma.OutboxEventInclude<ExtArgs> | null;
 	where?: Prisma.OutboxEventWhereInput;
+	orderBy?:
+		| Prisma.OutboxEventOrderByWithRelationInput
+		| Prisma.OutboxEventOrderByWithRelationInput[];
+	cursor?: Prisma.OutboxEventWhereUniqueInput;
+	take?: number;
+	skip?: number;
+	distinct?:
+		| Prisma.OutboxEventScalarFieldEnum
+		| Prisma.OutboxEventScalarFieldEnum[];
 };
 
 /**

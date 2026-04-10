@@ -1,3 +1,4 @@
+import { type OtpRequestedPayload, RMQ_PATTERNS } from '@contracts';
 import { Controller } from '@nestjs/common';
 import {
 	Ctx,
@@ -5,8 +6,6 @@ import {
 	Payload,
 	type RmqContext
 } from '@nestjs/microservices';
-import { RMQ_CLIENTS } from 'libs/rmq/client';
-import type { OtpRequestedEvent } from 'shared';
 
 import { MailService } from './mail.service';
 
@@ -14,9 +13,9 @@ import { MailService } from './mail.service';
 export class MailController {
 	constructor(private readonly mailService: MailService) {}
 
-	@EventPattern(RMQ_CLIENTS.MAIL_CLIENT.patterns.otpRequested)
+	@EventPattern(RMQ_PATTERNS.OTP_REQUESTED)
 	public async otpRequested(
-		@Payload() data: OtpRequestedEvent,
+		@Payload() data: OtpRequestedPayload,
 		@Ctx() ctx: RmqContext
 	) {
 		return this.mailService.sendOtpCode(data, ctx);

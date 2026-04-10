@@ -1,3 +1,4 @@
+import { KAFKA_TOPICS } from '@contracts';
 import { Injectable } from '@nestjs/common';
 import {
 	Prisma,
@@ -46,7 +47,7 @@ export class TransactionRepository {
 			if (existingTx) return existingTx;
 
 			// создаем тх
-			return this.prisma.transaction.create({
+			return tx.transaction.create({
 				data: {
 					id,
 					accountId,
@@ -169,7 +170,7 @@ export class TransactionRepository {
 				data: {
 					id: eventId,
 					transactionId: row.id,
-					topic: KafkaTopics.TX_DEPOSIT_COMPLETED,
+					topic: KAFKA_TOPICS.DEPOSIT_PAID_SUCCESS,
 					payload: {
 						eventId,
 						transactionId: row.id,

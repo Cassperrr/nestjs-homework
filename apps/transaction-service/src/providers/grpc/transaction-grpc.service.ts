@@ -142,7 +142,6 @@ export class TransactionGrpcService {
 					'Транзакция в обработке. Вы получите уведомление о ее статусе по Websocket'
 			};
 		} catch (error) {
-			console.log(error);
 			rethrowGrpcError(error);
 
 			this.logger.error(

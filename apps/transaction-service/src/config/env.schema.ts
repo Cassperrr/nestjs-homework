@@ -17,8 +17,7 @@ export const txServiceEnvSchema = generalSchema.extend({
 	YOOKASSA_SHOP_ID: z.string().nonempty(),
 	YOOKASSA_SECRET_KEY: z.string().nonempty(),
 
-	POLL_INTERVAL_MS: z.coerce.number().min(1000),
-	BATCH_SIZE: z.coerce.number().min(1),
+	LIMIT: z.coerce.number().min(1),
 	MAX_RETRY: z.coerce.number().min(0)
 });
 

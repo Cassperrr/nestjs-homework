@@ -1,1 +1,1 @@
-export * from './rmq-client.registry';
+export * from './rmq.queues.registry';

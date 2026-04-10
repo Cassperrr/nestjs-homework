@@ -1,10 +1,10 @@
-import { Controller } from '@nestjs/common';
-import { EventPattern, MessagePattern, Payload } from '@nestjs/microservices';
 import {
-	type DepositCompletedEvent,
-	KafkaTopics,
-	type TransferPendingEvent
-} from 'libs/kafka';
+	type DepositPaidSuccessPayload,
+	KAFKA_TOPICS,
+	type TransferInitedPayload
+} from '@contracts';
+import { Controller } from '@nestjs/common';
+import { EventPattern, Payload } from '@nestjs/microservices';
 
 import { BalanceKafkaService } from './balance-kafka.service';
 
@@ -14,14 +14,18 @@ export class BalanceKafkaController {
 		private readonly balanceKafkaService: BalanceKafkaService
 	) {}
 
-	@EventPattern(KafkaTopics.TX_DEPOSIT_COMPLETED)
-	public handleTxDepositCompleted(@Payload() payload: DepositCompletedEvent) {
+	@EventPattern(KAFKA_TOPICS.DEPOSIT_PAID_SUCCESS)
+	public handleTxDepositCompleted(
+		@Payload() payload: DepositPaidSuccessPayload
+	) {
 		console.log(payload);
-		return this.balanceKafkaService.depositCompleted(payload);
+		return;
 	}
 
-	@EventPattern(KafkaTopics.TX_DEPOSIT_COMPLETED)
-	public handleTxTransferCompleted(@Payload() payload: TransferPendingEvent) {
-		return this.balanceKafkaService.transferPending(payload);
+	@EventPattern(KAFKA_TOPICS.TRANSFER_INITED)
+	public handleTxTransferCompleted(
+		@Payload() payload: TransferInitedPayload
+	) {
+		return;
 	}
 }

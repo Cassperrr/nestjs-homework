@@ -1,6 +1,7 @@
+import { RMQ_PATTERNS } from '@contracts';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { RpcException } from '@nestjs/microservices';
+import { type ClientRMQ, RpcException } from '@nestjs/microservices';
 import {
 	AccountRepository,
 	CACHE_EVENTS,
@@ -13,7 +14,6 @@ import {
 	TOKEN_SERVICE,
 	TokenService
 } from '@user-service/src/core';
-import { MailProducerRmq } from '@user-service/src/infra';
 import type {
 	LoginRequest,
 	RefreshRequest,
@@ -24,6 +24,7 @@ import type {
 } from 'contracts/grpc/gen/auth';
 import type { StringMessage } from 'contracts/grpc/gen/shared';
 import { GrpcStatus } from 'libsV2/grpc';
+import { InjectRmqQueue } from 'libsV2/rmq';
 import { OtpKey, Role } from 'shared';
 
 @Injectable()
@@ -40,7 +41,8 @@ export class AuthService {
 		private readonly tokenService: TokenService,
 		@Inject(SESSION_SERVICE) private readonly session: SessionService,
 
-		private readonly mailProducerRmq: MailProducerRmq
+		@InjectRmqQueue('MAIL')
+		private readonly mailQueueRmq: ClientRMQ
 	) {}
 
 	public async register(data: RegisterRequest): Promise<StringMessage> {
@@ -68,7 +70,7 @@ export class AuthService {
 
 		const { code } = await this.otpService.generate(id, OtpKey.EMAIL);
 
-		await this.mailProducerRmq.otpRequested({ code, email });
+		this.mailQueueRmq.emit(RMQ_PATTERNS.OTP_REQUESTED, { code, email });
 
 		return {
 			message:
@@ -97,7 +99,7 @@ export class AuthService {
 			`[${account.id}] [${account.role}] Перевыпуск OTP кода`
 		);
 
-		await this.mailProducerRmq.otpRequested({ code, email });
+		this.mailQueueRmq.emit(RMQ_PATTERNS.OTP_REQUESTED, { code, email });
 
 		return {
 			message:

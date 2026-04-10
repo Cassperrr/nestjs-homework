@@ -1,1 +1,1 @@
-export * from './create-client-token.util';
+export * from './create-queue-token.util';

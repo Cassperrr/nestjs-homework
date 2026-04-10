@@ -20,19 +20,21 @@ model Transaction {
   status         String @db.VarChar(50)
   idempotencyKey String @unique @map("idempotency_key") @db.VarChar(40)
 
-  provider          String?
+  // депозиты
+  provider          String? @db.VarChar(20)
+  method            String? @db.VarChar(20)
   providerPaymentId String? @unique @map("provider_payment_id")
 
-  counterpartyAccountId String? @map("counterparty_account_id") @db.Char(36)
-  referenceId           String? @map("reference_id") @db.Char(36)
+  // трансферы
+  referenceId String? @map("reference_id") @db.Char(36)
 
+  // выводы
   withdrawalAccount String? @map("withdrawal_account")
 
-  retryCount Int      @default(0) @map("retry_count")
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  outboxEvents OutboxEvent?
+  outboxEvents OutboxEvent[]
 
   @@index([accountId])
   @@index([status])
@@ -43,16 +45,14 @@ model Transaction {
 
 model OutboxEvent {
   id            String @id @db.Char(36)
-  transactionId String @unique @map("transaction_id") @db.Char(36)
+  transactionId String @map("transaction_id") @db.Char(36)
 
-  topic      String  @db.VarChar(100)
-  payload    Json
-  processed  Boolean @default(false)
-  retryCount Int     @default(0) @map("retry_count")
+  topic     String  @db.VarChar(100)
+  payload   Json
+  processed Boolean @default(false)
 
   createdAt   DateTime  @default(now()) @map("created_at")
   processedAt DateTime? @map("processed_at")
-  failedAt    DateTime? @map("failed_at")
 
   transaction Transaction @relation(fields: [transactionId], references: [id])
 

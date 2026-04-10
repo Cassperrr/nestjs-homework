@@ -4,7 +4,7 @@ import { GrpcClientsModule } from './grpc';
 import { KafkaProcuderModule } from './kafka';
 import { PrismaModule } from './prisma';
 import { RedisModule } from './redis';
-import { RmqClientsModule } from './rmq';
+import { RmqQueuesModule } from './rmq';
 
 @Global()
 @Module({
@@ -12,14 +12,14 @@ import { RmqClientsModule } from './rmq';
 		PrismaModule,
 		RedisModule,
 		GrpcClientsModule,
-		RmqClientsModule,
+		RmqQueuesModule,
 		KafkaProcuderModule
 	],
 	exports: [
 		PrismaModule,
 		RedisModule,
 		GrpcClientsModule,
-		RmqClientsModule,
+		RmqQueuesModule,
 		KafkaProcuderModule
 	]
 })

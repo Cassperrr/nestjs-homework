@@ -1,7 +1,7 @@
 import { Metadata } from '@grpc/grpc-js';
 import type { OnModuleInit } from '@nestjs/common';
 import { Logger, ServiceUnavailableException } from '@nestjs/common';
-import { ClientGrpc } from '@nestjs/microservices';
+import { ClientGrpc, RpcException } from '@nestjs/microservices';
 import { GrpcStatus } from 'libsV2/grpc/utils';
 import { lastValueFrom } from 'rxjs';
 import { throwError, TimeoutError, timer } from 'rxjs';
@@ -68,11 +68,18 @@ export abstract class AbstractGrpcClient<
 					err instanceof TimeoutError ||
 					err?.code === GrpcStatus.UNAVAILABLE
 				) {
+					// return throwError(
+					// 	() =>
+					// 		new ServiceUnavailableException(
+					// 			'Service unavailable'
+					// 		)
+					// );
 					return throwError(
 						() =>
-							new ServiceUnavailableException(
-								'Service unavailable'
-							)
+							new RpcException({
+								code: GrpcStatus.UNAVAILABLE,
+								details: 'Service unavailable'
+							})
 					);
 				}
 				return throwError(() => err);

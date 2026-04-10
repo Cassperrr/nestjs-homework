@@ -6,12 +6,13 @@ import { getLoggerOptions } from 'libsV2/utils';
 import { appSetup } from './app.setup';
 import { TxServiceEnv } from './config';
 import { grpcSetup } from './grpc.setup';
-import { TransactionModule } from './transaction.module';
+import { kafkaSetup } from './kafka.setup';
+import { TransactionServiceModule } from './transaction-service.module';
 
 async function bootstrap() {
 	const isDev = process.env.NODE_ENV === 'development';
 
-	const app = await NestFactory.create(TransactionModule, {
+	const app = await NestFactory.create(TransactionServiceModule, {
 		logger: getLoggerOptions(isDev)
 	});
 
@@ -19,8 +20,10 @@ async function bootstrap() {
 	const grpcUrl = config.get('TRANSACTION_GRPC_URL', { infer: true });
 	const port = config.get('HTTP_PORT', { infer: true });
 	const trustNumber = config.get('TRUST_PROXY_NUMBER', { infer: true });
+	const kafkaBroker = config.get('KAFKA_BROKER', { infer: true });
 
 	grpcSetup(app, grpcUrl);
+	kafkaSetup(app, [kafkaBroker]);
 	appSetup(app, trustNumber);
 
 	await app.startAllMicroservices();

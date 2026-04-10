@@ -15,7 +15,6 @@ export class CronService {
 	public add(name: JOBS, job: CronJob) {
 		this.schedulerRegistry.addCronJob(name, job);
 		this.logger.log(`Cron "${name}" создан`);
-		// job.start() не вызываем — крон стартует только по команде
 	}
 
 	public start(name: JOBS) {
