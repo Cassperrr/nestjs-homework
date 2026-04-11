@@ -1,5 +1,4 @@
-import { GRPC_CLIENTS } from '../config';
-import { GRPC_CLIENT_PREFIX } from '../constants';
+import { GRPC_CLIENTS } from 'registries';
 
 export const createClientToken = (token: keyof typeof GRPC_CLIENTS) =>
-	`${GRPC_CLIENT_PREFIX}_${token}`;
+	`GRPC_CLIENT_${token}`;

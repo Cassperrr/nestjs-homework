@@ -54,7 +54,8 @@ export const AnyNull = runtime.AnyNull;
 
 export const ModelName = {
 	Transaction: 'Transaction',
-	OutboxEvent: 'OutboxEvent'
+	OutboxEvent: 'OutboxEvent',
+	ProcessedEvent: 'ProcessedEvent'
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -81,6 +82,7 @@ export const TransactionScalarFieldEnum = {
 	type: 'type',
 	status: 'status',
 	idempotencyKey: 'idempotencyKey',
+	retryCount: 'retryCount',
 	provider: 'provider',
 	method: 'method',
 	providerPaymentId: 'providerPaymentId',
@@ -105,6 +107,16 @@ export const OutboxEventScalarFieldEnum = {
 
 export type OutboxEventScalarFieldEnum =
 	(typeof OutboxEventScalarFieldEnum)[keyof typeof OutboxEventScalarFieldEnum];
+
+export const ProcessedEventScalarFieldEnum = {
+	id: 'id',
+	idempotencyKey: 'idempotencyKey',
+	topic: 'topic',
+	processedAt: 'processedAt'
+} as const;
+
+export type ProcessedEventScalarFieldEnum =
+	(typeof ProcessedEventScalarFieldEnum)[keyof typeof ProcessedEventScalarFieldEnum];
 
 export const SortOrder = {
 	asc: 'asc',

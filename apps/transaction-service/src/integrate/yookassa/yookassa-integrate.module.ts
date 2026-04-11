@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { TxServiceEnv } from '@transaction-service/src/config';
-import { YookassaFactoryModule } from 'libsV2/payments';
+import { YookassaFactoryModule } from 'libs/payments';
 
 @Module({
 	imports: [

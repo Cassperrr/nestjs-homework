@@ -9,7 +9,7 @@ import {
 	Query
 } from '@nestjs/common';
 import type { AvatarResponse } from 'contracts/grpc/gen/avatar';
-import { CheckHeaders } from 'libsV2/proxy';
+import { CheckHeaders } from 'libs/proxy';
 
 import { FileUploadInterceptor } from './common';
 import { UploadedAvatar } from './common/decorators';

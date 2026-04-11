@@ -5,7 +5,6 @@ import { YookassaWebhookService } from './yookassa-webhook.service';
 
 @Module({
 	controllers: [WebhookProcessController],
-	providers: [YookassaWebhookService],
-	exports: [YookassaWebhookService]
+	providers: [YookassaWebhookService]
 })
 export class WebhookProcessModule {}

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { TransactionRepository } from '@transaction-service/src/core';
-import { YookassaService, type YookassaWebhookResponse } from 'libsV2/payments';
+import { YookassaService, type YookassaWebhookResponse } from 'libs/payments';
 
 @Injectable()
 export class YookassaWebhookService {

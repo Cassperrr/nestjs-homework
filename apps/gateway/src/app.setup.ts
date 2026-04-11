@@ -1,6 +1,6 @@
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
-import { GrpcExeptionFilter } from 'libsV2/grpc';
+import { GrpcExeptionFilter } from 'libs/grpc';
 
 import { ThrottlerExceptionFilter } from './common';
 import { swaggerSetup } from './swagger';

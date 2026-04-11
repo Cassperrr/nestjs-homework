@@ -1,16 +1,19 @@
-import { Metadata } from '@grpc/grpc-js';
+import type { Metadata } from '@grpc/grpc-js';
 import {
-	CanActivate,
-	ExecutionContext,
+	type CanActivate,
+	type ExecutionContext,
 	Injectable,
 	Logger
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RpcException } from '@nestjs/microservices';
-import { GrpcStatus } from 'libsV2/grpc';
+import { GrpcStatus } from 'libs/grpc';
 
 import { ALLOWED_SERVICES_KEY } from '../constants';
 
+/**
+ * Guard для авторизированных запросов между gRPC-микросервисами
+ */
 @Injectable()
 export class GrpcAuthGuard implements CanActivate {
 	private readonly logger = new Logger(GrpcAuthGuard.name);

@@ -8,10 +8,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import type { Request } from 'express';
+import { TOKEN_VALIDATORS } from 'registries';
 
-import { TOKEN_VALIDATORS } from '../config';
 import { HEADERS_KEY } from '../constants';
 
+/**
+ * Guard для валидации headers со стороны прокси сервера для авторизированных запросов между proxy-микросервисами
+ */
 @Injectable()
 export class HeadersGuard implements CanActivate {
 	public constructor(
@@ -26,12 +29,6 @@ export class HeadersGuard implements CanActivate {
 		);
 
 		if (!headers) throw new BadRequestException('Headers не найдены');
-
-		// const validators =
-		// 	this.reflector.get<Record<string, string>>(
-		// 		TOKEN_VALIDATORS_KEY,
-		// 		ctx.getHandler()
-		// 	) ?? {};
 
 		const req = ctx.switchToHttp().getRequest<Request>();
 

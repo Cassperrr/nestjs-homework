@@ -13,7 +13,7 @@ import type {
 	FindMeRequest,
 	UserResponse
 } from 'contracts/grpc/gen/users';
-import { GrpcStatus } from 'libsV2/grpc';
+import { GrpcStatus } from 'libs/grpc';
 
 @Injectable()
 export class UsersService {

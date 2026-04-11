@@ -9,6 +9,9 @@ import {
 import { PRISMA_CLIENT_TOKEN } from '../constants';
 import type { PrismaClientLike } from '../interfaces';
 
+/**
+ * Сервис отвечающий за жизненный цикл Prisma Module
+ */
 @Injectable()
 export class PrismaLifecycleService implements OnModuleInit, OnModuleDestroy {
 	private readonly logger = new Logger(PrismaLifecycleService.name);

@@ -6,7 +6,7 @@ import {
 	TRANSACTION_SERVICE_NAME,
 	type TransactionServiceClient
 } from 'contracts/grpc/gen/transaction';
-import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libs/grpc';
 
 @Injectable()
 export class TransactionClientGrpc extends AbstractGrpcClient<TransactionServiceClient> {

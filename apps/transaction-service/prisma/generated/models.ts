@@ -9,4 +9,5 @@
  */
 export type * from './models/Transaction.js';
 export type * from './models/OutboxEvent.js';
+export type * from './models/ProcessedEvent.js';
 export type * from './commonInputTypes.js';

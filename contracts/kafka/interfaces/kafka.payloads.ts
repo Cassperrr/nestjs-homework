@@ -1,17 +1,17 @@
 export interface DepositPaidSuccessPayload {
-	amount: string;
-	currency: string;
+	eventId: string;
+	transactionId: string;
 	accountId: string;
+	currency: string;
+	amount: string;
+}
+
+export interface DepositCreditingSuccessPayload {
 	eventId: string;
 	transactionId: string;
 }
 
-export interface DepositSuccessPayload {
-	eventId: string;
-	transactionId: string;
-}
-
-export interface DepositFailedPayload {
+export interface DepositCreditingFailedPayload {
 	eventId: string;
 	transactionId: string;
 }
@@ -36,11 +36,4 @@ export interface TransferFailedPayload {
 	eventId: string;
 	outId: string;
 	inId: string;
-}
-
-export interface TransferCompletedPayload {
-	fromAccountId: string;
-	toAccountId: string;
-	amount: string;
-	currency: string;
 }

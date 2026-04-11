@@ -7,7 +7,7 @@ import {
 	UseGuards
 } from '@nestjs/common';
 import { YookassaIpGuard } from '@transaction-service/src/common';
-import type { YookassaWebhookResponse } from 'libsV2/payments';
+import type { YookassaWebhookResponse } from 'libs/payments';
 
 import { YookassaWebhookService } from './yookassa-webhook.service';
 

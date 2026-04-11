@@ -14,7 +14,7 @@ import type {
 	DeleteAvatarRequest
 } from 'contracts/grpc/gen/avatar';
 import type { StringMessage } from 'contracts/grpc/gen/shared';
-import { GrpcStatus } from 'libsV2/grpc';
+import { GrpcStatus } from 'libs/grpc';
 
 @Injectable()
 export class AvatarService {

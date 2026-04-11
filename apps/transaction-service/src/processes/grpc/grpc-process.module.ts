@@ -5,7 +5,6 @@ import { GrpcProcessService } from './grpc-process.service';
 
 @Module({
 	controllers: [GrpcProcessController],
-	providers: [GrpcProcessService],
-	exports: [GrpcProcessService]
+	providers: [GrpcProcessService]
 })
 export class GrpcProcessModule {}

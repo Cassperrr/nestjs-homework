@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { RmqQueueFactoryModule } from 'libsV2/rmq';
+import { RmqQueueFactoryModule } from 'libs/rmq';
 
 @Module({
-	imports: [RmqQueueFactoryModule.registerAsync(['MAIL'])]
+	imports: [RmqQueueFactoryModule.registerAsync(['MAIL', 'NOTIFICATION'])]
 })
 export class RmqQueuesModule {}

@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { UserServiceEnv } from '@user-service/src/config';
 import { PrismaClient } from 'apps/user-service/prisma/generated/client';
-import { PrismaFactoryModule } from 'libsV2/prisma';
+import { PrismaFactoryModule } from 'libs/prisma';
 
 @Module({
 	imports: [

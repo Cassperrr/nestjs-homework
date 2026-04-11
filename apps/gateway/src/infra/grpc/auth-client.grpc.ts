@@ -6,7 +6,7 @@ import {
 	AUTH_SERVICE_NAME,
 	type AuthServiceClient
 } from 'contracts/grpc/gen/auth';
-import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libs/grpc';
 
 @Injectable()
 export class AuthClientGrpc extends AbstractGrpcClient<AuthServiceClient> {

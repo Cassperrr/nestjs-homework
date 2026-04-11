@@ -1,9 +1,10 @@
+import { KAFKA_TOPICS } from '@contracts';
 import { Injectable } from '@nestjs/common';
 import {
 	Prisma,
 	type PrismaClient
 } from '@user-service/prisma/generated/client';
-import { InjectPrismaClient } from 'libsV2/prisma';
+import { InjectPrismaClient } from 'libs/prisma';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
@@ -34,69 +35,115 @@ export class BalanceRepository {
 		});
 	}
 
-	public deposit(
-		transactionId: string,
+	public depositAndCreateOutboxEvent(
+		idempotencyKey: string,
 		currency: string,
 		amount: bigint,
 		accountId: string,
-		topic: string
+		transactionId: string,
+		eventId: string
 	) {
 		return this.prisma.$transaction(async tx => {
 			// делать блокировку перед alreadyExist дороговато, но мне нужен баланс айди а тянуть его из метаданных юкассы влом
-			const [balance] = await tx.$queryRaw<{ id: string }[]>`
-				SELECT id 
-				FROM balances
-				WHERE account_id = ${accountId} AND currency = ${currency}
-				FOR UPDATE
-			`;
+			const [balance] = await tx.$queryRaw<{ id: string }[]>(
+				Prisma.sql`
+					SELECT id 
+					FROM balances
+					WHERE account_id = ${accountId} AND currency = ${currency}
+					FOR UPDATE
+				`
+			);
 
 			// здесь проверку на заблокированный баланс делать не буду потому что она делается до поулчения ссылки на оплату и если уже человек оплатил и вэтот момент баланс заблокировали то видеть что сумма дошла спокойней чем если бы деньги просто пропали
 			if (!balance) throw new Error('Счет не найден');
 
 			const alreadyExist = await tx.processedEvent.findUnique({
-				where: { idempotencyKey: transactionId }
+				where: { idempotencyKey }
 			});
 
-			if (alreadyExist)
-				return tx.balance.findUnique({
-					where: { id: balance.id },
-					select: {
-						accountId: true,
-						amount: true,
-						currency: true
-					}
-				});
+			if (alreadyExist) return;
 
-			const updated = await tx.balance.update({
+			await tx.balance.update({
 				where: { id: balance.id },
-				data: { amount: { increment: amount } },
-				select: {
-					accountId: true,
-					amount: true,
-					currency: true
-				}
+				data: { amount: { increment: amount } }
 			});
 
 			await tx.processedEvent.create({
-				data: { id: uuidv7(), idempotencyKey: transactionId, topic }
+				data: {
+					id: uuidv7(),
+					idempotencyKey,
+					topic: KAFKA_TOPICS.DEPOSIT_PAID_SUCCESS
+				}
 			});
 
-			return updated;
+			await tx.outboxEvent.create({
+				data: {
+					id: uuidv7(),
+					balanceId: balance.id,
+					topic: KAFKA_TOPICS.DEPOSIT_CREDITING_SUCCESS,
+					payload: {
+						eventId,
+						transactionId
+					}
+				}
+			});
 		});
 	}
 
-	public async transfer(
-		txOutId: string,
+	public async createOutboxEvent(
+		accountId: string,
+		currency: string,
+		topic: string,
+		payload: any
+	) {
+		return this.prisma.$transaction(async tx => {
+			const balance = await tx.balance.findFirst({
+				where: { accountId, currency },
+				select: { id: true }
+			});
+
+			if (!balance) throw new Error('Счет не найден');
+
+			return tx.outboxEvent.create({
+				data: {
+					id: uuidv7(),
+					balanceId: balance.id,
+					topic,
+					payload
+				}
+			});
+		});
+	}
+
+	public findUnprocessedEvents(limit: number) {
+		return this.prisma.outboxEvent.findMany({
+			where: { processed: false },
+			orderBy: { createdAt: 'asc' },
+			take: limit
+		});
+	}
+
+	public markEventsAsProcessed(ids: string[]) {
+		return this.prisma.outboxEvent.updateMany({
+			where: { id: { in: ids } },
+			data: { processed: true, processedAt: new Date() }
+		});
+	}
+
+	public async transferAndCreateOutboxEvent(
+		idempotencyKey: string,
 		fromAccountId: string,
 		toAccountId: string,
 		currency: string,
 		amount: bigint,
-		topic: string
+		eventId: string,
+		outId: string,
+		inId: string
 	) {
 		return this.prisma.$transaction(async tx => {
 			// соблюдаем идемпотентность
 			const alreadyExist = await tx.processedEvent.findUnique({
-				where: { idempotencyKey: txOutId }
+				where: { idempotencyKey }
 			});
 
 			if (alreadyExist) return;
@@ -110,12 +157,12 @@ export class BalanceRepository {
 					amount: bigint;
 					blocked_at: Date | null;
 				}[]
-			>`
-				SELECT id, account_id, amount, blocked_at FROM balances
-				WHERE account_id IN (${Prisma.join([firstId, secondId])}) AND currency = ${currency}
-				ORDER BY account_id
-				FOR UPDATE
-			`;
+			>(Prisma.sql`
+					SELECT id, account_id, amount, blocked_at FROM balances
+					WHERE account_id IN (${Prisma.join([firstId, secondId])}) AND currency = ${currency}
+					ORDER BY account_id
+					FOR UPDATE
+			`);
 
 			// доп проверка на существование аккаунтов уже внутри транзакции
 			if (balances.length < 2) {
@@ -153,10 +200,25 @@ export class BalanceRepository {
 			});
 
 			await tx.processedEvent.create({
-				data: { id: uuidv7(), idempotencyKey: txOutId, topic }
+				data: {
+					id: uuidv7(),
+					idempotencyKey,
+					topic: KAFKA_TOPICS.TRANSFER_INITED
+				}
 			});
 
-			return;
+			await tx.outboxEvent.create({
+				data: {
+					id: uuidv7(),
+					balanceId: senderBalance.id,
+					topic: KAFKA_TOPICS.TRANFER_SUCCESS,
+					payload: {
+						eventId,
+						outId,
+						inId
+					}
+				}
+			});
 		});
 	}
 

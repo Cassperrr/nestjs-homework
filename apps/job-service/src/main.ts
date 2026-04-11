@@ -1,6 +1,6 @@
+import { getLoggerOptions } from '@libs/utils';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { getLoggerOptions } from 'libsV2/utils';
 
 import { JobServiceEnv } from './config';
 import { grpcSetup } from './grpc.setup';

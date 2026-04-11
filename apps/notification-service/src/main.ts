@@ -1,20 +1,25 @@
+import { getLoggerOptions } from '@libs/utils';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { getLoggerOptions } from 'libsV2/utils';
 
 import { NotificationEnv } from './config';
-import { NotificationModule } from './notification.module';
+import { NotificationServiceModule } from './notification-service.module';
+import { rmqSetup } from './rmq.setup';
 
 async function bootstrap() {
 	const isDev = process.env.NODE_ENV === 'development';
 
-	const app = await NestFactory.create(NotificationModule, {
+	const app = await NestFactory.create(NotificationServiceModule, {
 		logger: getLoggerOptions(isDev)
 	});
 
 	const config = app.get(ConfigService<NotificationEnv, true>);
 	const port = config.get('WSS_PORT', { infer: true });
+	const rmqUrl = config.get('RMQ_URL', { infer: true });
 
+	rmqSetup(app, [rmqUrl]);
+
+	await app.startAllMicroservices();
 	await app.listen(port);
 }
 void bootstrap();

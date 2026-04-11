@@ -6,7 +6,7 @@ import {
 	ACCOUNT_SERVICE_NAME,
 	type AccountServiceClient
 } from 'contracts/grpc/gen/account';
-import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libs/grpc';
 
 @Injectable()
 export class AccountClientGrpc extends AbstractGrpcClient<AccountServiceClient> {

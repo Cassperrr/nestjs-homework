@@ -11,7 +11,7 @@ import type {
 	ProfileResponse,
 	UpdateProfileRequest
 } from 'contracts/grpc/gen/profile';
-import { GrpcStatus } from 'libsV2/grpc';
+import { GrpcStatus } from 'libs/grpc';
 
 @Injectable()
 export class ProfileService {

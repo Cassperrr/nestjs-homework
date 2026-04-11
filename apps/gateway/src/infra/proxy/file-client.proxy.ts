@@ -2,7 +2,7 @@ import { X_ACCOUNT_ID, X_GATEWAY_ACCESS_TOKEN } from '@contracts';
 import { GatewayEnv } from '@gateway/src/config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { AbstractProxyClient } from 'libsV2/proxy';
+import { AbstractProxyClient } from 'libs/proxy';
 import { JwtPayload } from 'shared';
 
 @Injectable()

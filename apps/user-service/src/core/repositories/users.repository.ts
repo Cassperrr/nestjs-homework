@@ -3,7 +3,7 @@ import {
 	Prisma,
 	type PrismaClient
 } from '@user-service/prisma/generated/client';
-import { InjectPrismaClient } from 'libsV2/prisma';
+import { InjectPrismaClient } from 'libs/prisma';
 
 @Injectable()
 export class UsersRepository {

@@ -1,2 +1,2 @@
-export * from './grpc-status.util';
-export * from './grpc-to-http-status.util';
+export { status as GrpcStatus } from '@grpc/grpc-js';
+export * from './rethrow-grpc-error.util';

@@ -1,5 +1,5 @@
 import { type INestApplication } from '@nestjs/common';
-import { createKafkaConsumer } from 'libsV2/kafka';
+import { createKafkaConsumer } from 'libs/kafka';
 
 export const kafkaSetup = (app: INestApplication, brokers: string[]) =>
 	createKafkaConsumer(

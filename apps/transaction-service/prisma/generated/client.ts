@@ -51,3 +51,8 @@ export type Transaction = Prisma.TransactionModel;
  *
  */
 export type OutboxEvent = Prisma.OutboxEventModel;
+/**
+ * Model ProcessedEvent
+ *
+ */
+export type ProcessedEvent = Prisma.ProcessedEventModel;

@@ -19,6 +19,7 @@ model Transaction {
   type           String @db.VarChar(50)
   status         String @db.VarChar(50)
   idempotencyKey String @unique @map("idempotency_key") @db.VarChar(40)
+  retryCount     Int    @default(0) @map("retry_count")
 
   // депозиты
   provider          String? @db.VarChar(20)
@@ -58,4 +59,15 @@ model OutboxEvent {
 
   @@index([processed, createdAt])
   @@map("outbox_events")
+}
+
+model ProcessedEvent {
+  id String @id @db.Char(36)
+
+  idempotencyKey String @unique @map("idempotency_key") @db.Char(36)
+  topic          String @db.Char(100)
+
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@map("processed_events")
 }

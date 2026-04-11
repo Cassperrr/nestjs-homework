@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { KafkaProducerFactoryModule } from 'libsV2/kafka';
+import { KafkaProducerFactoryModule } from 'libs/kafka';
 
 @Module({
-	imports: [KafkaProducerFactoryModule.regiserAsync('TRANSACTION')]
+	imports: [KafkaProducerFactoryModule.registerAsync('TRANSACTION')]
 })
 export class KafkaProcuderModule {}

@@ -1,3 +1,3 @@
-export * from './yookassa-factory.module';
-export * from './yookassa.service';
+export * from './modules';
+export * from './services';
 export * from './interfaces';

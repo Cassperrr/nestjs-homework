@@ -1,13 +1,17 @@
 import {
-	ArgumentsHost,
+	type ArgumentsHost,
 	Catch,
 	type ExceptionFilter,
 	HttpException,
 	HttpStatus
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { grpcToHttpStatus } from 'libs/grpc/utils';
 
+import { grpcToHttpStatus } from '../utils';
+
+/**
+ * Ловит ошибки gRPC и трансформирует их в HTTP ответы
+ */
 @Catch()
 export class GrpcExeptionFilter implements ExceptionFilter {
 	public catch(exception: any, host: ArgumentsHost) {

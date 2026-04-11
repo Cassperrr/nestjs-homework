@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserServiceEnv } from '@user-service/src/config';
-import { RedisFactoryModule } from 'libsV2/redis';
+import { RedisFactoryModule } from 'libs/redis';
 
 @Module({
 	imports: [

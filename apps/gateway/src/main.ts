@@ -1,7 +1,7 @@
+import { getLoggerOptions } from '@libs/utils';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { getLoggerOptions } from 'libsV2/utils';
 
 import { appSetup } from './app.setup';
 import { GatewayEnv } from './config';

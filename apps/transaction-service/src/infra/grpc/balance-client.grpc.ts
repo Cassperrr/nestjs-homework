@@ -6,7 +6,7 @@ import {
 	BALANCE_SERVICE_NAME,
 	type BalanceServiceClient
 } from 'contracts/grpc/gen/balance';
-import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libs/grpc';
 
 @Injectable()
 export class BalanceClientGrpc extends AbstractGrpcClient<BalanceServiceClient> {

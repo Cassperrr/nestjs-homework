@@ -245,6 +245,7 @@ export type BalanceWhereInput = {
 		Prisma.AccountScalarRelationFilter,
 		Prisma.AccountWhereInput
 	>;
+	outboxEvents?: Prisma.OutboxEventListRelationFilter;
 };
 
 export type BalanceOrderByWithRelationInput = {
@@ -256,6 +257,7 @@ export type BalanceOrderByWithRelationInput = {
 	updatedAt?: Prisma.SortOrder;
 	blockedAt?: Prisma.SortOrderInput | Prisma.SortOrder;
 	account?: Prisma.AccountOrderByWithRelationInput;
+	outboxEvents?: Prisma.OutboxEventOrderByRelationAggregateInput;
 };
 
 export type BalanceWhereUniqueInput = Prisma.AtLeast<
@@ -278,6 +280,7 @@ export type BalanceWhereUniqueInput = Prisma.AtLeast<
 			Prisma.AccountScalarRelationFilter,
 			Prisma.AccountWhereInput
 		>;
+		outboxEvents?: Prisma.OutboxEventListRelationFilter;
 	},
 	'id'
 >;
@@ -326,6 +329,7 @@ export type BalanceCreateInput = {
 	updatedAt?: Date | string;
 	blockedAt?: Date | string | null;
 	account: Prisma.AccountCreateNestedOneWithoutBalanceInput;
+	outboxEvents?: Prisma.OutboxEventCreateNestedManyWithoutBalanceInput;
 };
 
 export type BalanceUncheckedCreateInput = {
@@ -336,6 +340,7 @@ export type BalanceUncheckedCreateInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	blockedAt?: Date | string | null;
+	outboxEvents?: Prisma.OutboxEventUncheckedCreateNestedManyWithoutBalanceInput;
 };
 
 export type BalanceUpdateInput = {
@@ -350,6 +355,7 @@ export type BalanceUpdateInput = {
 		| string
 		| null;
 	account?: Prisma.AccountUpdateOneRequiredWithoutBalanceNestedInput;
+	outboxEvents?: Prisma.OutboxEventUpdateManyWithoutBalanceNestedInput;
 };
 
 export type BalanceUncheckedUpdateInput = {
@@ -364,6 +370,7 @@ export type BalanceUncheckedUpdateInput = {
 		| Date
 		| string
 		| null;
+	outboxEvents?: Prisma.OutboxEventUncheckedUpdateManyWithoutBalanceNestedInput;
 };
 
 export type BalanceCreateManyInput = {
@@ -449,6 +456,11 @@ export type BalanceMinOrderByAggregateInput = {
 
 export type BalanceSumOrderByAggregateInput = {
 	amount?: Prisma.SortOrder;
+};
+
+export type BalanceScalarRelationFilter = {
+	is?: Prisma.BalanceWhereInput;
+	isNot?: Prisma.BalanceWhereInput;
 };
 
 export type BalanceCreateNestedManyWithoutAccountInput = {
@@ -553,6 +565,32 @@ export type BigIntFieldUpdateOperationsInput = {
 	divide?: bigint | number;
 };
 
+export type BalanceCreateNestedOneWithoutOutboxEventsInput = {
+	create?: Prisma.XOR<
+		Prisma.BalanceCreateWithoutOutboxEventsInput,
+		Prisma.BalanceUncheckedCreateWithoutOutboxEventsInput
+	>;
+	connectOrCreate?: Prisma.BalanceCreateOrConnectWithoutOutboxEventsInput;
+	connect?: Prisma.BalanceWhereUniqueInput;
+};
+
+export type BalanceUpdateOneRequiredWithoutOutboxEventsNestedInput = {
+	create?: Prisma.XOR<
+		Prisma.BalanceCreateWithoutOutboxEventsInput,
+		Prisma.BalanceUncheckedCreateWithoutOutboxEventsInput
+	>;
+	connectOrCreate?: Prisma.BalanceCreateOrConnectWithoutOutboxEventsInput;
+	upsert?: Prisma.BalanceUpsertWithoutOutboxEventsInput;
+	connect?: Prisma.BalanceWhereUniqueInput;
+	update?: Prisma.XOR<
+		Prisma.XOR<
+			Prisma.BalanceUpdateToOneWithWhereWithoutOutboxEventsInput,
+			Prisma.BalanceUpdateWithoutOutboxEventsInput
+		>,
+		Prisma.BalanceUncheckedUpdateWithoutOutboxEventsInput
+	>;
+};
+
 export type BalanceCreateWithoutAccountInput = {
 	id: string;
 	amount?: bigint | number;
@@ -560,6 +598,7 @@ export type BalanceCreateWithoutAccountInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	blockedAt?: Date | string | null;
+	outboxEvents?: Prisma.OutboxEventCreateNestedManyWithoutBalanceInput;
 };
 
 export type BalanceUncheckedCreateWithoutAccountInput = {
@@ -569,6 +608,7 @@ export type BalanceUncheckedCreateWithoutAccountInput = {
 	createdAt?: Date | string;
 	updatedAt?: Date | string;
 	blockedAt?: Date | string | null;
+	outboxEvents?: Prisma.OutboxEventUncheckedCreateNestedManyWithoutBalanceInput;
 };
 
 export type BalanceCreateOrConnectWithoutAccountInput = {
@@ -627,6 +667,82 @@ export type BalanceScalarWhereInput = {
 	blockedAt?: Prisma.DateTimeNullableFilter<'Balance'> | Date | string | null;
 };
 
+export type BalanceCreateWithoutOutboxEventsInput = {
+	id: string;
+	amount?: bigint | number;
+	currency: string;
+	createdAt?: Date | string;
+	updatedAt?: Date | string;
+	blockedAt?: Date | string | null;
+	account: Prisma.AccountCreateNestedOneWithoutBalanceInput;
+};
+
+export type BalanceUncheckedCreateWithoutOutboxEventsInput = {
+	id: string;
+	amount?: bigint | number;
+	currency: string;
+	accountId: string;
+	createdAt?: Date | string;
+	updatedAt?: Date | string;
+	blockedAt?: Date | string | null;
+};
+
+export type BalanceCreateOrConnectWithoutOutboxEventsInput = {
+	where: Prisma.BalanceWhereUniqueInput;
+	create: Prisma.XOR<
+		Prisma.BalanceCreateWithoutOutboxEventsInput,
+		Prisma.BalanceUncheckedCreateWithoutOutboxEventsInput
+	>;
+};
+
+export type BalanceUpsertWithoutOutboxEventsInput = {
+	update: Prisma.XOR<
+		Prisma.BalanceUpdateWithoutOutboxEventsInput,
+		Prisma.BalanceUncheckedUpdateWithoutOutboxEventsInput
+	>;
+	create: Prisma.XOR<
+		Prisma.BalanceCreateWithoutOutboxEventsInput,
+		Prisma.BalanceUncheckedCreateWithoutOutboxEventsInput
+	>;
+	where?: Prisma.BalanceWhereInput;
+};
+
+export type BalanceUpdateToOneWithWhereWithoutOutboxEventsInput = {
+	where?: Prisma.BalanceWhereInput;
+	data: Prisma.XOR<
+		Prisma.BalanceUpdateWithoutOutboxEventsInput,
+		Prisma.BalanceUncheckedUpdateWithoutOutboxEventsInput
+	>;
+};
+
+export type BalanceUpdateWithoutOutboxEventsInput = {
+	id?: Prisma.StringFieldUpdateOperationsInput | string;
+	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	blockedAt?:
+		| Prisma.NullableDateTimeFieldUpdateOperationsInput
+		| Date
+		| string
+		| null;
+	account?: Prisma.AccountUpdateOneRequiredWithoutBalanceNestedInput;
+};
+
+export type BalanceUncheckedUpdateWithoutOutboxEventsInput = {
+	id?: Prisma.StringFieldUpdateOperationsInput | string;
+	amount?: Prisma.BigIntFieldUpdateOperationsInput | bigint | number;
+	currency?: Prisma.StringFieldUpdateOperationsInput | string;
+	accountId?: Prisma.StringFieldUpdateOperationsInput | string;
+	createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string;
+	blockedAt?:
+		| Prisma.NullableDateTimeFieldUpdateOperationsInput
+		| Date
+		| string
+		| null;
+};
+
 export type BalanceCreateManyAccountInput = {
 	id: string;
 	amount?: bigint | number;
@@ -647,6 +763,7 @@ export type BalanceUpdateWithoutAccountInput = {
 		| Date
 		| string
 		| null;
+	outboxEvents?: Prisma.OutboxEventUpdateManyWithoutBalanceNestedInput;
 };
 
 export type BalanceUncheckedUpdateWithoutAccountInput = {
@@ -660,6 +777,7 @@ export type BalanceUncheckedUpdateWithoutAccountInput = {
 		| Date
 		| string
 		| null;
+	outboxEvents?: Prisma.OutboxEventUncheckedUpdateManyWithoutBalanceNestedInput;
 };
 
 export type BalanceUncheckedUpdateManyWithoutAccountInput = {
@@ -675,6 +793,44 @@ export type BalanceUncheckedUpdateManyWithoutAccountInput = {
 		| null;
 };
 
+/**
+ * Count Type BalanceCountOutputType
+ */
+
+export type BalanceCountOutputType = {
+	outboxEvents: number;
+};
+
+export type BalanceCountOutputTypeSelect<
+	ExtArgs extends runtime.Types.Extensions.InternalArgs =
+		runtime.Types.Extensions.DefaultArgs
+> = {
+	outboxEvents?: boolean | BalanceCountOutputTypeCountOutboxEventsArgs;
+};
+
+/**
+ * BalanceCountOutputType without action
+ */
+export type BalanceCountOutputTypeDefaultArgs<
+	ExtArgs extends runtime.Types.Extensions.InternalArgs =
+		runtime.Types.Extensions.DefaultArgs
+> = {
+	/**
+	 * Select specific fields to fetch from the BalanceCountOutputType
+	 */
+	select?: Prisma.BalanceCountOutputTypeSelect<ExtArgs> | null;
+};
+
+/**
+ * BalanceCountOutputType without action
+ */
+export type BalanceCountOutputTypeCountOutboxEventsArgs<
+	ExtArgs extends runtime.Types.Extensions.InternalArgs =
+		runtime.Types.Extensions.DefaultArgs
+> = {
+	where?: Prisma.OutboxEventWhereInput;
+};
+
 export type BalanceSelect<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
 		runtime.Types.Extensions.DefaultArgs
@@ -688,6 +844,8 @@ export type BalanceSelect<
 		updatedAt?: boolean;
 		blockedAt?: boolean;
 		account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>;
+		outboxEvents?: boolean | Prisma.Balance$outboxEventsArgs<ExtArgs>;
+		_count?: boolean | Prisma.BalanceCountOutputTypeDefaultArgs<ExtArgs>;
 	},
 	ExtArgs['result']['balance']
 >;
@@ -754,6 +912,8 @@ export type BalanceInclude<
 		runtime.Types.Extensions.DefaultArgs
 > = {
 	account?: boolean | Prisma.AccountDefaultArgs<ExtArgs>;
+	outboxEvents?: boolean | Prisma.Balance$outboxEventsArgs<ExtArgs>;
+	_count?: boolean | Prisma.BalanceCountOutputTypeDefaultArgs<ExtArgs>;
 };
 export type BalanceIncludeCreateManyAndReturn<
 	ExtArgs extends runtime.Types.Extensions.InternalArgs =
@@ -775,6 +935,7 @@ export type $BalancePayload<
 	name: 'Balance';
 	objects: {
 		account: Prisma.$AccountPayload<ExtArgs>;
+		outboxEvents: Prisma.$OutboxEventPayload<ExtArgs>[];
 	};
 	scalars: runtime.Types.Extensions.GetPayloadResult<
 		{
@@ -1352,6 +1513,17 @@ export interface Prisma__BalanceClient<
 		ExtArgs,
 		GlobalOmitOptions
 	>;
+	outboxEvents<T extends Prisma.Balance$outboxEventsArgs<ExtArgs> = {}>(
+		args?: Prisma.Subset<T, Prisma.Balance$outboxEventsArgs<ExtArgs>>
+	): Prisma.PrismaPromise<
+		| runtime.Types.Result.GetResult<
+				Prisma.$OutboxEventPayload<ExtArgs>,
+				T,
+				'findMany',
+				GlobalOmitOptions
+		  >
+		| Null
+	>;
 	/**
 	 * Attaches callbacks for the resolution and/or rejection of the Promise.
 	 * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1859,6 +2031,37 @@ export type BalanceDeleteManyArgs<
 	 * Limit how many Balances to delete.
 	 */
 	limit?: number;
+};
+
+/**
+ * Balance.outboxEvents
+ */
+export type Balance$outboxEventsArgs<
+	ExtArgs extends runtime.Types.Extensions.InternalArgs =
+		runtime.Types.Extensions.DefaultArgs
+> = {
+	/**
+	 * Select specific fields to fetch from the OutboxEvent
+	 */
+	select?: Prisma.OutboxEventSelect<ExtArgs> | null;
+	/**
+	 * Omit specific fields from the OutboxEvent
+	 */
+	omit?: Prisma.OutboxEventOmit<ExtArgs> | null;
+	/**
+	 * Choose, which related nodes to fetch as well
+	 */
+	include?: Prisma.OutboxEventInclude<ExtArgs> | null;
+	where?: Prisma.OutboxEventWhereInput;
+	orderBy?:
+		| Prisma.OutboxEventOrderByWithRelationInput
+		| Prisma.OutboxEventOrderByWithRelationInput[];
+	cursor?: Prisma.OutboxEventWhereUniqueInput;
+	take?: number;
+	skip?: number;
+	distinct?:
+		| Prisma.OutboxEventScalarFieldEnum
+		| Prisma.OutboxEventScalarFieldEnum[];
 };
 
 /**

@@ -77,7 +77,26 @@ model Balance {
   updatedAt DateTime  @updatedAt @map("updated_at")
   blockedAt DateTime? @map("blocked_at")
 
+  outboxEvents OutboxEvent[]
+
   @@map("balances")
+}
+
+model OutboxEvent {
+  id        String @id @db.Char(36)
+  balanceId String @map("balance_id") @db.Char(36)
+
+  topic     String  @db.VarChar(100)
+  payload   Json
+  processed Boolean @default(false)
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  processedAt DateTime? @map("processed_at")
+
+  balance Balance @relation(fields: [balanceId], references: [id])
+
+  @@index([processed, createdAt])
+  @@map("outbox_events")
 }
 
 model ProcessedEvent {

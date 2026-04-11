@@ -11,7 +11,7 @@ import type {
 	ValidationAccountResponse
 } from 'contracts/grpc/gen/balance';
 import type { StringMessage } from 'contracts/grpc/gen/shared';
-import { GrpcStatus } from 'libsV2/grpc';
+import { GrpcStatus } from 'libs/grpc';
 import 'shared/extensions/bigint.extension';
 
 @Injectable()

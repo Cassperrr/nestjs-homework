@@ -3,7 +3,7 @@ import {
 	Inject,
 	Logger,
 	SetMetadata,
-	Type,
+	type Type,
 	UseGuards
 } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
@@ -11,15 +11,21 @@ import { GrpcMethod } from '@nestjs/microservices';
 import { ALLOWED_SERVICES_KEY } from '../constants';
 import { GrpcAuthGuard } from '../guard';
 
-export type ServiceAcl<T> = Partial<Record<keyof T, string[]>>;
-
+/**
+ * Фабрика для создания упрощенного gRPC контроллера и проксирования методов сервиса в него
+ * @param serviceName Название сервиса
+ * @param ServiceClass Класс сервиса
+ * @param proxingMethods Параметр для явного проксирования методов
+ * @param acl Объект с ключом - название метода и значением - список access-токенов сервисов, 		которым разрешено обращаться в этот метод
+ * @returns Возращает gRPC контроллер
+ */
 export function createGrpcController<T>(
 	serviceName: string,
 	ServiceClass: new (...args: any[]) => T,
-	proxingMethods: Array<keyof T> = [], // для явного прокисрования методов чтобы избежать мусора если он там появится
-	acl: ServiceAcl<T> = {} // для указания каким сервисам разрешено обращаться в этот метод через их апи токен
+	proxingMethods: Array<keyof T> = [],
+	acl: Partial<Record<keyof T, string[]>> = {}
 ): Type<any> {
-	const controllerName = `${ServiceClass.name.replace('Service', '')}Controller`;
+	const controllerName = `${serviceName.replace('Service', '')}Controller`;
 	const logger = new Logger(`GrpcControllerFactory (${controllerName})`);
 
 	// делаем обычный контроллер

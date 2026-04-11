@@ -2,7 +2,7 @@ import type { OtpRequestedPayload } from '@contracts';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable, Logger } from '@nestjs/common';
 import type { RmqContext } from '@nestjs/microservices';
-import { RmqConsumerService } from 'libsV2/rmq';
+import { RmqConsumerService } from 'libs/rmq';
 
 @Injectable()
 export class MailService {

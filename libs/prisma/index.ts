@@ -1,2 +1,2 @@
-export * from './prisma-factory.module';
+export * from './modules';
 export * from './decorators';

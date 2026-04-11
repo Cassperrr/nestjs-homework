@@ -41,6 +41,8 @@ export const userServiceEnvSchema = generalSchema.extend({
 
 	MAX_AVATARS_FOR_PROFILE: z.coerce.number().positive().min(1),
 
+	LIMIT: z.coerce.number().min(1),
+
 	JWT_SECRET: z.string().nonempty(),
 	JWT_ACCESS_TOKEN_TTL: z
 		.custom<StringValue>(

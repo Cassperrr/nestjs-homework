@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { RmqConsumerFactoryModule } from 'libsV2/rmq';
+import { RmqConsumerFactoryModule } from 'libs/rmq';
 
 import { ConfigModule } from './config';
 import { SmtpModule } from './infra';

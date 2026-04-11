@@ -6,7 +6,7 @@ import {
 	AVATAR_SERVICE_NAME,
 	type AvatarServiceClient
 } from 'contracts/grpc/gen/avatar';
-import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libs/grpc';
 
 @Injectable()
 export class AvatarClientGrpc extends AbstractGrpcClient<AvatarServiceClient> {

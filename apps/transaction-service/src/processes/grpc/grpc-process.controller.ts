@@ -1,6 +1,6 @@
 import { ACCESS_LIST } from '@transaction-service/src/config';
 import { TRANSACTION_SERVICE_NAME } from 'contracts/grpc/gen/transaction';
-import { createGrpcController } from 'libsV2/grpc';
+import { createGrpcController } from 'libs/grpc';
 
 import { GrpcProcessService } from './grpc-process.service';
 

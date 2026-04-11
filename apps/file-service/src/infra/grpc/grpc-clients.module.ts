@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GrpcClientFactoryModule } from 'libsV2/grpc';
+import { GrpcClientFactoryModule } from 'libs/grpc';
 
 import { AvatarClientGrpc } from './avatar-client.grpc';
 

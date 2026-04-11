@@ -10,6 +10,10 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 
 import type { CircuitState, ProxyReqHandler } from './interfaces';
 
+/**
+ * Абстрактный класс клиента для проксирования запросов на микросервис.
+ * Имеет встроенный circuit breaker.
+ */
 export abstract class AbstractProxyClient implements OnModuleInit {
 	private readonly logger = new Logger(this.constructor.name);
 	private proxy!: RequestHandler;

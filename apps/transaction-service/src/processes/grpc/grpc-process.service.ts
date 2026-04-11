@@ -2,13 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { TransactionRepository } from '@transaction-service/src/core';
 import { BalanceClientGrpc } from '@transaction-service/src/infra';
-import { error } from 'console';
+import type { StringMessage } from 'contracts/grpc/gen/shared';
 import type {
 	DepositRubRequest,
-	DepositRubResponse
+	DepositRubResponse,
+	TransferRubRequest
 } from 'contracts/grpc/gen/transaction';
-import { GrpcStatus } from 'libsV2/grpc';
-import { YookassaService } from 'libsV2/payments';
+import { GrpcStatus } from 'libs/grpc';
+import { YookassaService } from 'libs/payments';
 import {
 	Currency,
 	PaymentMethods,
@@ -16,6 +17,7 @@ import {
 	TransactionStatus,
 	TransactionType
 } from 'shared';
+import 'shared/extensions/bigint.extension';
 import { uuidv7 } from 'uuidv7';
 
 @Injectable()
@@ -122,11 +124,67 @@ export class GrpcProcessService {
 		});
 
 		this.logger.log(
-			`[${tx.id}] Транзакция -> "${TransactionStatus.PENDING}" | accountId=${accountId}`
+			`[${tx.id}] [${type}] Транзакция -> "${TransactionStatus.PENDING}" | accountId=${accountId} | ${amountInt} ${currency}`
 		);
 
 		return { url };
 	}
 
-	public async transferRub() {}
+	public async transferRub(data: TransferRubRequest): Promise<StringMessage> {
+		const { accountId, idempotencyKey, amount, toAccountId } = data;
+		if (accountId === toAccountId)
+			throw new RpcException({
+				code: GrpcStatus.INVALID_ARGUMENT,
+				details: 'Нельзя переводить самому себе'
+			});
+
+		const amountInt = BigInt(amount).toDollarsInt();
+		const currency = Currency.RUB;
+		const type = TransactionType.TRANSFER_OUT;
+
+		const [balanceOut] = await Promise.all([
+			this.balanceClient.call('validationAccount', {
+				accountId,
+				currency
+			}),
+			this.balanceClient.call('validationAccount', {
+				accountId: toAccountId,
+				currency
+			})
+		]).catch(error => {
+			if (
+				error?.code === GrpcStatus.UNAVAILABLE ||
+				error?.code === GrpcStatus.DEADLINE_EXCEEDED
+			) {
+				this.logger.error('Balance service недоступен', error);
+				throw new RpcException({
+					code: GrpcStatus.UNAVAILABLE,
+					details: 'Balance service недоступен'
+				});
+			}
+			throw error; // TODO протестить
+		});
+
+		if (BigInt(balanceOut.amount) < BigInt(amount))
+			return {
+				message: `Не хватает средств для перевода`
+			};
+
+		const tx = await this.txRepo.createTransfer(
+			accountId,
+			toAccountId,
+			BigInt(amount),
+			currency,
+			idempotencyKey
+		);
+
+		this.logger.log(
+			`[${tx.id}] [${type}] Транзакция -> "${TransactionStatus.PENDING}" | accountId=${accountId} | toAccountId=${toAccountId} | ${amountInt} ${currency}`
+		);
+
+		return {
+			message:
+				'Транзакция в обработке. Вы увидите ее статус исполнения в уведомлении Websocket (http://localhost:3003)'
+		};
+	}
 }

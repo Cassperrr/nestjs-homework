@@ -4,6 +4,12 @@ import z from 'zod';
 
 import { createValidate } from './env.validation';
 
+/**
+ * Фабрикует кастомный конфиг модуль для сбора env-переменных из локальной и глобаной областей сервиса.
+ * @param schema Zod-схема для валидации
+ * @param appName Название сервиса куда импортируется модуль
+ * @returns
+ */
 export function createConfigModule<T extends z.ZodTypeAny>(
 	schema: T,
 	appName: string

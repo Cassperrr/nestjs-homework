@@ -62,6 +62,11 @@ export type Avatar = Prisma.AvatarModel;
  */
 export type Balance = Prisma.BalanceModel;
 /**
+ * Model OutboxEvent
+ *
+ */
+export type OutboxEvent = Prisma.OutboxEventModel;
+/**
  * Model ProcessedEvent
  *
  */

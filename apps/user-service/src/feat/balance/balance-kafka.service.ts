@@ -1,68 +1,94 @@
-import { KAFKA_TOPICS } from '@contracts';
-import { Injectable, Logger } from '@nestjs/common';
-import type { ClientKafka } from '@nestjs/microservices';
-import { BalanceRepository } from '@user-service/src/core';
 import {
-	DepositCompletedEvent,
-	KafkaProducerService,
-	KafkaTopics,
-	TransferPendingEvent
-} from 'libs/kafka';
-import { InjectKafkaProducer } from 'libsV2/kafka';
+	type DepositPaidSuccessPayload,
+	KAFKA_TOPICS,
+	RMQ_PATTERNS,
+	TransferCompletedPayload,
+	TransferInitedPayload
+} from '@contracts';
+import { Injectable, Logger } from '@nestjs/common';
+import type { ClientRMQ, KafkaContext } from '@nestjs/microservices';
+import { BalanceRepository } from '@user-service/src/core';
+import { InjectRmqQueue } from 'libs/rmq';
 
 @Injectable()
 export class BalanceKafkaService {
 	private readonly logger = new Logger(BalanceKafkaService.name);
 
 	public constructor(
-		@InjectKafkaProducer()
-		private readonly kafkaProducer: ClientKafka,
-
+		@InjectRmqQueue('NOTIFICATION')
+		private readonly notificationRmqQueue: ClientRMQ,
 		private readonly balanceRepo: BalanceRepository
 	) {}
 
-	public async depositCompleted(event: DepositCompletedEvent) {
-		const { accountId, amount, currency, eventId, transactionId } = event;
-		const amountInt = BigInt(amount).toDollarsInt();
+	public async depositToBalance(
+		payload: DepositPaidSuccessPayload,
+		ctx: KafkaContext
+	) {
+		const { accountId, amount, currency, eventId, transactionId } = payload;
 
 		this.logger.log(
-			`[${KafkaTopics.TX_DEPOSIT_COMPLETED}] [accountId=${accountId}] [transactionId=${transactionId}] [${amountInt} ${currency}] Обработка начисления баланса...`
+			`[${accountId}] Обработка начисления депозита пользователю...`
 		);
+
 		try {
-			const updated = await this.balanceRepo.deposit(
-				transactionId,
+			const idempotencyKey = ctx
+				.getMessage()
+				.headers?.idempotencyKey?.toString();
+
+			if (!idempotencyKey) throw Error('Header "idempotencyKey" missing');
+
+			const amountInt = BigInt(amount).toDollarsInt();
+
+			await this.balanceRepo.depositAndCreateOutboxEvent(
+				idempotencyKey,
 				currency,
 				BigInt(amount),
 				accountId,
-				KafkaTopics.TX_DEPOSIT_COMPLETED
+				transactionId,
+				eventId
 			);
-
-			if (!updated) throw Error('Обновленный объект баланса не получен');
-
-			// здесь публикация успеха
-			this.kafkaProducer.emit(KAFKA_TOPICS.DEPOSIT_SUCCESS, {
-				key: eventId,
-				value: { eventId, transactionId }
-			});
 
 			this.logger.log(
-				`[${KafkaTopics.TX_DEPOSIT_COMPLETED}] [accountId=${accountId}] [transactionId=${transactionId}] [${amountInt} ${currency}] Баланс успешно начислен`
-			);
-		} catch (error) {
-			this.logger.error(
-				`[${KafkaTopics.TX_DEPOSIT_COMPLETED}] [accountId=${accountId}] [transactionId=${transactionId}] [${amountInt} ${currency}] Ошибка начисления баланса`,
-				error
+				`[${accountId}] Депозит успешно начислен +${amountInt} ${currency}`
 			);
 
-			// здесь публикация провала
-			this.kafkaProducer.emit(KAFKA_TOPICS.DEPOSIT_FAILED, {
-				key: eventId,
-				value: { eventId, transactionId }
+			this.notificationRmqQueue.emit(RMQ_PATTERNS.DEPOSIT_CREDITED, {
+				transactionId,
+				accountId,
+				amount: amountInt.toString(),
+				currency
 			});
+		} catch (err) {
+			this.logger.error(
+				`[${accountId}] Ошибка начиления депозита пользователю | Создание события "${KAFKA_TOPICS.DEPOSIT_CREDITING_FAILED}"...`,
+				err
+			);
+
+			const event = await this.balanceRepo
+				.createOutboxEvent(
+					accountId,
+					currency,
+					KAFKA_TOPICS.DEPOSIT_CREDITING_FAILED,
+					{ eventId, transactionId }
+				)
+				.catch(err => {
+					this.logger.error(
+						`[${accountId}] Ошибка создания события "${KAFKA_TOPICS.DEPOSIT_CREDITING_FAILED}" | WRITING TO DLQ...`,
+						err
+					);
+					// запись в DLQ
+					console.log(payload);
+					throw err;
+				});
+
+			this.logger.log(`[${accountId}] Событие "${event.topic}" создано`);
 		}
 	}
 
-	public async transferPending(event: TransferPendingEvent) {
+	public async transferToAccount(
+		payload: TransferInitedPayload,
+		ctx: KafkaContext
+	) {
 		const {
 			outId,
 			inId,
@@ -71,41 +97,71 @@ export class BalanceKafkaService {
 			eventId,
 			amount,
 			currency
-		} = event;
-		const amountInt = BigInt(amount).toDollarsInt();
+		} = payload;
 
 		this.logger.log(
-			`[${KafkaTopics.TX_TRANSFER_PENDING}] [fromAccountId=${fromAccountId}] [toAccountId=${toAccountId}] [outId=${outId}] [inId=${inId}] [${amountInt} ${currency}] Обработка перевода средств...`
+			`[${fromAccountId}] Обработка перевода средств пользователю -> ${toAccountId}...`
 		);
 
 		try {
-			await this.balanceRepo.transfer(
-				outId,
+			// throw new Error('ПИЗДА РУЛЯМ');
+			const idempotencyKey = ctx
+				.getMessage()
+				.headers?.idempotencyKey?.toString();
+
+			if (!idempotencyKey) throw Error('Header "idempotencyKey" missing');
+
+			const amountInt = BigInt(amount).toDollarsInt();
+
+			await this.balanceRepo.transferAndCreateOutboxEvent(
+				idempotencyKey,
 				fromAccountId,
 				toAccountId,
 				currency,
 				BigInt(amount),
-				KafkaTopics.TX_TRANSFER_PENDING
+				eventId,
+				outId,
+				inId
 			);
-
-			this.kafkaProducer.emit(KAFKA_TOPICS.TRANFER_SUCCESS, {
-				key: eventId,
-				value: { eventId, outId, inId }
-			});
 
 			this.logger.log(
-				`[${KafkaTopics.TX_TRANSFER_PENDING}] [fromAccountId=${fromAccountId}] [toAccountId=${toAccountId}] [outId=${outId}] [inId=${inId}] [${amountInt} ${currency}] Перевод выполнен`
+				`[${fromAccountId}] Перевод средств успешен ${amountInt} ${currency} -> ${toAccountId}`
 			);
-		} catch (error) {
-			this.logger.error(
-				`[${KafkaTopics.TX_TRANSFER_PENDING}] [fromAccountId=${fromAccountId}] [toAccountId=${toAccountId}] [outId=${outId}] [inId=${inId}] [${amountInt} ${currency}] Ошибка перевода средств`,
-				error
-			);
-			// здесь публикация провала
-			this.kafkaProducer.emit(KAFKA_TOPICS.TRANFER_FAILED, {
-				key: eventId,
-				value: { eventId, outId, inId }
+
+			this.notificationRmqQueue.emit(RMQ_PATTERNS.TRANSFER_COMPLETED, {
+				outTx: outId,
+				inTx: inId,
+				fromAccountId,
+				toAccountId,
+				amount: amountInt.toString(),
+				currency
 			});
+		} catch (err) {
+			this.logger.error(
+				`[${fromAccountId}] Ошибка перевода средств пользователю ${toAccountId} | Создание события "${KAFKA_TOPICS.TRANFER_FAILED}"...`,
+				err
+			);
+
+			const event = await this.balanceRepo
+				.createOutboxEvent(
+					fromAccountId,
+					currency,
+					KAFKA_TOPICS.TRANFER_FAILED,
+					{ eventId, outId, inId }
+				)
+				.catch(err => {
+					this.logger.error(
+						`[${fromAccountId}] Ошибка создания события "${KAFKA_TOPICS.TRANFER_FAILED}" | WRITING TO DLQ...`,
+						err
+					);
+					// запись в DLQ
+					console.log(payload);
+					throw err;
+				});
+
+			this.logger.log(
+				`[${fromAccountId}] Событие "${event.topic}" создано`
+			);
 		}
 	}
 }

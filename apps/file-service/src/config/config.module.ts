@@ -1,4 +1,4 @@
-import { createConfigModule } from 'libsV2/config';
+import { createConfigModule } from '@libs/config';
 
 import { fileServiceEnvSchema } from './env.schema';
 

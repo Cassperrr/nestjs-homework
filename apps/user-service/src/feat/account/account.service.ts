@@ -15,7 +15,7 @@ import type {
 	DeleteRequest
 } from 'contracts/grpc/gen/account';
 import type { OtpCodeResponse, StringMessage } from 'contracts/grpc/gen/shared';
-import { GrpcStatus } from 'libsV2/grpc';
+import { GrpcStatus } from 'libs/grpc';
 import { OtpKey } from 'shared';
 
 @Injectable()

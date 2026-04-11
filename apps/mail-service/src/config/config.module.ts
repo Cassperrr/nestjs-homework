@@ -1,4 +1,4 @@
-import { createConfigModule } from 'libsV2/config';
+import { createConfigModule } from '@libs/config';
 
 import { mailServiceEnvSchema } from './env.schema';
 

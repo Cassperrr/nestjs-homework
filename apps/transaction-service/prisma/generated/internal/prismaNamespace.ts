@@ -416,7 +416,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never
 
 export const ModelName = {
 	Transaction: 'Transaction',
-	OutboxEvent: 'OutboxEvent'
+	OutboxEvent: 'OutboxEvent',
+	ProcessedEvent: 'ProcessedEvent'
 } as const;
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName];
@@ -438,7 +439,7 @@ export type TypeMap<
 		omit: GlobalOmitOptions;
 	};
 	meta: {
-		modelProps: 'transaction' | 'outboxEvent';
+		modelProps: 'transaction' | 'outboxEvent' | 'processedEvent';
 		txIsolationLevel: TransactionIsolationLevel;
 	};
 	model: {
@@ -594,6 +595,82 @@ export type TypeMap<
 				};
 			};
 		};
+		ProcessedEvent: {
+			payload: Prisma.$ProcessedEventPayload<ExtArgs>;
+			fields: Prisma.ProcessedEventFieldRefs;
+			operations: {
+				findUnique: {
+					args: Prisma.ProcessedEventFindUniqueArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload> | null;
+				};
+				findUniqueOrThrow: {
+					args: Prisma.ProcessedEventFindUniqueOrThrowArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>;
+				};
+				findFirst: {
+					args: Prisma.ProcessedEventFindFirstArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload> | null;
+				};
+				findFirstOrThrow: {
+					args: Prisma.ProcessedEventFindFirstOrThrowArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>;
+				};
+				findMany: {
+					args: Prisma.ProcessedEventFindManyArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>[];
+				};
+				create: {
+					args: Prisma.ProcessedEventCreateArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>;
+				};
+				createMany: {
+					args: Prisma.ProcessedEventCreateManyArgs<ExtArgs>;
+					result: BatchPayload;
+				};
+				createManyAndReturn: {
+					args: Prisma.ProcessedEventCreateManyAndReturnArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>[];
+				};
+				delete: {
+					args: Prisma.ProcessedEventDeleteArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>;
+				};
+				update: {
+					args: Prisma.ProcessedEventUpdateArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>;
+				};
+				deleteMany: {
+					args: Prisma.ProcessedEventDeleteManyArgs<ExtArgs>;
+					result: BatchPayload;
+				};
+				updateMany: {
+					args: Prisma.ProcessedEventUpdateManyArgs<ExtArgs>;
+					result: BatchPayload;
+				};
+				updateManyAndReturn: {
+					args: Prisma.ProcessedEventUpdateManyAndReturnArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>[];
+				};
+				upsert: {
+					args: Prisma.ProcessedEventUpsertArgs<ExtArgs>;
+					result: runtime.Types.Utils.PayloadToResult<Prisma.$ProcessedEventPayload>;
+				};
+				aggregate: {
+					args: Prisma.ProcessedEventAggregateArgs<ExtArgs>;
+					result: runtime.Types.Utils.Optional<Prisma.AggregateProcessedEvent>;
+				};
+				groupBy: {
+					args: Prisma.ProcessedEventGroupByArgs<ExtArgs>;
+					result: runtime.Types.Utils.Optional<Prisma.ProcessedEventGroupByOutputType>[];
+				};
+				count: {
+					args: Prisma.ProcessedEventCountArgs<ExtArgs>;
+					result:
+						| runtime.Types.Utils.Optional<Prisma.ProcessedEventCountAggregateOutputType>
+						| number;
+				};
+			};
+		};
 	};
 } & {
 	other: {
@@ -641,6 +718,7 @@ export const TransactionScalarFieldEnum = {
 	type: 'type',
 	status: 'status',
 	idempotencyKey: 'idempotencyKey',
+	retryCount: 'retryCount',
 	provider: 'provider',
 	method: 'method',
 	providerPaymentId: 'providerPaymentId',
@@ -665,6 +743,16 @@ export const OutboxEventScalarFieldEnum = {
 
 export type OutboxEventScalarFieldEnum =
 	(typeof OutboxEventScalarFieldEnum)[keyof typeof OutboxEventScalarFieldEnum];
+
+export const ProcessedEventScalarFieldEnum = {
+	id: 'id',
+	idempotencyKey: 'idempotencyKey',
+	topic: 'topic',
+	processedAt: 'processedAt'
+} as const;
+
+export type ProcessedEventScalarFieldEnum =
+	(typeof ProcessedEventScalarFieldEnum)[keyof typeof ProcessedEventScalarFieldEnum];
 
 export const SortOrder = {
 	asc: 'asc',
@@ -740,6 +828,22 @@ export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<
 >;
 
 /**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<
+	$PrismaModel,
+	'Int'
+>;
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<
+	$PrismaModel,
+	'Int[]'
+>;
+
+/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<
@@ -777,22 +881,6 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<
 	$PrismaModel,
 	'Boolean'
->;
-
-/**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<
-	$PrismaModel,
-	'Int'
->;
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<
-	$PrismaModel,
-	'Int[]'
 >;
 
 /**
@@ -916,6 +1004,7 @@ export type PrismaClientOptions = (
 export type GlobalOmitConfig = {
 	transaction?: Prisma.TransactionOmit;
 	outboxEvent?: Prisma.OutboxEventOmit;
+	processedEvent?: Prisma.ProcessedEventOmit;
 };
 
 /* Types for Logging */

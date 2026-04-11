@@ -1,2 +1,2 @@
-export * from './kafka-producer.module';
-export * from './kafka-producer.service';
+export * from './decorators';
+export * from './modules';

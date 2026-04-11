@@ -23,8 +23,8 @@ import type {
 	VerifyRequest
 } from 'contracts/grpc/gen/auth';
 import type { StringMessage } from 'contracts/grpc/gen/shared';
-import { GrpcStatus } from 'libsV2/grpc';
-import { InjectRmqQueue } from 'libsV2/rmq';
+import { GrpcStatus } from 'libs/grpc';
+import { InjectRmqQueue } from 'libs/rmq';
 import { OtpKey, Role } from 'shared';
 
 @Injectable()

@@ -6,7 +6,7 @@ import {
 	PROFILE_SERVICE_NAME,
 	type ProfileServiceClient
 } from 'contracts/grpc/gen/profile';
-import { AbstractGrpcClient, InjectGrpcClient } from 'libsV2/grpc';
+import { AbstractGrpcClient, InjectGrpcClient } from 'libs/grpc';
 
 @Injectable()
 export class ProfileClientGrpc extends AbstractGrpcClient<ProfileServiceClient> {

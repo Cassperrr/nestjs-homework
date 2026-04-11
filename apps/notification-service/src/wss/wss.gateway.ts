@@ -7,24 +7,17 @@ import {
 	WebSocketGateway,
 	WebSocketServer
 } from '@nestjs/websockets';
-import type { KafkaTopic, TransferCompletedEvent } from 'libs/kafka';
-import type { JwtPayload } from 'shared';
 import type { Server, Socket } from 'socket.io';
-
-import { WssService } from './wss.service';
 
 @WebSocketGateway()
 export class WssGateway
 	implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
-	@WebSocketServer() server: Server;
+	@WebSocketServer() server!: Server;
 
 	private readonly logger = new Logger(WssGateway.name);
 
-	public constructor(
-		private readonly wssService: WssService,
-		private readonly jwtService: JwtService
-	) {}
+	public constructor(private readonly jwtService: JwtService) {}
 
 	public afterInit() {
 		this.logger.log(`Wss server inited`);
@@ -44,8 +37,7 @@ export class WssGateway
 		}
 
 		try {
-			const payload: JwtPayload =
-				await this.jwtService.verifyAsync(token);
+			const payload = await this.jwtService.verifyAsync(token);
 			client.data.user = payload;
 			const room = `room:${payload.id}`;
 			await client.join(room);
@@ -73,11 +65,7 @@ export class WssGateway
 		this.logger.log(`[${client.id}] Client disconnected`);
 	}
 
-	public sendNotification(
-		accountId: string,
-		event: string,
-		payload: TransferCompletedEvent
-	) {
+	public sendNotification(accountId: string, event: string, payload: any) {
 		this.server.to(`room:${accountId}`).emit(event, payload);
 		this.logger.log(`[${event}] [room:${accountId}] Message sent`);
 	}

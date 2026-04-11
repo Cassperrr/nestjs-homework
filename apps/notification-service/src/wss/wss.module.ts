@@ -1,9 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 
 import { WssGateway } from './wss.gateway';
-import { WssService } from './wss.service';
 
+@Global()
 @Module({
-	providers: [WssGateway, WssService]
+	providers: [WssGateway],
+	exports: [WssGateway]
 })
 export class WssModule {}

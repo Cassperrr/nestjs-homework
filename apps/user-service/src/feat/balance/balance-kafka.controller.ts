@@ -4,7 +4,12 @@ import {
 	type TransferInitedPayload
 } from '@contracts';
 import { Controller } from '@nestjs/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import {
+	Ctx,
+	EventPattern,
+	type KafkaContext,
+	Payload
+} from '@nestjs/microservices';
 
 import { BalanceKafkaService } from './balance-kafka.service';
 
@@ -15,17 +20,18 @@ export class BalanceKafkaController {
 	) {}
 
 	@EventPattern(KAFKA_TOPICS.DEPOSIT_PAID_SUCCESS)
-	public handleTxDepositCompleted(
-		@Payload() payload: DepositPaidSuccessPayload
+	public handleDepositPaidSuccess(
+		@Payload() payload: DepositPaidSuccessPayload,
+		@Ctx() ctx: KafkaContext
 	) {
-		console.log(payload);
-		return;
+		return this.balanceKafkaService.depositToBalance(payload, ctx);
 	}
 
 	@EventPattern(KAFKA_TOPICS.TRANSFER_INITED)
-	public handleTxTransferCompleted(
-		@Payload() payload: TransferInitedPayload
+	public handleTransferInited(
+		@Payload() payload: TransferInitedPayload,
+		@Ctx() ctx: KafkaContext
 	) {
-		return;
+		return this.balanceKafkaService.transferToAccount(payload, ctx);
 	}
 }

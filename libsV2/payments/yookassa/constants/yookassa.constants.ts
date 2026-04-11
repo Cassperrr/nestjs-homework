@@ -1,1 +1,0 @@
-export const YOOKASSA_OPTIONS = Symbol('YOOKASSA_OPTIONS');

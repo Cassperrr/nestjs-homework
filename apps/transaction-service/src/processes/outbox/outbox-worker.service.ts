@@ -4,10 +4,11 @@ import type { ClientKafka } from '@nestjs/microservices';
 import { CronExpression } from '@nestjs/schedule';
 import type { TxServiceEnv } from '@transaction-service/src/config';
 import { TransactionRepository } from '@transaction-service/src/core';
-import { InjectKafkaProducer } from 'libsV2/kafka';
-import { AbstractOutboxWorkerService } from 'libsV2/outbox';
-import { OutboxEvent } from 'libsV2/outbox/abstracts/interfaces';
+import { InjectKafkaProducer } from 'libs/kafka';
+import { AbstractOutboxWorkerService } from 'libs/outbox';
+import { OutboxEvent } from 'libs/outbox';
 import { firstValueFrom } from 'rxjs';
+import { uuidv7 } from 'uuidv7';
 
 @Injectable()
 export class OutboxWorkerService extends AbstractOutboxWorkerService {
@@ -29,7 +30,10 @@ export class OutboxWorkerService extends AbstractOutboxWorkerService {
 		await firstValueFrom(
 			this.kafkaProducer.emit(event.topic, {
 				key: event.id,
-				value: event.payload
+				value: event.payload,
+				headers: {
+					idempotencyKey: uuidv7()
+				}
 			})
 		);
 	}
