@@ -10,9 +10,9 @@ import {
 	Payload,
 	type RmqContext
 } from '@nestjs/microservices';
+import { TransactionDocService } from '@notification-service/src/infra';
 import { RmqConsumerService } from 'libs/rmq';
 
-import { TransactionDocService } from '../infra/mongo/docs';
 import { WssGateway } from '../wss';
 
 @Controller()

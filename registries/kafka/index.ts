@@ -1,1 +1,1 @@
-export * from './kafka.producer.registries';
+export * from './kafka.producer.registry';

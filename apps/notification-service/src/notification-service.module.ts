@@ -2,11 +2,10 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from './config';
 import { CoreModule } from './core';
-import { MongoModule } from './infra';
-import { RmqModule } from './rmq';
-import { WssModule } from './wss';
+import { InfraModule } from './infra';
+import { ProcessesModule } from './processes';
 
 @Module({
-	imports: [ConfigModule, CoreModule, WssModule, RmqModule, MongoModule]
+	imports: [ConfigModule, CoreModule, InfraModule, ProcessesModule]
 })
 export class NotificationServiceModule {}

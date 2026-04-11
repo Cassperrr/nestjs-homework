@@ -2,7 +2,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
-import { NotificationEnv } from '../config';
+import type { NotificationEnv } from '../config';
 
 @Global()
 @Module({

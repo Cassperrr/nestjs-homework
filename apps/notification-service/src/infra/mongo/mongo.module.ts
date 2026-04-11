@@ -9,7 +9,6 @@ import {
 	TransactionDocService
 } from './docs';
 
-@Global()
 @Module({
 	imports: [
 		MongooseModule.forRootAsync({
