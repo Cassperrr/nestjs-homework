@@ -12,43 +12,47 @@ import {
 } from '@nestjs/microservices';
 import { RmqConsumerService } from 'libs/rmq';
 
+import { TransactionDocService } from '../infra/mongo/docs';
 import { WssGateway } from '../wss';
 
 @Controller()
 export class RmqController {
 	constructor(
 		private readonly rmqService: RmqConsumerService,
-		private readonly wssGateway: WssGateway
+		private readonly wssGateway: WssGateway,
+		private readonly docService: TransactionDocService
 	) {}
 
 	@EventPattern(RMQ_PATTERNS.DEPOSIT_CREDITED)
 	public async depositCredited(
-		@Payload() data: DepositCreditedPayload,
+		@Payload() payload: DepositCreditedPayload,
 		@Ctx() ctx: RmqContext
 	) {
 		this.wssGateway.sendNotification(
-			data.accountId,
+			payload.accountId,
 			RMQ_PATTERNS.DEPOSIT_CREDITED,
-			data
+			payload
 		);
 		this.rmqService.ack(ctx);
+		await this.docService.saveDepositMessage(payload);
 	}
 
 	@EventPattern(RMQ_PATTERNS.TRANSFER_COMPLETED)
 	public async transferCompleted(
-		@Payload() data: TransferCompletedPayload,
+		@Payload() payload: TransferCompletedPayload,
 		@Ctx() ctx: RmqContext
 	) {
 		this.wssGateway.sendNotification(
-			data.fromAccountId,
+			payload.fromAccountId,
 			RMQ_PATTERNS.TRANSFER_COMPLETED,
-			data
+			payload
 		);
 		this.wssGateway.sendNotification(
-			data.toAccountId,
+			payload.toAccountId,
 			RMQ_PATTERNS.TRANSFER_COMPLETED,
-			data
+			payload
 		);
 		this.rmqService.ack(ctx);
+		await this.docService.saveTransferMessage(payload);
 	}
 }
