@@ -1,0 +1,97 @@
+import { applyDecorators } from '@nestjs/common';
+import {
+	ApiBearerAuth,
+	ApiHeader,
+	ApiOkResponse,
+	ApiOperation
+} from '@nestjs/swagger';
+
+import {
+	AuditBalanceResponse,
+	DepositAmountResponse,
+	GetMyBalancesResponse,
+	TransferAmountResponse,
+	WithdrawalAmountResponse
+} from '../dto';
+
+export const ApiGetBalance = () =>
+	applyDecorators(
+		ApiOperation({
+			summary: 'Показать мой баланс'
+		}),
+		ApiOkResponse({ type: GetMyBalancesResponse }),
+		ApiBearerAuth()
+	);
+
+export const ApiAudit = () =>
+	applyDecorators(
+		ApiOperation({
+			summary:
+				'Проверить консистеность баланса пользователя по истории транзакций, только для администратора'
+		}),
+		ApiOkResponse({ type: AuditBalanceResponse }),
+		ApiBearerAuth()
+	);
+
+export const ApiDeposit = () =>
+	applyDecorators(
+		ApiOperation({
+			summary: 'Пополнить баланс'
+		}),
+		ApiHeader({
+			name: 'Idempotency-Key',
+			description: 'В swagger генерация автоматическая, V4',
+			required: false
+		}),
+		ApiOkResponse({ type: DepositAmountResponse }),
+		ApiBearerAuth()
+	);
+
+export const ApiWithdrawn = () =>
+	applyDecorators(
+		ApiOperation({
+			summary: 'Вывод на другой счет'
+		}),
+		ApiHeader({
+			name: 'Idempotency-Key',
+			description: 'В swagger генерация автоматическая, V4',
+			required: false
+		}),
+		ApiOkResponse({ type: WithdrawalAmountResponse }),
+		ApiBearerAuth()
+	);
+
+export const ApiTransfer = () =>
+	applyDecorators(
+		ApiOperation({
+			summary: 'Перевести средства с одного аккаунта на другой'
+		}),
+		ApiBearerAuth()
+	);
+
+export const ApiReset = () =>
+	applyDecorators(
+		ApiOperation({
+			summary:
+				'Добавляет Job по отчистки балансов юзеров каждое N время, только для админов'
+		}),
+		ApiBearerAuth()
+	);
+
+export const ApiStartCron = () =>
+	applyDecorators(
+		ApiOperation({
+			summary:
+				'Запускает Job по отчистки балансов юзеров, только для админов'
+		}),
+		ApiBearerAuth()
+	);
+
+export const ApiStopCron = () =>
+	applyDecorators(
+		ApiOperation({
+			summary:
+				'Останавливает Job по отчистки балансов юзеров, только для админов'
+		}),
+		ApiBearerAuth()
+	);

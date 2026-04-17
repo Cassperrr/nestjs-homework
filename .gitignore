@@ -3,7 +3,7 @@
 /node_modules
 /build
 prisma/generated
-todo
+todo.md
 /trash
 
 # Logs
@@ -44,6 +44,7 @@ lerna-debug.log*
 # .env.test.local
 # .env.production.local
 # .env.local
+# **/.env*.local
 
 # temp directory
 .temp
@@ -59,3 +60,5 @@ pids
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 
+
+/generated/prisma

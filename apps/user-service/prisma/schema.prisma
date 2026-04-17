@@ -1,0 +1,111 @@
+generator client {
+  provider        = "prisma-client"
+  output          = "./generated"
+  moduleFormat    = "cjs"
+  previewFeatures = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Account {
+  id String @id @db.Char(36)
+
+  username   String  @unique
+  password   String  @db.VarChar(255)
+  email      String  @unique
+  isVerified Boolean @default(false) @map("is_verified")
+  role       String  @default("USER") @db.VarChar(25)
+
+  profile Profile?
+  balance Balance[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("accounts")
+}
+
+model Profile {
+  id String @id @db.Char(36)
+
+  firstName   String @map("first_name") @db.VarChar(50)
+  lastName    String @map("last_name") @db.VarChar(50)
+  age         Int
+  description String @default("") @db.VarChar(1000)
+
+  accountId String  @unique @map("account_id") @db.Char(36)
+  account   Account @relation(fields: [accountId], references: [id])
+
+  avatars Avatar[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([age])
+  @@map("profiles")
+}
+
+model Avatar {
+  id String @id @db.Char(36)
+
+  name String @unique
+
+  profile   Profile @relation(fields: [profileId], references: [id])
+  profileId String  @map("profile_id") @db.Char(36)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@index([profileId], where: raw("deleted_at IS NULL"))
+  @@map("avatars")
+}
+
+model Balance {
+  id String @id @db.Char(36)
+
+  amount   BigInt @default(0)
+  currency String @db.VarChar(10)
+
+  accountId String  @map("account_id") @db.Char(36)
+  account   Account @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  blockedAt DateTime? @map("blocked_at")
+
+  outboxEvents OutboxEvent[]
+
+  @@map("balances")
+}
+
+model OutboxEvent {
+  id        String @id @db.Char(36)
+  balanceId String @map("balance_id") @db.Char(36)
+
+  topic     String  @db.VarChar(100)
+  payload   Json
+  processed Boolean @default(false)
+
+  createdAt   DateTime  @default(now()) @map("created_at")
+  processedAt DateTime? @map("processed_at")
+
+  balance Balance @relation(fields: [balanceId], references: [id])
+
+  @@index([processed, createdAt])
+  @@map("outbox_events")
+}
+
+model ProcessedEvent {
+  id String @id @db.Char(36)
+
+  idempotencyKey String @unique @map("idempotency_key") @db.Char(36)
+  topic          String @db.Char(100)
+
+  processedAt DateTime @default(now()) @map("processed_at")
+
+  @@map("processed_events")
+}

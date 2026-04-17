@@ -1,0 +1,1 @@
+prisma db push --config=apps/user-service/prisma.config.ts

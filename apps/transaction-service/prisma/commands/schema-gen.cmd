@@ -1,0 +1,1 @@
+prisma generate --config=apps/transaction-service/prisma.config.ts

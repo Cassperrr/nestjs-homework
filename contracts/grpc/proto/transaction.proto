@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package transaction;
+
+import "shared.proto";
+
+service TransactionService {
+  rpc DepositRub (DepositRubRequest) returns (DepositRubResponse);
+  rpc TransferRub (TransferRubRequest) returns (shared.StringMessage);
+}
+
+message DepositRubRequest {
+  string account_id = 1;
+  string idempotency_key = 2;
+  uint64 amount = 3;
+}
+
+message DepositRubResponse {
+  string url = 1;
+}
+
+message TransferRubRequest {
+  string account_id = 1;
+  string idempotency_key = 2;
+  uint64 amount = 3;
+  string to_account_id = 4;
+}

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package auth;
+
+import "shared.proto";
+
+service AuthService {
+  rpc Register (RegisterRequest) returns (shared.StringMessage);
+  rpc Resend (ResendRequest) returns (shared.StringMessage);
+  rpc Verify (VerifyRequest) returns (TokensResponse);
+  rpc Login (LoginRequest) returns (TokensResponse);
+  rpc Refresh (RefreshRequest) returns (TokensResponse);
+  rpc Logout (RefreshRequest) returns (shared.StringMessage);
+}
+
+message RegisterRequest {
+  string username = 1;
+  string password = 2;
+  string email    = 3;
+}
+
+message ResendRequest {
+  string email = 1;
+}
+
+message VerifyRequest {
+  string email = 1;
+  string code = 2;
+}
+
+message TokensResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  string refresh_ttl = 3;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message RefreshRequest {
+  string refresh_token = 1;
+}
+

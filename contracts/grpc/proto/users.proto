@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package users;
+
+import "profile.proto";
+
+service UsersService {
+  rpc FindMe (FindMeRequest) returns (UserResponse);
+  rpc FindAll (FindAllUsersRequest) returns (FindAllUsersResponse);
+  rpc FindActive (FindActiveUsersRequest) returns (FindActiveUsersResponse);
+} 
+
+message FindMeRequest {
+  string account_id=1;
+}
+
+message UserResponse {
+  string id=1;
+  string username=2;
+  string email=3;
+  string created_at=4;
+  optional profile.ProfileResponse profile = 5;
+}
+
+message FindAllUsersRequest {
+  string account_id=1;
+  optional string username = 2;
+  optional string cursor = 3;
+  optional uint32 limit = 4;
+}
+
+message FindAllUsersResponse {
+  repeated UserResponse data = 1;
+  optional string next_cursor = 2;
+  bool has_next_page = 3;
+}
+
+message FindActiveUsersRequest {
+  string account_id=1;
+  uint32 min_age = 2;
+  uint32 max_age = 3;
+}
+
+message ActiveUserResponse {
+  string account_id=1;
+  string username=2;
+  string email=3;
+  string created_at=4;
+  string profile_id = 5;
+  string first_name = 6;
+  string last_name = 7;
+  uint32 age = 8;
+  optional string description = 9;
+  string last_loaded_avatar = 10;
+}
+
+message FindActiveUsersResponse {
+  repeated ActiveUserResponse users = 1;
+}
