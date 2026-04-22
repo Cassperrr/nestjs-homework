@@ -1,5 +1,6 @@
 import { type INestApplication, ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 import { GrpcExeptionFilter } from 'libs/grpc';
 
 import { ThrottlerExceptionFilter } from './common';
@@ -11,22 +12,18 @@ export const appSetup = (app: INestApplication, isDev: boolean) => {
 		credentials: true,
 		methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
 	});
-
+	app.use(helmet());
 	app.use(cookieParser());
-
 	app.useGlobalPipes(
 		new ValidationPipe({
 			transform: true,
 			whitelist: true
 		})
 	);
-
 	app.useGlobalFilters(
 		new GrpcExeptionFilter(),
 		new ThrottlerExceptionFilter()
 	);
-
-	// app.useGlobalFilters(new InfrastructureFilter());
 
 	swaggerSetup(app, isDev);
 };
